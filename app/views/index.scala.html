@@ -1,0 +1,151 @@
+  @(message: String)(domList: List[Domain])(me: List[MailObjectModel])
+<html lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title> mail obj in html </title>
+ 
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/base/jquery-ui.css" type="text/css" />
+<link rel="stylesheet" href="/assets/css/ui.jqgrid.css" type="text/css" />
+<script src="/assets/js/jquery.jqGrid.min.js"></script>
+<script src="/assets/js/grid.locale-en.js"></script>
+<script src="/assets/js/handlebars-v1.3.0.js"></script>
+<link rel="shortcut icon" href="http://designshack.net/favicon.ico">
+<link rel="icon" href="http://designshack.net/favicon.ico">
+<script type="text/javascript" charset="utf-8" src="/assets/js/jquery.leanModal.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/assets/css/style.css" /> 
+<!-- <script src="/assets/js/bootstrap-modal.js"></script>
+<script src="/assets/js/bootstrap-modalmanager.js"></script>
+ <link href="/assets/css/bootstrap-modal.css" rel="stylesheet">--> 
+<link href="/assets/css/customDemo.css" rel="stylesheet">
+<script src="/assets/js/customDemo.js"></script>
+<link rel="stylesheet" type="text/css" media="all" href="/assets/css/style.css">
+</head>
+<body>
+<div style=" padding: 20px;">
+<div class="first">
+<div id="dialog-form" title="Create new user">
+		<form id="searchMailObjForm">
+	<fieldset>
+		<table border="1">
+		<tr>
+			<td>
+					<label for="text">Subject Keyword/s:</label><input type="text" name="text"  placeholder="Key-Words" class="text ui-widget-content ui-corner-all">
+				<label for="datetimepicker">
+					 From: </label><input type='text' id='datetimepicker' name="datetimepicker" class="text ui-widget-content ui-corner-all"/> 
+				<label for="datetimepicker1">
+					To :  </label> <input type='text' id='datetimepicker1' name="datetimepicker1" class="text ui-widget-content ui-corner-all"/> 
+				
+			      <input type="button" id="searchMailFrmDomain" value="Search">
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<label for="text">Contents Keyword/s:</label><input type="text" name="keyWordsContents"  placeholder="Contents- Search" class="text ui-widget-content ui-corner-all">  
+				<label for="domain">Domain: </label>
+					<select name="domain" id="" class="text ui-widget-content ui-corner-all">
+						<option  value="" selected="selected"> select all</option>
+							 @for( c <- domList){
+							 	<option value="@c.domainName"> @c.domainName</option>
+							 }
+					 </select>
+			</td>
+		</tr>
+		</table>
+	</fieldset>
+		</form>
+</div>
+  		<div id="msgDisplay" style="display: none;" >
+				<h4>There are no search results. Try again!</h4>
+		</div>
+	
+    </div>
+
+	<div class="second">
+	<form id="checkedOrUncheckedForm">
+	<table>
+	<tr><th colspan="1"> <b>current search status:</b></th></tr>
+	<tr> <td><b>keyword/s:</b></td><td><p id="keWords"></p> <input type="hidden" id="keWordsInput" name="keWordsInput">  </td></tr>
+	<tr> <td><b> date: from: </b><span id="fromDate"></span> <input type="hidden" id="fromDateInput" name="fromDateInput">  </td><td> 
+	 <b>  to: </b><span id="toDate"></span> <input type="hidden"  id="toDateInput" name="toDateInput"> </td></tr>
+	</table>
+	<div align="center"> <input type="checkbox"  id="allResultChkBox" checked> All Check / Uncheck </div>
+<div id="target" style="overflow: scroll; width: 100%; height: 250px;">
+<table>
+  <tbody id="templateSection">
+  </tbody>
+</table>
+	<div id="domainVal">
+		<script id="entry-template" type="text/x-handlebars-template" >
+		{{#each moList}}
+            <tr class="results_available">
+              <td>{{domain}}</td>
+			  {{#if isChecked}}
+					<td><input class="cbx" type="checkbox" checked domain="{{domain}}" value="{{domain}}"/> </td>
+			  {{else}}
+					<td><input class="cbx" type="checkbox"  domain="{{domain}}" value="{{domain}}"/> </td>
+			{{/if}}
+			<td><b>{{sub_count}}</b> </td>
+			  <td><label> results</label> </td>
+            </tr>
+		{{/each}}
+	    </script>
+ </div>
+ </div>
+<a href="#loginmodal" class="flatbtn" id="modaltrigger">Save Set</a>
+<a id="searchMailFrmUnchked" class="flatbtn"> Search</a>
+	</form>
+</div>
+	<div class="third">
+		<table id="grid"></table>
+		<div id="agent_pager"></div>
+	</div>
+
+	
+<div class="last">
+
+</div>
+</div>
+
+  <div id="loginmodal" style="display:none;">
+    <h1>Save Set</h1>
+    <form id="loginform" name="loginform" method="post" >
+      <label for="username">Set Name:</label>
+      <input type="text" name="username" id="username" class="txtfield" tabindex="1">
+      <div class="center">
+      		<input type="submit" name="loginbtn" id="loginbtn" class="flatbtn-blu hidemodal" value="Save Set" tabindex="2">
+      </div>
+    </form>
+  </div>
+
+
+  <div id="myModal" style="display:none;">
+    <h1>Mail Show</h1>
+    <label id="subId"></label>
+    <div id="showHidenHtml">
+    
+    </div>
+  </div>  
+  
+  
+<!--  <div class="modal fade-in" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Mail Subject:</h4>
+        <label id="subId"></label>
+      </div>
+      <div class="modal-body" id="showHidenHtml">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>/.modal-content
+  </div>/.modal-dialog
+</div>/.modal  -->
+</body>
+</html>
