@@ -8,7 +8,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.ConnectException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -35,8 +38,8 @@ import akka.actor.ActorSystem;
 public class EmailWriteFile {
 	static final String rootDir = Play.application().configuration()
 			.getString("mail.storage.path");
-
-	public static void main(String args[]) throws MessagingException {
+	static SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
+	public static void main(String args[]) throws MessagingException, ParseException {
     	Store store = MailConnection.getStore();
         Folder folder = getFolderObj(store);
         Message[] message = folder.getMessages();
@@ -49,22 +52,26 @@ public class EmailWriteFile {
 			mm.sendersEmail=message[i].getFrom()[0].toString();
 			//System.out.println("----123456-----"+ mm.sendersEmail);
             createRootDir();
-            String domain1 = createDomainDir(message, i);
+            String domain = createDomainDir(message, i);
             String dateStr=message[i].getSentDate().toString();
         	String contentType=message[i].getContentType().substring(0,message[i].getContentType().indexOf('/'));
-        	int startIndex=dateStr.indexOf("IST");
-            String fileName=dateStr.substring(startIndex-9, startIndex).trim().replaceAll(":","");
-            String year = createYearDir(domain1, dateStr, startIndex);
-            String month = createMonthDir(domain1, dateStr, year);
-            String day=dateStr.substring(8,10).trim();
-            createDayDir(domain1, year, month, day);
+        	Date dt = sdf.parse(dateStr);
+        	Calendar calendar = Calendar.getInstance();
+        	calendar.setTime(dt);
+            String fileName= calendar.get(Calendar.HOUR_OF_DAY) +""+calendar.get(Calendar.MINUTE) +""+ calendar.get(Calendar.SECOND);
+            createYearDir(domain, calendar.get(Calendar.YEAR));
+            createMonthDir(domain, calendar.get(Calendar.MONTH), calendar.get(Calendar.YEAR));
+            createDayDir(domain, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
+            
             Document doc;
             String htmlText = "";
         	MimeMultipart obj = null;
+        	String path = rootDir + File.separator + domain + File.separator + calendar.get(Calendar.YEAR) + File.separator + calendar.get(Calendar.MONTH) + File.separator + calendar.get(Calendar.DATE) + File.separator + fileName+"-"+i+".eml";
+        	
         	try {
 	        	if("multipart".equals(contentType)) {
 	    				obj = (MimeMultipart)message[i].getContent();
-	    				OutputStream out = new FileOutputStream(rootDir+File.separator+domain1+File.separator+year+File.separator+month+File.separator+day+File.separator+fileName+"-"+i+".eml");
+	    				OutputStream out = new FileOutputStream(path);
 	    				message[i].writeTo(out);
 	    				out.close();
 	    				if(obj.getCount() == 0) {
@@ -80,13 +87,14 @@ public class EmailWriteFile {
 				e.printStackTrace();
 				doc = null;
 			}
+        	
         	htmlText = htmlText.substring(0, htmlText.length() > 5000 ? 5000 : htmlText.length()-1);
         	doc = Jsoup.parseBodyFragment(htmlText, "ISO-8859-1");
         	doc.outputSettings().escapeMode(EscapeMode.xhtml);
-    		mm.receivedDate=message[i].getReceivedDate();
-            mm.sentDate=message[i].getSentDate();
-            mm.mailPath=rootDir+File.separator+domain1+File.separator+year+File.separator+month+File.separator+day+File.separator+fileName+"-"+i+".eml";
-            mm.domain=domain1;
+    		mm.receivedDate = message[i].getReceivedDate();
+            mm.sentDate = message[i].getSentDate();
+            mm.mailPath = path;
+            mm.domain = domain;
     		mm.save();
     		
     		final String imgPath=mm.mailPath;
@@ -110,7 +118,7 @@ public class EmailWriteFile {
     		 
 	        OutputStream out = null;
 			try {
-				out = new FileOutputStream(rootDir+File.separator+domain1+File.separator+year+File.separator+month+File.separator+day+File.separator+fileName+"-"+i+".eml");
+				out = new FileOutputStream(path);
 				message[i].writeTo(out);  
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -146,9 +154,9 @@ public class EmailWriteFile {
 		}
 	}
 
-	public static void createDayDir(String domain1, String year, String month,
-			String day) {
-		File file5 = new File(rootDir + File.separator + domain1
+	public static void createDayDir(String domain, int year, int month,
+			int day) {
+		File file5 = new File(rootDir + File.separator + domain
 				+ File.separator + year + File.separator + month
 				+ File.separator + day);
 		if (!file5.exists()) {
@@ -156,27 +164,21 @@ public class EmailWriteFile {
 		}
 	}
 
-	public static String createMonthDir(String domain1, String dateStr,
-			String year) {
-		String month = dateStr.substring(4, 7).trim();
-		File file4 = new File(rootDir + File.separator + domain1
+	public static void createMonthDir(String domain, int month , int year) {
+		File file4 = new File(rootDir + File.separator + domain
 				+ File.separator + year + File.separator + month);
 		if (!file4.exists()) {
 			file4.mkdir();
 		}
-		return month;
 	}
 
-	public static String createYearDir(String domain1, String dateStr,
-			int startIndex) {
-		String year = dateStr.substring(startIndex + 3, dateStr.length())
-				.trim();
-		File file3 = new File(rootDir + File.separator + domain1
+	public static void createYearDir(String domain, int year) {
+		
+		File file3 = new File(rootDir + File.separator + domain
 				+ File.separator + year);
 		if (!file3.exists()) {
 			file3.mkdir();
 		}
-		return year;
 	}
 
 	public static String createDomainDir(Message[] message, int i)
