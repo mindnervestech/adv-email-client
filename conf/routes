@@ -4,9 +4,7 @@
 
 # Home page
 
-GET     /                                    controllers.App.index()
-GET     /search                            controllers.App.index123()
-GET		/showMail  					     controllers.App.showMailPopUp()
+GET     /                                controllers.Application.index()
 GET     /checkedOrUnchecked              controllers.Application.checkedOrUnchecked()
 
 GET		/searchForEmails				 controllers.Application.searchForEmails()

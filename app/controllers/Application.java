@@ -41,6 +41,10 @@ import controllers.Application.SearchResponse.Domain;
 
 public class Application  extends Controller {
 	
+	public static Result index() {
+		return ok(views.html.home.render());
+	}
+	
 	public static Result searchForEmails() {
 		Form<SearchFilter> searchFilter = DynamicForm.form(SearchFilter.class).bindFromRequest();
 		/*final String[] domain = searchFilter.get().domain ; */
