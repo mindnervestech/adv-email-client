@@ -2,11 +2,14 @@ package controllers;
 
 
 
+import indexing.Email;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,11 +23,20 @@ import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import models.MailObjectModel;
+import models.SaveSearchSet;
+
+import org.elasticsearch.common.collect.Iterables;
+import org.elasticsearch.index.query.AndFilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeFilterBuilder;
+import org.elasticsearch.search.facet.FacetBuilders;
+import org.elasticsearch.search.facet.terms.strings.InternalStringTermsFacet;
+import org.elasticsearch.search.facet.terms.strings.InternalStringTermsFacet.TermEntry;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import models.MailObjectModel;
-import models.SaveSearchSet;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.libs.Json;
@@ -36,6 +48,9 @@ import com.avaje.ebean.Expr;
 import com.avaje.ebean.Expression;
 import com.avaje.ebean.SqlRow;
 import com.avaje.ebean.annotation.Transactional;
+import com.github.cleverage.elasticsearch.IndexQuery;
+import com.github.cleverage.elasticsearch.IndexResults;
+import com.google.common.base.Splitter;
 
 import controllers.Application.SearchResponse.Domain;
 
@@ -47,12 +62,95 @@ public class Application  extends Controller {
 	
 	public static Result searchForEmails() {
 		Form<SearchFilter> searchFilter = DynamicForm.form(SearchFilter.class).bindFromRequest();
-		/*final String[] domain = searchFilter.get().domain ; */
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+		
+		RangeFilterBuilder rangeFilterBuilder = FilterBuilders.rangeFilter("sentDate");
+		String fromDateStr = searchFilter.data().get("from");
+		Date fromDate = null;
+		
+		if(fromDateStr !=null && fromDateStr.length() > 10 ) {
+			try {
+				fromDate = simpleDateFormat.parse(fromDateStr);
+				rangeFilterBuilder.from(fromDate);
+			} catch (ParseException e) {
+			}
+		}
+		
+		Date toDate = null;
+		String toDateStr = searchFilter.data().get("to");//("EEE MMM dd HH:mm:ss z yyyy");
+		if(toDateStr !=null && toDateStr.length() > 10 ) {
+			try {
+				toDate = simpleDateFormat.parse(toDateStr);
+				rangeFilterBuilder.to(toDate.getTime());
+			} catch (ParseException e) {
+			}
+		}
+		
+		AndFilterBuilder andFilterBuilder = null;
+		String keyWordsContents = searchFilter.data().get("cntKeyWord"); 
+		if(keyWordsContents != null && keyWordsContents.length() > 1 ) {
+			if(andFilterBuilder == null) andFilterBuilder = FilterBuilders.andFilter();
+			andFilterBuilder.add(FilterBuilders.queryFilter(QueryBuilders.fieldQuery("description", keyWordsContents)));
+		}
+		
+		String keyWordsSub = searchFilter.data().get("subKeyWord"); 
+		if(keyWordsSub != null && keyWordsSub.length() > 1 ) {
+			if(andFilterBuilder == null) andFilterBuilder = FilterBuilders.andFilter();
+			andFilterBuilder.add(FilterBuilders.queryFilter(QueryBuilders.fieldQuery("subject",keyWordsSub)));
+		}
+		
+		String domainChecked =  searchFilter.get().domainChecked;
+		if(domainChecked != null && domainChecked.length() > 3 ) {
+			Iterable<String> domains = Splitter.on(",").omitEmptyStrings().trimResults().split(domainChecked);
+			if(andFilterBuilder == null) andFilterBuilder = FilterBuilders.andFilter();
+			andFilterBuilder.add(FilterBuilders.inFilter("domain",Iterables.toArray(domains, String.class)));
+		}
+		
+		 IndexQuery<Email> indexQuery = Email.find.query();
+		 if(andFilterBuilder == null) {
+			 indexQuery.setBuilder(QueryBuilders.matchAllQuery());
+		 } else {
+			 indexQuery.setBuilder(QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), 
+					 andFilterBuilder));
+		 }
+		 
+		 indexQuery.addFacet(FacetBuilders.termsFacet("domain").field("domain"));
+		 
+		 // below two lines are for Pagination ---
+		 indexQuery.from(searchFilter.get().page*10);
+		 indexQuery.size(10);
+		 
+		 
+		 IndexResults<Email> allAndFacetAge = Email.find.search(indexQuery);
+		 
+		 SearchResponse searchResponse = new SearchResponse(); 
+		 searchResponse.emails = new ArrayList<Application.SearchResponse.Email>();
+		 for(Email e : allAndFacetAge.results) {
+			 searchResponse.emails.add(new Application.SearchResponse.Email(e.subject,
+					 e.domain,e.sentDate,e.description,e.mail_objectId));
+		 }
+		 searchResponse.saveSearchSets.addAll(SaveSearchSet.find.all());
+		 searchResponse.noOFPages = (int) Math.ceil((double)allAndFacetAge.getTotalCount()/10);
+		 
+		 // For Domain Counts
+		 searchResponse.domainCounts = new ArrayList<Application.SearchResponse.Domain>();
+		 for(TermEntry te : ((InternalStringTermsFacet)allAndFacetAge.facets.facet("domain")).getEntries()) {
+			 searchResponse.domainCounts.add(new Domain(te.getTerm().string(), te.getCount()));
+		 }
+		 
+		 return ok(Json.toJson(searchResponse));
+		
+	}
+	
+	@Deprecated
+	public static Result searchForEmailsV1() {
+		Form<SearchFilter> searchFilter = DynamicForm.form(SearchFilter.class).bindFromRequest();
 		String keyWordsContents = searchFilter.data().get("cntKeyWord"); 
 		String keyWordsSub = searchFilter.data().get("subKeyWord"); 
 		String fromDate = searchFilter.data().get("from");
 		String toDate = searchFilter.data().get("to");
 		String domainChecked =  searchFilter.get().domainChecked; 
+		
 		SearchResponse searchResponse = new SearchResponse();
 	        
 		if( (keyWordsSub==null || keyWordsSub.isEmpty()) &&(keyWordsContents==null || keyWordsContents.isEmpty()) && (fromDate== null ) && (toDate == null ))
@@ -68,70 +166,6 @@ public class Application  extends Controller {
 	}
 
 	
-	@SuppressWarnings("unchecked")
-	public static Result checkedOrUnchecked()
-	{
-		List<String> strs= new ArrayList<String>();
-		SearchResponse searchResponse = new SearchResponse();
-		Form<SearchFilter> searchFilter = DynamicForm.form(SearchFilter.class).bindFromRequest();
-		String domainChecked =  searchFilter.get().domainChecked; 
-		String keyWordsContents = searchFilter.data().get("cntKeyWord"); 
-		String keyWordsSub = searchFilter.data().get("subKeyWord"); 
-		String fromDate = searchFilter.data().get("from");
-		String toDate = searchFilter.data().get("to");
-		List<Expression> expressions = new ArrayList<Expression>();
-		List arrrayEmailObj= new ArrayList<MailObjectModel>();
-		StringTokenizer tk = new StringTokenizer(domainChecked, ",");
-		while(tk.hasMoreTokens())
-		{
-			String  str=tk.nextToken();
-			strs.add(str);
-		}
-		if(!domainChecked.isEmpty() && domainChecked != null)
-		{
-			expressions.add(Expr.in("domain",strs));
-		}
-		 Date dateFrom = convertStringToDate(fromDate);
-		 Date dateTo = convertStringToDate(toDate);
-		
-		if(fromDate!=null &&  toDate== null)
-		{
-			expressions.add(Expr.gt("sentDate",dateFrom));
-		}
-		if(toDate!=null  && fromDate==null)
-		{
-			expressions.add(Expr.lt("sentDate",dateTo));
-		}
-		if(fromDate!=null  && toDate!=null )
-		{
-			expressions.add(Expr.between("sentDate",dateFrom,dateTo));
-		}
-		if( keyWordsSub!=null && !keyWordsSub.isEmpty())
-		{
-			expressions.add(Expr.like("mailName",keyWordsSub));
-		}
-		if( keyWordsContents!=null && !keyWordsContents.isEmpty())
-		{
-			expressions.add(Expr.like("mailName",keyWordsContents));
-		}
-		if(expressions.size()!=0)
-		{
-			Expression exp=expressions.get(0);
-			for(int i =1;i<expressions.size();i++){
-				exp = Expr.and(exp, expressions.get(i));
-			}
-			arrrayEmailObj=MailObjectModel.find.where().add(exp).findList();
-			//System.out.println("sz---"+arrrayEmailObj.size());
-			searchResponse.noOFPages =(int) Math.ceil((double)arrrayEmailObj.size()/10);
-			arrrayEmailObj= MailObjectModel.find.where().add(exp).setMaxRows(searchFilter.get().rowCount).
-					setFirstRow(searchFilter.get().page*10).findList();
-		}
-		List list= new ArrayList<SaveSearchSet>();
-		list=SaveSearchSet.find.all();
-		searchResponse.saveSearchSets.addAll(list);
-		searchResponse.emails.addAll(arrrayEmailObj);
-		return ok(Json.toJson(searchResponse));
-	}
 	
 	@SuppressWarnings("rawtypes")
 	public static Result saveEmailSearchSet()
@@ -216,10 +250,10 @@ public class Application  extends Controller {
 	
 	public static class SearchResponse {
 		
-		public List<Email> emails = new ArrayList<>();
-		public List<Domain> domainCounts= new ArrayList<>();
-		public List<SaveSearchSet> saveSearchSets= new ArrayList<>();
-		public int noOFPages;
+		public List<Email> emails = new ArrayList<Email>();
+		public List<Domain> domainCounts= new ArrayList<Domain>();
+		public List<SaveSearchSet> saveSearchSets= new ArrayList<SaveSearchSet>();
+		public long noOFPages;
 		public String htmlToShowMailPopUp;
 		public static class Email {
 			public Email(){}

@@ -8,6 +8,7 @@ emailclient.controller('ApplicationController',function($scope){
 });
 
 emailclient.controller('SearchController',function($scope, $http, $modal, usSpinnerService){
+		$scope.allChecked = true;
 	/*  Below Section for modal  */
 	  var modalInstance;
 	  $scope.open = function () {
@@ -76,12 +77,6 @@ emailclient.controller('SearchController',function($scope, $http, $modal, usSpin
     /*  Above Section for email links modal  */ 
 	  
 	  
-	  
-	  
-	  
-	  
-	  
-	  
 	/*  Below Section for pagination  */
 	$scope.totalItems = 0;
 	$scope.currentPage = 0;
@@ -119,7 +114,6 @@ emailclient.controller('SearchController',function($scope, $http, $modal, usSpin
 		usSpinnerService.spin('loading...');
 		$http.get('/searchForEmails', {params:$scope.searchForm})
 		.success(function(data, status, headers, config){
-			console.log(data);
 			$scope.emails = data.emails;
 			$scope.hasSearchResult = data.emails.length != 0;
 			$scope.domainCounts = data.domainCounts; 
@@ -178,13 +172,16 @@ emailclient.controller('SearchController',function($scope, $http, $modal, usSpin
 		  
 		  
 	$scope.filterEmailSearch= function() {
+		$scope.searchForm.domainChecked = "";
+		usSpinnerService.spin('loading...');
 		for(var i=0 ; i < $scope.domainCounts.length; i++) {
 			if($scope.domainCounts[i].sel) {
 				$scope.searchForm.domainChecked += $scope.domainCounts[i].name+",";
 			}
 		}
-		$http.get('/checkedOrUnchecked',{params:$scope.searchForm})
+		$http.get('/filterSearch',{params:$scope.searchForm})
 		.success(function(data, status, headers, config){
+			usSpinnerService.stop('loading...');
 			$scope.emails = data.emails;
 			$scope.saveSearchSets = data.saveSearchSets; 
 			$scope.noOFPages = data.noOFPages;
