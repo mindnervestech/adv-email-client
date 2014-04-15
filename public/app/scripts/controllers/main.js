@@ -8,7 +8,7 @@ emailclient.controller('ApplicationController',function($scope){
 });
 
 emailclient.controller('SearchController',function($scope, $http, $modal, usSpinnerService){
-		$scope.allChecked = true;
+	
 	/*  Below Section for modal  */
 	  var modalInstance;
 	  $scope.open = function () {
@@ -87,8 +87,22 @@ emailclient.controller('SearchController',function($scope, $http, $modal, usSpin
 	$scope.$watch('currentPage', function(newPage){
 		  if($scope.prevPage != newPage && newPage != 0) {
 			  $scope.searchForm.page = newPage - 1 ;
-			  $scope.submitSearch();
+			  search(function(data){
+					$scope.emails = data.emails;
+					$scope.hasSearchResult = data.emails.length != 0;
+					$scope.noOFPages = data.noOFPages;
+					$scope.totalItems = data.noOFPages * $scope.searchForm.rowCount ; // Added for Pagination
+					usSpinnerService.stop('loading...');
+			  });
 		  }
+	});
+	
+	$scope.$watch('allChecked', function(value){
+		if($scope.domainCounts) {
+			for(var i=0 ; i < $scope.domainCounts.length; i++) {
+				$scope.domainCounts[i].sel = value; 
+			}
+		}
 	});
 	  
 	/*  Above Section for pagination  */  
@@ -111,9 +125,9 @@ emailclient.controller('SearchController',function($scope, $http, $modal, usSpin
 	}
 	
 	$scope.submitSearch = function() {
-		usSpinnerService.spin('loading...');
-		$http.get('/searchForEmails', {params:$scope.searchForm})
-		.success(function(data, status, headers, config){
+		
+		search(function(data) {
+			
 			$scope.emails = data.emails;
 			$scope.hasSearchResult = data.emails.length != 0;
 			$scope.domainCounts = data.domainCounts; 
@@ -122,8 +136,22 @@ emailclient.controller('SearchController',function($scope, $http, $modal, usSpin
 			$scope.saveSearchSets = data.saveSearchSets;        // Added for saveSearchSet
 			$scope.hasQuickSearch = data.saveSearchSets.length != 0;
 			usSpinnerService.stop('loading...');
+			$scope.allChecked = true;
 		});
 	}
+	
+	function search(callback) {
+		usSpinnerService.spin('loading...');
+		$scope.searchForm.domainChecked = "";
+		$http.get('/searchForEmails', {params:$scope.searchForm})
+		.success(function(data, status, headers, config){
+			if(callback) {
+				callback(data);
+			}
+			
+		});
+	}
+	
 	$scope.getTimes=function(n){
 		var arr = [];
 		for (var i = 0; i < n; i++){
@@ -134,7 +162,13 @@ emailclient.controller('SearchController',function($scope, $http, $modal, usSpin
 	
 	$scope.emailPaging = function() {
 		$scope.searchForm.page++;
-		$scope.submitSearch();
+		search(function(data){
+			$scope.emails = data.emails;
+			$scope.hasSearchResult = data.emails.length != 0;
+			$scope.noOFPages = data.noOFPages;
+			$scope.totalItems = data.noOFPages * $scope.searchForm.rowCount ; // Added for Pagination
+			usSpinnerService.stop('loading...');
+		});
 	}
 	
 	$scope.openEmailModal = function(emailID) {
@@ -186,6 +220,7 @@ emailclient.controller('SearchController',function($scope, $http, $modal, usSpin
 			$scope.saveSearchSets = data.saveSearchSets; 
 			$scope.noOFPages = data.noOFPages;
 			$scope.totalItems = data.noOFPages * $scope.searchForm.rowCount ; // Added for Pagination
+			$scope.allChecked = true;
 		});
 	}
 });
