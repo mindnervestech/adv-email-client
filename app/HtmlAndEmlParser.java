@@ -1,3 +1,5 @@
+import indexing.Email;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -6,6 +8,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Properties;
 
@@ -43,19 +46,24 @@ public class HtmlAndEmlParser {
 			MimeMultipart obj=null;
 			Elements links= new Elements();
 			String htmlText = "";
+			Object bodyContent;
 			if("multipart".equals(contentType)) {
 				obj = (MimeMultipart)msg.getContent();
 				if(obj.getCount() == 0) {
-					htmlText = obj.getBodyPart(0).getContent().toString();
+					bodyContent = obj.getBodyPart(0).getContent();
 				} else {
-					htmlText = obj.getBodyPart(obj.getCount() -1 ).getContent().toString();
+					bodyContent = obj.getBodyPart(obj.getCount() -1 ).getContent();
 				}
 				
 			}
 			else {
-				htmlText= msg.getContent().toString();
+				bodyContent = msg.getContent();
 			}
-			
+			if(bodyContent instanceof String) {
+				htmlText = bodyContent.toString();
+			} else {
+				htmlText = "Attachement Found";
+			}
         	doc = Jsoup.parseBodyFragment(htmlText, "ISO-8859-1");
         	doc.outputSettings().escapeMode(EscapeMode.xhtml);
         	links = doc.getElementsByTag("img");
@@ -72,6 +80,16 @@ public class HtmlAndEmlParser {
 			mm.setStatus(true);
 			mm.setContent(content);
 			mm.update();
+			
+			// THIS IS FOR ELASTIC SEARCH....
+			Email email = new Email();
+			email.description = doc.text();
+			email.subject = mm.mailName;
+			email.domain = mm.domain;
+			email.sentDate = mm.sentDate;
+			email.mail_objectId = mm.id;
+			email.sendersEmail = mm.sendersEmail;
+			email.index();
 			
 			for (Element link : links) {
 				saveImageInDb(mm, hp, link);

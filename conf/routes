@@ -5,7 +5,7 @@
 # Home page
 
 GET     /                                controllers.Application.index()
-GET     /checkedOrUnchecked              controllers.Application.checkedOrUnchecked()
+GET     /filterSearch              controllers.Application.searchForEmails()
 
 GET		/searchForEmails				 controllers.Application.searchForEmails()
 GET		/get-cover-image-by-id/:id		 controllers.Application.getCoverImageByID(id :Long)

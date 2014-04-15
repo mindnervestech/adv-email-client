@@ -15,7 +15,6 @@ public class Content extends Model {
 	public Long id;
 	
 	
-	
 	@ManyToOne
 	public Htmlpage htmlPage; 
 	@Lob

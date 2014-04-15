@@ -8,7 +8,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -23,6 +22,7 @@ import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.search.FlagTerm;
 
 import models.MailObjectModel;
 
@@ -39,18 +39,26 @@ public class EmailWriteFile {
 	static final String rootDir = Play.application().configuration()
 			.getString("mail.storage.path");
 	static SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
-	public static void main(String args[]) throws MessagingException, ParseException {
+	
+	public static void main(String args[]) throws Exception {
     	Store store = MailConnection.getStore();
-        Folder folder = getFolderObj(store);
-        Message[] message = folder.getMessages();
-        folder.setFlags(message, new Flags(Flags.Flag.SEEN), true);
+        Folder folder;
+		try {
+			folder = getFolderObj(store);
+		} catch (Exception e1) {
+			store = MailConnection.getStore();
+			folder = getFolderObj(store);
+		}
+		//FlagTerm ft = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
+		Message message[] = folder.getMessages();//.search(ft);
+		
+		System.out.println("folder.hasNewMessages(): " + folder.hasNewMessages() +" Got mails at "+ message.length);
         
         // save message.
       	for (int i = 0; i < message.length; i++) {
       		MailObjectModel mm = new MailObjectModel();
 			mm.mailName=message[i].getSubject();
 			mm.sendersEmail=message[i].getFrom()[0].toString();
-			//System.out.println("----123456-----"+ mm.sendersEmail);
             createRootDir();
             String domain = createDomainDir(message, i);
             String dateStr=message[i].getSentDate().toString();
@@ -131,18 +139,10 @@ public class EmailWriteFile {
 					e.printStackTrace();
 				}
 			}
-        	
-
-
-	    	/*
-            Dimension dimension = new Dimension(100, 100);
-            imageGenerator.setSize(dimension);
-           // imageGenerator.    		
-	    	
-		    imageGenerator.saveAsImage(imgPath.replace(".eml",".png"));
-			imageGenerator.saveAsHtmlWithMap(imgPath.replace(".eml",".html"),imgPath.replace(".eml",".png"));*/
-		    
+			
         }
+      	folder.setFlags(message, new Flags(Flags.Flag.SEEN), true);
+        
         folder.close(true);
         //store.close();
     }
@@ -193,7 +193,7 @@ public class EmailWriteFile {
 		return domain1;
 	}
 
-	public static Folder getFolderObj(Store store) throws MessagingException {
+	public static Folder getFolderObj(Store store) throws Exception {
 		// Create a Folder object corresponding to the given name.
 		Folder folder = store.getFolder("inbox");
 		// Open the Folder.
@@ -250,22 +250,6 @@ public class EmailWriteFile {
 		}
 	}
 
-	public static Store getConnection() throws NoSuchProviderException,
-			MessagingException {
-		String host = "pop.gmail.com";
-		String user = "admin@lab104.net";
-		String password = "dipesh104";
-
-		// Get the default Session object.
-		Session session = Session.getDefaultInstance(new Properties());
-
-		// Get a Store object that implements the specified protocol.
-		Store store = session.getStore("pop3s");
-
-		// Connect to the current host using the specified username and
-		// password.
-		store.connect(host, user, password);
-		return store;
-	}
+	
 
 }

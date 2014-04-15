@@ -114,14 +114,14 @@ a {
 					<div style="text-align: center;font-weight: 700;">
 						<div style="margin-top: 3%;margin-bottom: 2%;">
 							<label>Domains</label>  
-							<div style="float: right;margin-right: 2%;">All <input type="checkbox" ng-model="master" style="margin-top: 5%;"> </div>
+							<div style="float: right;margin-right: 2%;">All <input type="checkbox" checked="checked" data-ng-model="allChecked" style="margin-top: 5%;"> </div>
 						</div>	
 						<div class="panel-body scrollspy-example">
 							
 							<form class="form-horizontal" role="form">
 								<ul class="list-group">
 									<li style="font-size:12px;height: 35px; text-align: left; font-weight: normal;" class="list-group-item" data-ng-repeat="d in domainCounts">
-										<input type="checkbox"  checked="checked" ng-model="d.sel" ng-checked="master" style="float: left;">
+										<input type="checkbox"   data-ng-model="d.sel" data-ng-checked="allChecked" style="float: left;">
 								    	<p tooltip-placement="bottom" class="tip-bottom" tooltip="{{d.name}}" style="cursor: pointer;float: left; width: 80%;margin-left: 2%;">{{d.name}} </p><span class="badge_adv" style="float: left;">( {{d.count}} )</span>
 									</li>
 								</ul>
@@ -168,16 +168,16 @@ a {
 								
 								<td>
 								<!-- Date -->
-									<p  style="float: right;">{{email.sentDate | date:'MMMM-dd-yyyy'}}</p>
+									<p  style="float: right;">{{email.date | date:'MMMM-dd-yyyy'}}</p>
 									
 								<!-- Subject -->
-									<blockquote class="text-primary" style="float: left;width: 100%;font-size: 15px !important;">{{email.mailName}}</blockquote>
+									<blockquote class="text-primary" style="float: left;width: 100%;font-size: 15px !important;">{{email.subject}}</blockquote>
 								
 								<!-- Domain -->
 									<p class="text-primary" style="margin-left: 3%;">{{email.domain}}</p>
 								
 								<!-- Extract -->
-									<p>{{email.contents}}</p>
+									<p>{{email.extract}}</p>
 									
 									<button type="button" style="float: right;" class="btn btn-success">Show</button>
 								</td>
