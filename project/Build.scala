@@ -13,7 +13,7 @@ object ApplicationBuild extends Build {
     "javax.mail" % "mail" % "1.4",
     "gui.ava" % "html2image" % "0.9",
     "mysql" % "mysql-connector-java" % "5.1.18",
-    "com.clever-age" % "play2-elasticsearch" % "0.6-SNAPSHOT",
+    "com.clever-age" % "play2-elasticsearch" % "0.7-SNAPSHOT",
     javaCore,
     javaJdbc,
     javaEbean
