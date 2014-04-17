@@ -12,7 +12,8 @@ angular.module('email-client', [
   'ui.bootstrap.datetimepicker',
   'validator',
   'validator.rules',
-  'angularSpinner'
+  'angularSpinner' ,
+  'ngSanitize'
 ])
   .config(function ($routeProvider) {
     $routeProvider

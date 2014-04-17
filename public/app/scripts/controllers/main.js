@@ -108,7 +108,7 @@ emailclient.controller('SearchController',function($scope, $http, $modal, usSpin
 	/*  Above Section for pagination  */  
 	  
 	$scope.searchForm= {
-				from : "",
+				from : '',
 				to : new Date(),
 				domain : [],
 				domainChecked:"",
