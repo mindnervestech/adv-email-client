@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import java.util.StringTokenizer;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -27,7 +26,9 @@ import models.MailObjectModel;
 import models.SaveSearchSet;
 
 import org.elasticsearch.common.collect.Iterables;
+import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.AndFilterBuilder;
+import org.elasticsearch.index.query.BaseQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeFilterBuilder;
@@ -43,16 +44,13 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-import com.avaje.ebean.Ebean;
-import com.avaje.ebean.Expr;
-import com.avaje.ebean.Expression;
-import com.avaje.ebean.SqlRow;
 import com.avaje.ebean.annotation.Transactional;
-import com.github.cleverage.elasticsearch.IndexQuery;
 import com.github.cleverage.elasticsearch.IndexResults;
 import com.google.common.base.Splitter;
 
 import controllers.Application.SearchResponse.Domain;
+import elastic.MntHighlightBuilder;
+import elastic.MntIndexQuery;
 
 public class Application  extends Controller {
 	
@@ -62,15 +60,16 @@ public class Application  extends Controller {
 	
 	public static Result searchForEmails() {
 		Form<SearchFilter> searchFilter = DynamicForm.form(SearchFilter.class).bindFromRequest();
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("\"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'\"");
 		
-		RangeFilterBuilder rangeFilterBuilder = FilterBuilders.rangeFilter("sentDate");
+		RangeFilterBuilder rangeFilterBuilder = null;
 		String fromDateStr = searchFilter.data().get("from");
 		Date fromDate = null;
 		
 		if(fromDateStr !=null && fromDateStr.length() > 10 ) {
 			try {
 				fromDate = simpleDateFormat.parse(fromDateStr);
+				rangeFilterBuilder = FilterBuilders.rangeFilter("sentDate");
 				rangeFilterBuilder.from(fromDate);
 			} catch (ParseException e) {
 			}
@@ -81,16 +80,23 @@ public class Application  extends Controller {
 		if(toDateStr !=null && toDateStr.length() > 10 ) {
 			try {
 				toDate = simpleDateFormat.parse(toDateStr);
-				rangeFilterBuilder.to(toDate.getTime());
+				rangeFilterBuilder = FilterBuilders.rangeFilter("sentDate");
+				rangeFilterBuilder.to(toDate);
 			} catch (ParseException e) {
+				e.printStackTrace();
 			}
 		}
 		
 		AndFilterBuilder andFilterBuilder = null;
 		String keyWordsContents = searchFilter.data().get("cntKeyWord"); 
-		if(keyWordsContents != null && keyWordsContents.length() > 1 ) {
+		/*if(keyWordsContents != null && keyWordsContents.length() > 1 ) {
 			if(andFilterBuilder == null) andFilterBuilder = FilterBuilders.andFilter();
 			andFilterBuilder.add(FilterBuilders.queryFilter(QueryBuilders.fieldQuery("description", keyWordsContents)));
+		}*/
+		
+		BaseQueryBuilder queryBuilder = QueryBuilders.matchAllQuery();  
+		if(keyWordsContents != null && keyWordsContents.length() > 1 ) {
+			queryBuilder = QueryBuilders.queryString(keyWordsContents).defaultField("description");
 		}
 		
 		String keyWordsSub = searchFilter.data().get("subKeyWord"); 
@@ -106,13 +112,21 @@ public class Application  extends Controller {
 			andFilterBuilder.add(FilterBuilders.inFilter("domain",Iterables.toArray(domains, String.class)));
 		}
 		
-		 IndexQuery<Email> indexQuery = Email.find.query();
+		if(rangeFilterBuilder != null) {
+			if(andFilterBuilder == null) andFilterBuilder = FilterBuilders.andFilter();
+			andFilterBuilder.add(rangeFilterBuilder);
+		}
+		
+		MntIndexQuery<Email> indexQuery = new MntIndexQuery<Email>(Email.class);
+		 
 		 if(andFilterBuilder == null) {
-			 indexQuery.setBuilder(QueryBuilders.matchAllQuery());
+			 indexQuery.setBuilder(queryBuilder);
 		 } else {
-			 indexQuery.setBuilder(QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), 
+			 indexQuery.setBuilder(QueryBuilders.filteredQuery(queryBuilder, 
 					 andFilterBuilder));
 		 }
+		 ;
+		 indexQuery.addHighlights(MntHighlightBuilder.instance().setField("description"));
 		 
 		 indexQuery.addFacet(FacetBuilders.termsFacet("domain").field("domain"));
 		 
@@ -125,9 +139,21 @@ public class Application  extends Controller {
 		 
 		 SearchResponse searchResponse = new SearchResponse(); 
 		 searchResponse.emails = new ArrayList<Application.SearchResponse.Email>();
+		 
 		 for(Email e : allAndFacetAge.results) {
+			 
+			 String extract = "";//e.searchHit.getScore();
+			 if(e.searchHit.getHighlightFields() != null && e.searchHit.getHighlightFields().get("description") != null) {
+				 for(Text _t : e.searchHit.getHighlightFields().get("description").fragments()){
+					 extract += _t.string() + "\n";
+				 }
+			 }
+			 
+			 if(extract.isEmpty()) {
+				 extract = e.description.substring(0, e.description.length() > 1000 ? 1000 : e.description.length()) +" ...";
+			 }
 			 searchResponse.emails.add(new Application.SearchResponse.Email(e.subject,
-					 e.domain,e.sentDate,e.description,e.mail_objectId));
+					 e.domain, e.sentDate, extract, e.mail_objectId));
 		 }
 		 searchResponse.saveSearchSets.addAll(SaveSearchSet.find.all());
 		 searchResponse.noOFPages = (int) Math.ceil((double)allAndFacetAge.getTotalCount()/10);
@@ -240,7 +266,7 @@ public class Application  extends Controller {
 				this.subject = subject;
 				this.domain = domain;
 				this.date = date;
-				this.extract = extract.substring(0,extract.length() > 1000 ? 1000 : extract.length()) +" ...";;
+				this.extract = extract;
 				this.id = id;
 			}
 			public String subject;

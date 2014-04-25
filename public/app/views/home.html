@@ -177,7 +177,7 @@ a {
 									<p class="text-primary" style="margin-left: 3%;">{{email.domain}}</p>
 								
 								<!-- Extract -->
-									<p>{{email.extract}}</p>
+									<div ng-bind-html="email.extract"></div>
 									
 									<button type="button" style="float: right;" class="btn btn-success">Show</button>
 								</td>
