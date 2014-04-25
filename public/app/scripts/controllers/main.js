@@ -107,6 +107,8 @@ emailclient.controller('SearchController',function($scope, $http, $modal, usSpin
 	  
 	/*  Above Section for pagination  */  
 	  
+	$scope.noOfRows = 'Per Page';
+	$scope.sortBy = 'Sort By';
 	$scope.searchForm= {
 				from : '',
 				to : new Date(),
@@ -124,7 +126,20 @@ emailclient.controller('SearchController',function($scope, $http, $modal, usSpin
 				saveSearchName :""
 	}
 	
-	$scope.submitSearch = function() {
+	$scope.submitSearch = function(count,sortText) {
+		if(sortText == null){
+			$scope.sortBy = 'Sort By';
+		}else{
+			$scope.sortBy = sortText;
+		}
+		
+		if(count == null){
+			$scope.noOfRows = 'Per Page';
+			$scope.searchForm.rowCount = 10;
+		}else{
+			$scope.noOfRows = count;
+			$scope.searchForm.rowCount = count;
+		}
 		
 		search(function(data) {
 			

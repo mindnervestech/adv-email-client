@@ -89,6 +89,9 @@ public class Application  extends Controller {
 		
 		AndFilterBuilder andFilterBuilder = null;
 		String keyWordsContents = searchFilter.data().get("cntKeyWord"); 
+		String keyWordsName = searchFilter.data().get("nameKeyWord");
+		String perPage = searchFilter.data().get("rowCount");
+		//System.out.println("keyWordsName = "+keyWordsName);
 		/*if(keyWordsContents != null && keyWordsContents.length() > 1 ) {
 			if(andFilterBuilder == null) andFilterBuilder = FilterBuilders.andFilter();
 			andFilterBuilder.add(FilterBuilders.queryFilter(QueryBuilders.fieldQuery("description", keyWordsContents)));
@@ -97,6 +100,10 @@ public class Application  extends Controller {
 		BaseQueryBuilder queryBuilder = QueryBuilders.matchAllQuery();  
 		if(keyWordsContents != null && keyWordsContents.length() > 1 ) {
 			queryBuilder = QueryBuilders.queryString(keyWordsContents).defaultField("description");
+		}
+		
+		if(keyWordsName != null && keyWordsName.length() > 1 ) {
+			queryBuilder = QueryBuilders.queryString(keyWordsName).defaultField("subject");
 		}
 		
 		String keyWordsSub = searchFilter.data().get("subKeyWord"); 
@@ -127,12 +134,11 @@ public class Application  extends Controller {
 		 }
 		 ;
 		 indexQuery.addHighlights(MntHighlightBuilder.instance().setField("description"));
-		 
 		 indexQuery.addFacet(FacetBuilders.termsFacet("domain").field("domain"));
-		 
+		 int count = Integer.parseInt(perPage);
 		 // below two lines are for Pagination ---
-		 indexQuery.from(searchFilter.get().page*10);
-		 indexQuery.size(10);
+		 indexQuery.from(searchFilter.get().page*count);
+		 indexQuery.size(count);
 		 
 		 
 		 IndexResults<Email> allAndFacetAge = Email.find.search(indexQuery);
@@ -149,11 +155,15 @@ public class Application  extends Controller {
 				 }
 			 }
 			 
+			 if(e.subject.length() > 60){
+				 e.subject = e.subject.substring(0, e.subject.length() > 60 ? 60 : e.subject.length()) +" ...";
+			 }
+			 
 			 if(extract.isEmpty()) {
-				 extract = e.description.substring(0, e.description.length() > 1000 ? 1000 : e.description.length()) +" ...";
+				 extract = e.description.substring(0, e.description.length() > 300 ? 300 : e.description.length()) +" ...";
 			 }
 			 searchResponse.emails.add(new Application.SearchResponse.Email(e.subject,
-					 e.domain, e.sentDate, extract, e.mail_objectId));
+					 e.domain, e.sentDate, e.sendersEmail, extract, e.mail_objectId));
 		 }
 		 searchResponse.saveSearchSets.addAll(SaveSearchSet.find.all());
 		 searchResponse.noOFPages = (int) Math.ceil((double)allAndFacetAge.getTotalCount()/10);
@@ -260,18 +270,20 @@ public class Application  extends Controller {
 		public static class Email {
 			public Email(){}
 			public Email(String subject, String domain, Date date,
-					String extract, Long id) 
+					String sendersEmail, String extract, Long id) 
 			{
 				super();
 				this.subject = subject;
 				this.domain = domain;
 				this.date = date;
+				this.sendersEmail = sendersEmail;
 				this.extract = extract;
 				this.id = id;
 			}
 			public String subject;
 			public String domain;
 			public Date date;
+			public String sendersEmail;
 			public String extract;
 			public Long id;
 		}

@@ -15,6 +15,12 @@
 	background-color: #ffffff;
 	border-radius: 0px;
 }
+
+.blockquote_adv{
+	margin: 0 0 5px;
+	padding: 0px 17px;
+	border-left: 0px solid #eee;
+}
  
  input[type=checkbox] {
 	margin: 2px 0 0;
@@ -22,6 +28,7 @@
 
 .pagination_adv {
 	margin: 0px 0;
+	width: 47%;
 } 
 .panel_adv{
 	margin-bottom: 0%;
@@ -57,6 +64,41 @@
 a {
   cursor: pointer;
 }
+
+button.big_submit {
+	width: 300px;
+	background: rgb(0,149,216);
+	color: #fff;
+	border: 1px solid rgba(0, 0, 0, 0.4);
+	text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+	box-shadow: inset 0px 10px 20px rgba(255, 255, 255, 0.4);
+}
+
+button {
+	margin: 0px auto;
+	font: 500 14px helvetica neue, helvetica, arial, sans-serif;
+	padding: 10px;
+	border: 1px solid rgba(0, 0, 0, 0.1);
+	border-radius: 10px;
+	cursor: pointer;
+	text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
+	box-shadow: inset 0px 10px 20px rgba(255, 255, 255, 0.4);
+	color: #111;
+}
+.table-striped>tbody>tr:nth-child(odd)>td, .table-striped>tbody>tr:nth-child(odd)>th {
+	background-color: #fff;
+}
+
+.textStyle{
+	font-weight: 500;
+	text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+	line-height: 20px;
+}
+.pagination_adv{
+	margin: 0px 0;
+	margin-bottom: 1%;
+}
+
 </style>  
 
 <script language="javascript">
@@ -67,33 +109,37 @@ a {
     });
 </script>
 
-<nav class="navbar navbar-default" role="navigation">
-	 <div class="navbar-header">
-	 	<a class="navbar-brand" href="#">Your Brand</a>
+<nav class="navbar" role="navigation" style="color: #bbb;border-bottom: 1px solid #444;">
+	 <div class="navbar-header" style="width: 20%;margin-left: 2%;margin-top: 0.5%;">
+	 	<img src="/assets/app/images/logo_agora.png" style="width: 100%" alt="Your Brand" >
 	 </div>
 	  <ul class="nav navbar-nav">
 	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 		 
 		<form data-ng-submit="submitSearch()" class="navbar-form navbar-left  form-inline" role="search">
-        	<div class="form-group">
+          
+         <div class="form-group">
+		    <label  class="sr-only" for="email_Keyword">Email Name</label>
+		    <input type="text" class="input-sm form-control textStyle" data-ng-model="searchForm.nameKeyWord" id="email_Keyword" placeholder="Email Name">
+		 </div>
+          <div class="form-group">
 		    <label  class="sr-only" for="Content_Keyword">Content Keyword</label>
-		    <input type="text" class="input-sm form-control" data-ng-model="searchForm.cntKeyWord" id="Content_Keyword" placeholder="Content Keyword">
+		    <input type="text" class="input-sm form-control textStyle" data-ng-model="searchForm.cntKeyWord" id="Content_Keyword" placeholder="Content Keyword">
 		  </div>
 		  <div class="form-group">
 		    <label  class="sr-only" for="Subject_Keyword">Subject Keyword</label>
-		    <input type="text" class="input-sm form-control" data-ng-model="searchForm.subKeyWord" id="Subject_Keyword" placeholder="Subject Keyword">
+		    <input type="text" class="input-sm form-control textStyle" data-ng-model="searchForm.subKeyWord" id="Subject_Keyword" placeholder="Subject Keyword">
 		  </div>
 		  
 		  <div class="form-group dropdown">
-		    <label  for="from">From</label>
-		    <input type="text" class="input-sm form-control dropdown-toggle" data-toggle="dropdown" value="{{searchForm.from | date:'MMMM-dd-yyyy' || 'From'}}" placeholder="From">
+		    <input type="text" class="input-sm form-control dropdown-toggle textStyle" data-toggle="dropdown" value="{{searchForm.from | date:'MMMM-dd-yyyy' || 'From'}}" placeholder="From">
 		    	<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
 		    		<datetimepicker  data-ng-model="searchForm.from" data-datetimepicker-config="{ dropdownSelector: '.dropdown-toggle',minView: 'day' }"></datetimepicker>
 		  		</ul>
 		  </div>
 		  <div class="form-group dropdown">
 		    <label  for="to">To</label>
-		    <input type="text" class="input-sm form-control dropdown-toggle" data-toggle="dropdown" value="{{searchForm.to | date:'MMMM-dd-yyyy' || 'To'}}" placeholder="To">
+		    <input type="text" class="input-sm form-control dropdown-toggle textStyle" data-toggle="dropdown" value="{{searchForm.to | date:'MMMM-dd-yyyy' || 'To'}}" placeholder="To">
 		    	<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
 		    		<datetimepicker data-ng-model="searchForm.to" data-datetimepicker-config="{ dropdownSelector: '.dropdown-toggle',minView: 'day' }"></datetimepicker>
 		  		</ul>
@@ -107,7 +153,7 @@ a {
 <div class="container-fluid">
 	
 	<div class="row">
-		<div class="col-md-3 col-lg-3">
+		<div class="col-md-3 col-lg-3" style="width: 20%;">
 			<div ng-show="hasSearchResult" class="row">
 				
 				<div class="panel panel-default panel_adv">
@@ -116,21 +162,21 @@ a {
 							<label>Domains</label>  
 							<div style="float: right;margin-right: 2%;">All <input type="checkbox" checked="checked" data-ng-model="allChecked" style="margin-top: 5%;"> </div>
 						</div>	
-						<div class="panel-body scrollspy-example">
+						<div class="scrollspy-example">
 							
 							<form class="form-horizontal" role="form">
 								<ul class="list-group">
 									<li style="font-size:12px;height: 35px; text-align: left; font-weight: normal;" class="list-group-item" data-ng-repeat="d in domainCounts">
 										<input type="checkbox"   data-ng-model="d.sel" style="float: left;">
-								    	<p tooltip-placement="bottom" class="tip-bottom" tooltip="{{d.name}}" style="cursor: pointer;float: left; width: 80%;margin-left: 2%;">{{d.name}} </p><span class="badge_adv" style="float: left;">( {{d.count}} )</span>
+								    	<p tooltip-placement="bottom" class="tip-bottom textStyle" tooltip="{{d.name}}" style="cursor: pointer;float: left; margin-left: 2%;">{{d.name}} </p><span class="badge_adv" style="float: right;">( {{d.count}} )</span>
 									</li>
 								</ul>
 							</form>
 						</div>
 					</div>
 				</div>
-				<div class="btn-group btn-group-sm">
-					<button type="submit" style="margin-top: 2%;margin-bottom: 2%;" data-ng-click="filterEmailSearch()" class="btn btn-primary">Filter Search</button>
+				<div class="btn-group btn-group-sm" style="width: 100%;">
+					<button type="submit" style="margin-left: 20%;margin-right: 2%; margin-top: 2%;margin-bottom: 2%;" data-ng-click="filterEmailSearch()" class="btn btn-primary">Filter Search</button>
 					<button data-toggle="modal" style="margin-top: 2%;margin-bottom: 2%;" data-ng-click="open()" class="btn btn-default">Save Set</button>
 				</div>
 			</div>
@@ -143,7 +189,7 @@ a {
 							<form class="form-horizontal" role="form">
 								<div  data-ng-repeat="result in saveSearchSets">
 								  <label style="color:#034D94;text-align: left;" class="table table-striped table-hover list-group-item">
-								    	<span style="cursor: pointer; font-size:12px;!important;" tooltip-placement="bottom" class="tip-bottom" tooltip="{{result.name}}" data-ng-model="searchForm.searchId" data-ng-click="showSearchResult(result.querySql)">{{result.name}}</span>
+								    	<span style="cursor: pointer; font-size:12px;!important;" tooltip-placement="bottom" class="tip-bottom textStyle" tooltip="{{result.name}}" data-ng-model="searchForm.searchId" data-ng-click="showSearchResult(result.querySql)">{{result.name}}</span>
 								  </label>
 								</div>
 							</form>
@@ -153,40 +199,85 @@ a {
 			</div>
 		</div>
 		
-		<div class="col-md-9 col-lg-9">
+		<div class="col-md-9 col-lg-9" style="padding-right: 0%;width: 80%;">
 			<div ng-show="hasSearchResult">
-						<pagination  max-size="maxSize" class="pagination-small pagination_adv" boundary-links="true" rotate="false" 
-						ng-show="totalItems != 0" total-items="totalItems" page="currentPage" 
-						items-per-page="searchForm.rowCount" >
+						<pagination max-size="maxSize" class="pagination-small pagination_adv col-xs-12 col-sm-6 col-md-6" boundary-links="true" rotate="false" 
+							ng-show="totalItems != 0" total-items="totalItems" page="currentPage" 
+							items-per-page="searchForm.rowCount" >
 						</pagination>
-						<table class="table Contextual  table-striped table-bordered table-condensed table-hover"  style="height: 400px;overflow: auto; border: 1px solid;">
-							<tr data-ng-repeat="email in emails">
+						
+							<div class="btn-group col-xs-2 col-sm-2 col-md-2" style="width: 11%; float: left;padding-left: 0px;">
+								<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+							    	{{noOfRows}} <span class="caret"></span>
+							  	</button>
+							  	<ul class="dropdown-menu" style="min-width: 96px;" role="menu">
+							    	<li><a  ng-click="submitSearch(10,relevance)">10</a></li>
+							    	<li><a  ng-click="submitSearch(20,relevance)">20</a></li>
+							    	<li><a  ng-click="submitSearch(30,relevance)">30</a></li>
+							  	</ul>
+							</div>
+							
+							<div class="btn-group" style="float: left;">
+								<!--button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+							    	{{sortBy}} <span class="caret"></span>
+							  	</button-->
+							  	<ul class="dropdown-menu" style="min-width: 96px;" role="menu">
+							    	<li><a ng-click="submitSearch(null,'Relevance')">Relevance</a></li>
+							    	<li><a ng-click="submitSearch(null,'Domain')">Domain</a></li>
+							    	<li><a ng-click="submitSearch(null,'Date')">Date</a></li>
+							    	<li><a ng-click="submitSearch(null,'Email Name')">Email Name</a></li>
+							  	</ul>
+							</div>
+						
+						
+						
+						<table   class="table Contextual  table-striped table-bordered table-condensed table-hover"  style="margin-bottom: 1px;overflow: auto; border: 1px solid;">
+							<!-- <tr >
+								<td colspan="2" style="height: 40px;">
+									<div class="row">
+  										<div class="col-xs-12 col-sm-6 col-md-8">
+  											<blockquote class="text-primary blockquote_adv textStyle" style="float: left;width: 100%;font-size: 15px !important;">{{email.subject}}
+												<p style="color: #333;" class="textStyle">Posted on : {{email.date | date:'MMMM-dd-yyyy'}}</p>
+											</blockquote>
+										</div>
+  										<div class="col-xs-6 col-md-4 textStyle" style="text-align: right;">{{email.sendersEmail}}</div>
+									</div>
+									
+								</td>
+										
+							</tr> -->
+							<tr data-ng-repeat="email in emails" style="background-color: #fff !important;height: 140px;">
+									<p  style="float: right;margin: 0 0 0px;" class="textStyle">{{email.date | date:'MMMM-dd-yyyy'}}</p>
 								<!-- Image -->
-								<td>
-									<img data-ng-src="/get-cover-image-by-id/{{email.id}}" style="width:100px; height: 200px;" data-ng-click="showPopUpModal(email.id)" />
+								<td style="padding: 1%;width: 10%;">
+									<img data-ng-src="/get-cover-image-by-id/{{email.id}}" style="width:120px; height: 90px;border: 1px solid gray;" data-ng-click="showPopUpModal(email.id)" />
+									<!-- Domain -->
+									<p class="text-primary textStyle" style="text-align: center;">{{email.domain}}</p>
 								</td>
 								
 								<td>
-								<!-- Date -->
-									<p  style="float: right;">{{email.date | date:'MMMM-dd-yyyy'}}</p>
-									
+								<div>
 								<!-- Subject -->
-									<blockquote class="text-primary" style="float: left;width: 100%;font-size: 15px !important;">{{email.subject}}</blockquote>
+									 <blockquote class="text-primary blockquote_adv" style="float: left;font-size: 15px !important;">{{email.subject}}</blockquote>
 								
-								<!-- Domain -->
-									<p class="text-primary" style="margin-left: 3%;">{{email.domain}}</p>
-								
-								<!-- Extract -->
-									<div ng-bind-html="email.extract"></div>
+								<!-- Date -->
+								 	<p  style="float: right;margin-right: 2%;">{{email.date | date:'MMMM-dd-yyyy'}}</p> 
 									
-									<button type="button" style="float: right;" class="btn btn-success">Show</button>
+								</div>
+								<!-- Extract -->
+									<div ng-bind-html="email.extract" style="float: left;" class="textStyle col-xs-12 col-sm-10 col-md-12"></div>
+									
+									<!-- button type="button" style="float: right;margin-right: 2%;" class="btn btn-primary">Show</button -->
 								</td>
+							
 							</tr>
+							
 						</table>
 			</div>
 		</div>
 	
 	</div>
 </div>	
+
 	
 	

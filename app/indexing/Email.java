@@ -54,6 +54,7 @@ public class Email extends Index {
 		map.put("description", description);
 		map.put("subject", subject);
 		map.put("domain", domain);
+		map.put("sendersEmail", sendersEmail);
 		map.put("sentDate", sentDate);
 		map.put("mail_objectId", mail_objectId);
 		return map;
