@@ -80,7 +80,8 @@ public class Application  extends Controller {
 		if(toDateStr !=null && toDateStr.length() > 10 ) {
 			try {
 				toDate = simpleDateFormat.parse(toDateStr);
-				rangeFilterBuilder = FilterBuilders.rangeFilter("sentDate");
+				if(rangeFilterBuilder == null)
+					rangeFilterBuilder = FilterBuilders.rangeFilter("sentDate");
 				rangeFilterBuilder.to(toDate);
 			} catch (ParseException e) {
 				e.printStackTrace();

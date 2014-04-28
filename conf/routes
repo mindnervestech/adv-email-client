@@ -13,6 +13,10 @@ GET     /showPopUpModal                  controllers.Application.showPopUpModal(
 GET     /showPopUpImages                 controllers.Application.showPopUpImages()
 GET     /showPopUpLinks                  controllers.Application.showPopUpLinks()
 
-GET		/saveEmailSearchSet				 controllers.Application.saveEmailSearchSet()
+# Table Data
+GET     /showTables/:id                     controllers.ShowTab.showTables(id :Long)
+GET		/saveEmailSearchSet				 	controllers.Application.saveEmailSearchSet()
+GET		/get-table-cover-image-by-id/:id	controllers.ShowTab.getTableCoverImageByID(id :Long)
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

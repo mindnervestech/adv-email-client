@@ -23,7 +23,7 @@ public class Global extends GlobalSettings {
 				new Runnable() {
 					public void run() {
 						 try {
-							EmailWriteFile.main(null);
+							EmailWriteFile.main();
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
