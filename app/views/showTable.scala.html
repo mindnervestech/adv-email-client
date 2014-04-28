@@ -1,0 +1,176 @@
+ @(domainList: List[vm.MailsToDisplay])(yearList: List[String])
+<html lang="en">
+<head>
+<style type="text/css">
+.textStyle{
+	font-size: 15px;
+	text-align: center;
+	text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+}
+</style>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title> Mail Table In Html </title>
+</head>
+<link  href="@routes.Assets.at("app/bower_components/bootstrap/dist/css/bootstrap.min.css")" rel="stylesheet">
+   <script src="@routes.Assets.at("app/bower_components/jquery/dist/jquery.min.js")"></script>
+      <script src="@routes.Assets.at("app/bower_components/bootstrap/dist/js/bootstrap.js")"></script>
+  <body style="background: #222 url('/assets/app/images/page_wrapper.png') no-repeat 50% top;" ng-app="email-client" ng-controller="ApplicationController">
+ 
+ <div class="container-fluid">
+ <nav class="navbar" role="navigation" style="color: #bbb;border-bottom: 1px solid #444;">
+	 <div class="navbar-header" style="width: 20%;margin-left: 2%;margin-top: 0.5%;">
+	 	<a href="/">
+	 		<img src="/assets/app/images/logo_agora.png" style="width: 100%" alt="Your Brand" >
+	 	</a>
+	 </div>	
+</nav>
+ 
+	<div class="first">
+      <div class="row">
+          <div class="col-md-12" style="">
+          @for( c <- yearList){
+             <a style="float: left;margin-right: 2%;color: #bbb;font-size: 36px; cursor: pointer;" href="/showTables/@c">Tab @c</a>
+          }
+              <table class="table table-bordered" style="background-color: white;">
+        <thead>
+                <th class="textStyle">Channel</th>
+                <th class="textStyle">Jan</th>
+                <th class="textStyle">Feb</th>
+                <th class="textStyle">Mar</th>
+                <th class="textStyle">Apr</th>
+                <th class="textStyle">May</th>
+                <th class="textStyle">Jun</th>
+                <th class="textStyle">Jul</th>
+                <th class="textStyle">Aug</th>
+                <th class="textStyle">Sep</th>
+                <th class="textStyle">Oct</th>
+                <th class="textStyle">Nov</th>
+                <th class="textStyle">Dec</th>
+        </thead>
+        <tbody >
+            <tr>
+           
+            @for( c <- domainList){
+               <tr><td colspan="0" style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">  @c.domainName</td> 
+               <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">
+                 @if(c.monthDates.get("Jan").size()!=0){
+                  @for( d <- c.monthDates.get("Jan")){
+                   <a onclick="getEmailPage(@d.emailId)" data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                  }
+                   }</td> 
+               <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);"> 
+                @if(c.monthDates.get("Feb").size()!=0){
+                @for( d <- c.monthDates.get("Feb")){
+                   <a onclick="getEmailPage(@d.emailId)"  data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                  }
+                   }</td> 
+               <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">
+               @if(c.monthDates.get("Mar").size()!=0){
+                @for( d <- c.monthDates.get("Mar")){
+                   <a onclick="getEmailPage(@d.emailId)"  data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                  }
+                   }</td> 
+               <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">
+               @if(c.monthDates.get("Apr").size()!=0){
+                    @for( d <- c.monthDates.get("Apr")){
+                   <a onclick="getEmailPage(@d.emailId)"  data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date</a></br>
+                  }
+                   }</td> 
+               <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);"> 
+                  @if(c.monthDates.get("May").size()!=0){
+                  @for(d<- c.monthDates.get("May")){
+                    <a onclick="getEmailPage(@d.emailId)"  data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                  }
+                   }</td> 
+               <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">  
+                @if(c.monthDates.get("Jun").size()!=0){
+                 @for(d <- c.monthDates.get("Jun") ){
+                  <a onclick="getEmailPage(@d.emailId)"  data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                 }
+                 }
+               <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">   
+                @if(c.monthDates.get("Jul").size()!=0){
+                 @for(d <- c.monthDates.get("Jul")){
+                  <a onclick="getEmailPage(@d.emailId)" data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                 }
+                 }</td> 
+               <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);"> 
+                  @if(c.monthDates.get("Aug").size()!=0){
+                     @for(d <- c.monthDates.get("Aug")){
+                  <a onclick="getEmailPage(@d.emailId)" data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                 }
+                 }</td>
+               <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);"> 
+                  @if(c.monthDates.get("Sep").size()!=0){
+                      @for(d <- c.monthDates.get("Sep")){
+                  <a onclick="getEmailPage(@d.emailId)" data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                 }
+                 }</td>
+               <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">
+                  @if(c.monthDates.get("Oct").size()!=0){
+                       @for(d <- c.monthDates.get("Oct")){
+                  <a onclick="getEmailPage(@d.emailId)" data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                 }
+                 }</td>
+               <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);"> 
+                @if(c.monthDates.get("Nov").size()!=0){
+              	 @for(d <- c.monthDates.get("Oct")){
+                  <a onclick="getEmailPage(@d.emailId)" data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                 }
+                 }</td>
+               <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">
+               @if(c.monthDates.get("Dec").size()!=0){
+                 @for(d <- c.monthDates.get("Oct")){
+                  <a onclick="getEmailPage(@d.emailId)" data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                 }
+                 }</td>
+           </td> 
+           }
+            </tr>
+        </tbody>
+    </table>
+</div>
+    </div>
+    </div>
+    
+    <div id="footer" class="container-fluid" style="text-align: center;background-color: white; height: 30px;margin-top: 2%;">
+	  <div id="copyright">
+	   
+	</div>
+</div>
+</div>
+</body>
+
+<div class="modal fade" id="mymodel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Show Email</h4>
+      </div>
+      <div class="modal-body">
+      	<img alt="" src="" width="100%;" id="modalValue">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+</html>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		   $(".tip-bottom").tooltip({
+		        placement : 'bottom'
+		    });
+	 });
+	function getEmailPage(id){
+		$.ajax({
+			url:"/get-table-cover-image-by-id/"+id,
+			success:function(result){
+				$("#modalValue").attr('src','/get-table-cover-image-by-id/'+id);
+				$("#mymodel").modal('show');
+		  }});
+	}
+</script>

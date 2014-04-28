@@ -124,7 +124,7 @@ public class HtmlAndEmlParser {
 		} finally{
 			try {
 				bis.close();
-			} catch (IOException e) {
+			} catch (Exception e) {
 			}
 		}
 			

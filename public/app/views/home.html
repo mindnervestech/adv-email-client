@@ -111,7 +111,9 @@ button {
 
 <nav class="navbar" role="navigation" style="color: #bbb;border-bottom: 1px solid #444;">
 	 <div class="navbar-header" style="width: 20%;margin-left: 2%;margin-top: 0.5%;">
-	 	<img src="/assets/app/images/logo_agora.png" style="width: 100%" alt="Your Brand" >
+	 	<a href="">
+	 		<img src="/assets/app/images/logo_agora.png" style="width: 100%" alt="Your Brand" >
+	 	</a>
 	 </div>
 	  <ul class="nav navbar-nav">
 	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -146,11 +148,14 @@ button {
 		  </div>
 		  
 		  <button type="submit" class="btn btn-primary">Search</button>
+		  <div class="btn-group">
+			<a class="btn btn-default" href="/showTables/0" >Report</a>
+		  </div>
       	</form>
 	</div>
 </nav>
 
-<div class="container-fluid">
+<div class="container-fluid" style="min-height: 500px;">
 	
 	<div class="row">
 		<div class="col-md-3 col-lg-3" style="width: 20%;">
@@ -166,9 +171,11 @@ button {
 							
 							<form class="form-horizontal" role="form">
 								<ul class="list-group">
-									<li style="font-size:12px;height: 35px; text-align: left; font-weight: normal;" class="list-group-item" data-ng-repeat="d in domainCounts">
-										<input type="checkbox"   data-ng-model="d.sel" style="float: left;">
-								    	<p tooltip-placement="bottom" class="tip-bottom textStyle" tooltip="{{d.name}}" style="cursor: pointer;float: left; margin-left: 2%;">{{d.name}} </p><span class="badge_adv" style="float: right;">( {{d.count}} )</span>
+									<li style="font-size:12px;height: 35px; text-align: left; font-weight: normal;padding-right: 0%;" class="list-group-item" data-ng-repeat="d in domainCounts">
+										<div style="float: left;width: 100%;">
+											<input type="checkbox" data-ng-model="d.sel" style="float: left;">
+								    		<p tooltip-placement="bottom" class="tip-bottom textStyle" tooltip="{{d.name}}" style="cursor: pointer;float: left;width: 70%; margin-left: 2%;">{{d.name}} </p><span class="badge_adv" style="float: right;width: 20%;">( {{d.count}} )</span>
+								    	</div>	
 									</li>
 								</ul>
 							</form>
@@ -206,7 +213,7 @@ button {
 							items-per-page="searchForm.rowCount" >
 						</pagination>
 						
-							<div class="btn-group col-xs-2 col-sm-2 col-md-2" style="width: 11%; float: left;padding-left: 0px;">
+							<div class="btn-group " style="float: left;margin-right: 1%;">
 								<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 							    	{{noOfRows}} <span class="caret"></span>
 							  	</button>
@@ -217,40 +224,15 @@ button {
 							  	</ul>
 							</div>
 							
-							<div class="btn-group" style="float: left;">
-								<!--button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-							    	{{sortBy}} <span class="caret"></span>
-							  	</button-->
-							  	<ul class="dropdown-menu" style="min-width: 96px;" role="menu">
-							    	<li><a ng-click="submitSearch(null,'Relevance')">Relevance</a></li>
-							    	<li><a ng-click="submitSearch(null,'Domain')">Domain</a></li>
-							    	<li><a ng-click="submitSearch(null,'Date')">Date</a></li>
-							    	<li><a ng-click="submitSearch(null,'Email Name')">Email Name</a></li>
-							  	</ul>
-							</div>
 						
 						
 						
 						<table   class="table Contextual  table-striped table-bordered table-condensed table-hover"  style="margin-bottom: 1px;overflow: auto; border: 1px solid;">
-							<!-- <tr >
-								<td colspan="2" style="height: 40px;">
-									<div class="row">
-  										<div class="col-xs-12 col-sm-6 col-md-8">
-  											<blockquote class="text-primary blockquote_adv textStyle" style="float: left;width: 100%;font-size: 15px !important;">{{email.subject}}
-												<p style="color: #333;" class="textStyle">Posted on : {{email.date | date:'MMMM-dd-yyyy'}}</p>
-											</blockquote>
-										</div>
-  										<div class="col-xs-6 col-md-4 textStyle" style="text-align: right;">{{email.sendersEmail}}</div>
-									</div>
-									
-								</td>
-										
-							</tr> -->
 							<tr data-ng-repeat="email in emails" style="background-color: #fff !important;height: 140px;">
 									<p  style="float: right;margin: 0 0 0px;" class="textStyle">{{email.date | date:'MMMM-dd-yyyy'}}</p>
 								<!-- Image -->
 								<td style="padding: 1%;width: 10%;">
-									<img data-ng-src="/get-cover-image-by-id/{{email.id}}" style="width:120px; height: 90px;border: 1px solid gray;" data-ng-click="showPopUpModal(email.id)" />
+									<img data-ng-src="/get-cover-image-by-id/{{email.id}}" style="width:120px; cursor: pointer; height: 90px;border: 1px solid gray;" data-ng-click="showPopUpModal(email.id)" />
 									<!-- Domain -->
 									<p class="text-primary textStyle" style="text-align: center;">{{email.domain}}</p>
 								</td>
@@ -267,7 +249,7 @@ button {
 								<!-- Extract -->
 									<div ng-bind-html="email.extract" style="float: left;" class="textStyle col-xs-12 col-sm-10 col-md-12"></div>
 									
-									<!-- button type="button" style="float: right;margin-right: 2%;" class="btn btn-primary">Show</button -->
+									<!-- <button type="button" style="float: right;margin-right: 2%;" class="btn btn-primary">Show</button> -->
 								</td>
 							
 							</tr>

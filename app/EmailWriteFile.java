@@ -40,7 +40,7 @@ public class EmailWriteFile {
 			.getString("mail.storage.path");
 	static SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
 	
-	public static void main(String args[]) throws Exception {
+	public static void main() throws Exception {
     	Store store = MailConnection.getStore();
         Folder folder;
 		try {
