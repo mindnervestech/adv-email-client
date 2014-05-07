@@ -93,13 +93,14 @@ public class HtmlAndEmlParser {
      				pathForImage = pathForImage + File.separator  + "-" + i++ + ".jpg";
      	        	
      				BufferedImage image = null;
-     				URL imageUrl = new URL(link.attr("src"));
-     				URL url = new URL(imageUrl.toString());
      				UrlValidator urlValidator = new UrlValidator();
- 					if(urlValidator.isValid(imageUrl.toString())){
+     				System.out.println("Looking for URL " + link.attr("src"));
+ 					if(urlValidator.isValid(link.attr("src"))){
+ 						URL imageUrl = new URL(link.attr("src"));
+ 	     				
  						System.out.println("Saving image to FS from " + imageUrl.toString());
  						
- 	    				image = ImageIO.read(url);
+ 	    				image = ImageIO.read(imageUrl);
  	    				int h = image.getHeight();
  	    				int w = image.getWidth();
  	    				if(h > 100 && w > 100) {
