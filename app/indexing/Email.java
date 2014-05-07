@@ -1,7 +1,9 @@
 package indexing;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -9,7 +11,6 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import com.github.cleverage.elasticsearch.Index;
 import com.github.cleverage.elasticsearch.IndexUtils;
 import com.github.cleverage.elasticsearch.Indexable;
-import com.github.cleverage.elasticsearch.annotations.IndexMapping;
 import com.github.cleverage.elasticsearch.annotations.IndexType;
 
 @IndexType(name = "email")
@@ -34,6 +35,8 @@ public class Email extends Index {
 	@JsonProperty("id")
 	public Long mail_objectId;
 	
+	public List<Links> nestedHtml = new ArrayList<Links>();
+	
 	@Override
 	public Indexable fromIndex(Map map) {
 		if (map == null) {
@@ -45,6 +48,7 @@ public class Email extends Index {
 		this.sendersEmail = (String) map.get("sendersEmail");
 		this.mail_objectId = (Long) IndexUtils.convertValue(map.get("mail_objectId"), Long.class);
 		this.sentDate = (Date) IndexUtils.convertValue(map.get("sentDate"), Date.class);
+		this.nestedHtml = IndexUtils.getIndexables(map,"nestedHtml", Links.class);
 		return this;
 	}
 
@@ -57,6 +61,7 @@ public class Email extends Index {
 		map.put("sendersEmail", sendersEmail);
 		map.put("sentDate", sentDate);
 		map.put("mail_objectId", mail_objectId);
+		map.put("nestedHtml", IndexUtils.toIndex(nestedHtml));
 		return map;
 	}
 	

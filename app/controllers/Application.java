@@ -25,10 +25,12 @@ import javax.mail.internet.MimeMultipart;
 import models.MailObjectModel;
 import models.SaveSearchSet;
 
+import org.apache.lucene.queryparser.xml.builders.BooleanQueryBuilder;
 import org.elasticsearch.common.collect.Iterables;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.AndFilterBuilder;
 import org.elasticsearch.index.query.BaseQueryBuilder;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeFilterBuilder;
@@ -38,6 +40,7 @@ import org.elasticsearch.search.facet.terms.strings.InternalStringTermsFacet.Ter
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import play.api.libs.ws.WS;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.libs.Json;
@@ -92,21 +95,41 @@ public class Application  extends Controller {
 		String keyWordsContents = searchFilter.data().get("cntKeyWord"); 
 		String keyWordsName = searchFilter.data().get("nameKeyWord");
 		String perPage = searchFilter.data().get("rowCount");
+		String levelOnekeyWords = searchFilter.data().get("levelOnekeyWord");;
 		//System.out.println("keyWordsName = "+keyWordsName);
 		/*if(keyWordsContents != null && keyWordsContents.length() > 1 ) {
 			if(andFilterBuilder == null) andFilterBuilder = FilterBuilders.andFilter();
 			andFilterBuilder.add(FilterBuilders.queryFilter(QueryBuilders.fieldQuery("description", keyWordsContents)));
 		}*/
 		
-		BaseQueryBuilder queryBuilder = QueryBuilders.matchAllQuery();  
-		if(keyWordsContents != null && keyWordsContents.length() > 1 ) {
+		BaseQueryBuilder queryBuilder;  
+		BoolQueryBuilder booleanQueryBuilder = QueryBuilders.boolQuery();
+		boolean isDescription = keyWordsContents != null && keyWordsContents.length() > 1 ;
+		boolean issendersEmail = keyWordsName != null && keyWordsName.length() > 1 ;
+		boolean isnestedHtml = levelOnekeyWords != null && levelOnekeyWords.length() > 1;
+		
+		if(isDescription) {
 			queryBuilder = QueryBuilders.queryString(keyWordsContents).defaultField("description");
+			booleanQueryBuilder.must(queryBuilder);
+		} 
+		
+		//queryBuilder = QueryBuilders.queryString("emos");
+		if(issendersEmail) {
+			queryBuilder = QueryBuilders.queryString(keyWordsName).defaultField("sendersEmail");
+			booleanQueryBuilder.must(queryBuilder);
 		}
 		
-		if(keyWordsName != null && keyWordsName.length() > 1 ) {
-			queryBuilder = QueryBuilders.queryString(keyWordsName).defaultField("subject");
+		if(isnestedHtml ) {
+			queryBuilder = QueryBuilders.queryString(levelOnekeyWords).defaultField("nestedHtml.description");
+			booleanQueryBuilder.must(queryBuilder);
 		}
 		
+		if(!(isnestedHtml || issendersEmail || isDescription)){
+			booleanQueryBuilder.must(QueryBuilders.matchAllQuery());
+		}
+		
+		
+		queryBuilder = booleanQueryBuilder;
 		String keyWordsSub = searchFilter.data().get("subKeyWord"); 
 		if(keyWordsSub != null && keyWordsSub.length() > 1 ) {
 			if(andFilterBuilder == null) andFilterBuilder = FilterBuilders.andFilter();
@@ -135,6 +158,7 @@ public class Application  extends Controller {
 		 }
 		 ;
 		 indexQuery.addHighlights(MntHighlightBuilder.instance().setField("description"));
+		 indexQuery.addHighlights(MntHighlightBuilder.instance().setField("nestedHtml.description"));
 		 indexQuery.addFacet(FacetBuilders.termsFacet("domain").field("domain"));
 		 int count = Integer.parseInt(perPage);
 		 // below two lines are for Pagination ---
@@ -154,6 +178,16 @@ public class Application  extends Controller {
 				 for(Text _t : e.searchHit.getHighlightFields().get("description").fragments()){
 					 extract += _t.string() + "\n";
 				 }
+				 for(Text _t : e.searchHit.getHighlightFields().get("nestedHtml").fragments()){
+					 extract += _t.string() + "\n";
+				 }
+			 }
+			 
+			 if(e.searchHit.getHighlightFields() != null && e.searchHit.getHighlightFields().get("nestedHtml.description") != null) {
+				 for(Text _t : e.searchHit.getHighlightFields().get("nestedHtml.description").fragments()){
+					 extract += _t.string() + "\n";
+				 }
+				 
 			 }
 			 
 			 if(e.subject.length() > 60){
@@ -253,6 +287,7 @@ public class Application  extends Controller {
 		public String to ;
 		public String cntKeyWord;
 		public String subKeyWord;
+		public String levelOnekeyWord;
 		public int page;
 		public int rowCount;
 		public String[] domain;

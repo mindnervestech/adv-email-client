@@ -121,16 +121,21 @@ button {
 		<form data-ng-submit="submitSearch()" class="navbar-form navbar-left  form-inline" role="search">
           
          <div class="form-group">
-		    <label  class="sr-only" for="email_Keyword">Email Name</label>
-		    <input type="text" class="input-sm form-control textStyle" data-ng-model="searchForm.nameKeyWord" id="email_Keyword" placeholder="Email Name">
+		    <label  class="sr-only" for="email_Keyword">Sender Email Keyword</label>
+		    <input tooltip= "Look for keywords in email address sender of email" type="text" class="input-sm form-control textStyle" data-ng-model="searchForm.nameKeyWord" id="email_Keyword" placeholder="Email Name">
 		 </div>
+		 
           <div class="form-group">
 		    <label  class="sr-only" for="Content_Keyword">Content Keyword</label>
-		    <input type="text" class="input-sm form-control textStyle" data-ng-model="searchForm.cntKeyWord" id="Content_Keyword" placeholder="Content Keyword">
+		    <input tooltip= "Look for keywords in email" type="text" class="input-sm form-control textStyle" data-ng-model="searchForm.cntKeyWord" id="Content_Keyword" placeholder="Content Keyword">
 		  </div>
 		  <div class="form-group">
 		    <label  class="sr-only" for="Subject_Keyword">Subject Keyword</label>
-		    <input type="text" class="input-sm form-control textStyle" data-ng-model="searchForm.subKeyWord" id="Subject_Keyword" placeholder="Subject Keyword">
+		    <input tooltip= "Look for keywords in subject of email" type="text" class="input-sm form-control textStyle" data-ng-model="searchForm.subKeyWord" id="Subject_Keyword" placeholder="Subject Keyword">
+		  </div>
+		  <div class="form-group">
+		    <label  class="sr-only" for="Subject_Keyword">One level Deep lookup</label>
+		    <input tooltip= "Look into htmls link embedded in email" type="text" class="input-sm form-control textStyle" data-ng-model="searchForm.levelOnekeyWord" id="levelOnekeyWord_Keyword" placeholder="One level Deep lookup">
 		  </div>
 		  
 		  <div class="form-group dropdown">

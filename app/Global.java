@@ -1,8 +1,18 @@
+import gui.ava.html.image.generator.HtmlImageGenerator;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import models.MailObjectModel;
+import javax.validation.ConstraintValidatorContext;
 
+import org.apache.commons.validator.UrlValidator;
+import org.hibernate.validator.internal.constraintvalidators.URLValidator;
+
+import models.Links;
 import play.Application;
 import play.GlobalSettings;
 import play.Logger;
@@ -25,7 +35,6 @@ public class Global extends GlobalSettings {
 						 try {
 							EmailWriteFile.main();
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
@@ -41,12 +50,47 @@ public class Global extends GlobalSettings {
 							try {
 								HtmlAndEmlParser.emlParse();
 							} catch (Exception e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 					}
 					}, actorSystem1.dispatcher()
 				);
+		 
+		 ActorSystem actorSystemJob = Akka.system();
+			actorSystemJob.scheduler().schedule(
+					Duration.create(0, TimeUnit.MILLISECONDS),
+					Duration.create(1, TimeUnit.MINUTES), new Runnable() {
+						@Override
+						public void run() {
+							List<Links> links = Links.find.where().eq("path", null).findList();
+							
+							for (Links link : links) {
+								String imageFolderPath = link.mail_id.mailPath;
+								imageFolderPath = imageFolderPath.replace(".eml","");
+								File file = new File(imageFolderPath);
+								if (!file.exists()) {
+									if (file.mkdir()) {
+										System.out.println("Directory is created!");
+									} else {
+										System.out.println("Failed to create directory!");
+									}
+								}
+								String imageName = link.id + ".png";
+								UrlValidator urlValidator = new UrlValidator();
+								if(urlValidator.isValid(link.getUrl())){
+									HtmlImageGenerator imageGenerator1 = new HtmlImageGenerator();
+									imageGenerator1.loadUrl(link.getUrl());
+									imageGenerator1.saveAsImage(file +File.separator+ imageName);
+									link.setPath(file + imageName);
+									link.update();
+								} else {
+									link.setPath("BAD_URL");
+									link.update();
+								}
+									
+							}
+						}
+					}, actorSystemJob.dispatcher());
 	}
 	@Override
 	  public void onStop(Application app) {

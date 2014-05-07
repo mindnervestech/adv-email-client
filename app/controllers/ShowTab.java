@@ -64,7 +64,7 @@ public class ShowTab extends Controller {
 			 oct = new ArrayList<MailsIDToDisplay>();
 			 nov = new ArrayList<MailsIDToDisplay>();
 			 dec = new ArrayList<MailsIDToDisplay>();
-			 Map<String,List<MailsIDToDisplay>> map = new HashMap<>();
+			 Map<String,List<MailsIDToDisplay>> map = new HashMap<String,List<MailsIDToDisplay>>();
 				 MailsToDisplay mailsToDisplay= new MailsToDisplay();
 				 mailsToDisplay.domainName= sr.getString("domain");
 				 List <SqlRow> list= MailObjectModel.findMailObjectByDomainName(mailsToDisplay.domainName,Long.toString(yearTab));
