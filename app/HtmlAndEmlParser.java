@@ -38,6 +38,7 @@ public class HtmlAndEmlParser {
     public static void emlParse() throws Exception  {
     	Document doc= null;
     	List <MailObjectModel> moList =MailObjectModel.find.where().eq("status", false).findList();
+    	System.out.println("Processing mails" + moList.size());
 		for (MailObjectModel mm:moList)
 		{
 			Session session = Session.getDefaultInstance(new Properties());
