@@ -14,6 +14,8 @@ object ApplicationBuild extends Build {
     "gui.ava" % "html2image" % "0.9",
     "mysql" % "mysql-connector-java" % "5.1.18",
     "com.clever-age" % "play2-elasticsearch" % "0.7-SNAPSHOT",
+    "oro" % "oro" % "2.0.8",
+    "commons-validator" % "commons-validator" % "1.3.1",
     javaCore,
     javaJdbc,
     javaEbean

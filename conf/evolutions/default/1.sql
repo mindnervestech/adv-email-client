@@ -5,32 +5,27 @@
 
 create table content (
   id                        bigint auto_increment not null,
-  html_page_id              bigint,
   description               longtext,
   constraint pk_content primary key (id))
-;
-
-create table domain (
-  id                        bigint auto_increment not null,
-  domain_name               varchar(255),
-  mail_object_model_id      bigint,
-  constraint pk_domain primary key (id))
-;
-
-create table htmlpage (
-  id                        bigint auto_increment not null,
-  html_id                   varchar(255),
-  constraint pk_htmlpage primary key (id))
 ;
 
 create table image_info (
   id                        bigint auto_increment not null,
   mail_object_model_id      bigint,
-  html_page_id              bigint,
   url                       longtext,
   image_byte                longblob,
   alt                       longtext,
   constraint pk_image_info primary key (id))
+;
+
+create table links (
+  id                        bigint auto_increment not null,
+  url                       longtext,
+  mail_id_id                bigint,
+  status                    tinyint(1) default 0,
+  htmlcontent               longtext,
+  path                      varchar(255),
+  constraint pk_links primary key (id))
 ;
 
 create table mail_object_model (
@@ -54,16 +49,12 @@ create table save_search_set (
   constraint pk_save_search_set primary key (id))
 ;
 
-alter table content add constraint fk_content_htmlPage_1 foreign key (html_page_id) references htmlpage (id) on delete restrict on update restrict;
-create index ix_content_htmlPage_1 on content (html_page_id);
-alter table domain add constraint fk_domain_mailObjectModel_2 foreign key (mail_object_model_id) references mail_object_model (id) on delete restrict on update restrict;
-create index ix_domain_mailObjectModel_2 on domain (mail_object_model_id);
-alter table image_info add constraint fk_image_info_mailObjectModel_3 foreign key (mail_object_model_id) references mail_object_model (id) on delete restrict on update restrict;
-create index ix_image_info_mailObjectModel_3 on image_info (mail_object_model_id);
-alter table image_info add constraint fk_image_info_htmlPage_4 foreign key (html_page_id) references htmlpage (id) on delete restrict on update restrict;
-create index ix_image_info_htmlPage_4 on image_info (html_page_id);
-alter table mail_object_model add constraint fk_mail_object_model_content_5 foreign key (content_id) references content (id) on delete restrict on update restrict;
-create index ix_mail_object_model_content_5 on mail_object_model (content_id);
+alter table image_info add constraint fk_image_info_mailObjectModel_1 foreign key (mail_object_model_id) references mail_object_model (id) on delete restrict on update restrict;
+create index ix_image_info_mailObjectModel_1 on image_info (mail_object_model_id);
+alter table links add constraint fk_links_mail_id_2 foreign key (mail_id_id) references mail_object_model (id) on delete restrict on update restrict;
+create index ix_links_mail_id_2 on links (mail_id_id);
+alter table mail_object_model add constraint fk_mail_object_model_content_3 foreign key (content_id) references content (id) on delete restrict on update restrict;
+create index ix_mail_object_model_content_3 on mail_object_model (content_id);
 
 
 
@@ -73,11 +64,9 @@ SET FOREIGN_KEY_CHECKS=0;
 
 drop table content;
 
-drop table domain;
-
-drop table htmlpage;
-
 drop table image_info;
+
+drop table links;
 
 drop table mail_object_model;
 

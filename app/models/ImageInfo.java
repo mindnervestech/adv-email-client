@@ -32,13 +32,7 @@ public class ImageInfo extends Model {
 		this.mailObjectModel = mailObjectModel;
 	}
 
-	public Htmlpage getHtmlPage() {
-		return htmlPage;
-	}
-
-	public void setHtmlPage(Htmlpage htmlPage) {
-		this.htmlPage = htmlPage;
-	}
+	
 
 	public String getUrl() {
 		return url;
@@ -79,9 +73,7 @@ public class ImageInfo extends Model {
 	@ManyToOne
 	public MailObjectModel mailObjectModel; 
 	
-	@JsonIgnore
-	@ManyToOne
-	public Htmlpage htmlPage; 
+	
 	
 	@Lob
 	public String url;

@@ -1,19 +1,19 @@
-//import gui.ava.html.image.generator.HtmlImageGenerator;
-
-//import java.awt.Dimension;
 import gui.ava.html.image.generator.HtmlImageGenerator;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import javax.imageio.ImageIO;
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
@@ -22,13 +22,15 @@ import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.MimeMultipart;
-import javax.mail.search.FlagTerm;
 
 import models.MailObjectModel;
 
+import org.apache.commons.validator.UrlValidator;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Entities.EscapeMode;
+import org.jsoup.select.Elements;
 
 import play.Play;
 import play.libs.Akka;
@@ -70,6 +72,7 @@ public class EmailWriteFile {
             createYearDir(domain, calendar.get(Calendar.YEAR));
             createMonthDir(domain, calendar.get(Calendar.MONTH), calendar.get(Calendar.YEAR));
             createDayDir(domain, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
+            createimgDir(domain, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE),fileName,i);
             
             Document doc;
             String htmlText = "";
@@ -96,6 +99,7 @@ public class EmailWriteFile {
 				doc = null;
 			}
         	
+        	
         	htmlText = htmlText.substring(0, htmlText.length() > 5000 ? 5000 : htmlText.length()-1);
         	doc = Jsoup.parseBodyFragment(htmlText, "ISO-8859-1");
         	doc.outputSettings().escapeMode(EscapeMode.xhtml);
@@ -107,7 +111,7 @@ public class EmailWriteFile {
     		
     		final String imgPath=mm.mailPath;
     		final Document doc1 = doc;
-    		
+    	
     		 ActorSystem  actorSystem = Akka.system();
     		 actorSystem.scheduler().scheduleOnce(Duration.create(0, TimeUnit.MILLISECONDS), 
     				 new Runnable() {
@@ -120,9 +124,13 @@ public class EmailWriteFile {
 							HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
 				    		imageGenerator.loadHtml(doc1.toString());
 				    		imageGenerator.saveAsImage(imgPath.replace(".eml",".png"));
-						}
+				    		
+				    		
+				    	}
     			 
     		 }, actorSystem.dispatcher());
+    		 
+    		
     		 
 	        OutputStream out = null;
 			try {
@@ -163,6 +171,18 @@ public class EmailWriteFile {
 			file5.mkdir();
 		}
 	}
+	
+	public static void createimgDir(String domain, int year, int month,
+			int day , String filename , int i) {
+		File file6 = new File(rootDir + File.separator + domain
+				+ File.separator + year + File.separator + month
+				+ File.separator + day + File.separator + filename+"-"+i+"_images");
+		if (!file6.exists()) {
+			file6.mkdir();
+			
+		}
+	}
+	
 
 	public static void createMonthDir(String domain, int month , int year) {
 		File file4 = new File(rootDir + File.separator + domain

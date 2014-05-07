@@ -123,7 +123,8 @@ emailclient.controller('SearchController',function($scope, $http, $modal, usSpin
 				popUpId:0,
 				eIdForImages :0,
 				eIdForLinks : 0,
-				saveSearchName :""
+				saveSearchName :"",
+				levelOnekeyWord :""
 	}
 	
 	$scope.submitSearch = function(count,sortText) {

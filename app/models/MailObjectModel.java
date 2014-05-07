@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -33,6 +34,8 @@ public class MailObjectModel extends Model{
 	public Date sentDate;
 	public Date receivedDate;
 	
+	@OneToMany
+	public Links links;
 	@OneToOne
 	@JsonIgnore
 	public Content content;
