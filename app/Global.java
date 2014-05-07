@@ -76,14 +76,16 @@ public class Global extends GlobalSettings {
 									}
 								}
 								String imageName = link.id + ".png";
-								UrlValidator urlValidator = new UrlValidator();
-								if(urlValidator.isValid(link.getUrl())){
+								//UrlValidator urlValidator = new UrlValidator();
+								//if(urlValidator.isValid(link.getUrl())){
+								try {
 									HtmlImageGenerator imageGenerator1 = new HtmlImageGenerator();
 									imageGenerator1.loadUrl(link.getUrl());
 									imageGenerator1.saveAsImage(file +File.separator+ imageName);
 									link.setPath(file + imageName);
 									link.update();
-								} else {
+								} catch (Exception e) {
+									System.out.println("while parsing links in global " + e.getMessage());
 									link.setPath("BAD_URL");
 									link.update();
 								}
