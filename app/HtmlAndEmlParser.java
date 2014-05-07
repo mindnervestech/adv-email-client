@@ -38,11 +38,14 @@ public class HtmlAndEmlParser {
     public static void emlParse() throws Exception  {
     	Document doc= null;
     	List <MailObjectModel> moList =MailObjectModel.find.where().eq("status", false).findList();
-    	System.out.println("Processing mails" + moList.size());
+    	System.out.println("No of mails to be processed  from FS" + moList.size());
 		for (MailObjectModel mm:moList)
 		{
 			Session session = Session.getDefaultInstance(new Properties());
 			String urll=mm.mailPath;
+			
+			System.out.println("Processing mail from FS" + urll);
+			
 			File file= new File(urll);
 			InputStream inMsg = new FileInputStream(file);
 			
@@ -83,6 +86,8 @@ public class HtmlAndEmlParser {
      			links = new Elements();
      			links =	doc.select("img[src]");
      			int i = 0;
+     			System.out.println("No of links got for mail  " + links.size());
+					
      			for (Element link : links) {
      				
      				pathForImage = pathForImage + File.separator  + "-" + i++ + ".jpg";
@@ -92,6 +97,8 @@ public class HtmlAndEmlParser {
      				URL url = new URL(imageUrl.toString());
      				UrlValidator urlValidator = new UrlValidator();
  					if(urlValidator.isValid(imageUrl.toString())){
+ 						System.out.println("Saving image to FS from " + imageUrl.toString());
+ 						
  	    				image = ImageIO.read(url);
  	    				int h = image.getHeight();
  	    				int w = image.getWidth();
@@ -173,6 +180,8 @@ public class HtmlAndEmlParser {
 		String urlLink = link.attr("href").replaceAll(" ", "");
 		UrlValidator urlValidator = new UrlValidator();
 		if(urlValidator.isValid(urlLink)) {
+			System.out.println("Saving link in mail  " + urlLink);
+				
 			Links linkDB = new Links();
 			linkDB.setMail_id(mm);
 			linkDB.setUrl(urlLink);
