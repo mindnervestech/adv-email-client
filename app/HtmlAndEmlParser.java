@@ -93,8 +93,10 @@ public class HtmlAndEmlParser {
      				pathForImage = pathForImage + File.separator  + "-" + i++ + ".jpg";
      	        	
      				BufferedImage image = null;
-     				UrlValidator urlValidator = new UrlValidator();
      				System.out.println("Looking for URL " + link.attr("src"));
+ 					
+     				UrlValidator urlValidator = new UrlValidator();
+     				System.out.println("Looking for URL validation " + link.attr("src"));
  					if(urlValidator.isValid(link.attr("src"))){
  						URL imageUrl = new URL(link.attr("src"));
  	     				
