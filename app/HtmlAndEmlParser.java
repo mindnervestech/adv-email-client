@@ -75,8 +75,8 @@ public class HtmlAndEmlParser {
         	doc = Jsoup.parseBodyFragment(htmlText, "ISO-8859-1");
         	doc.outputSettings().escapeMode(EscapeMode.xhtml);
         	Elements linksHref = doc.select("a[href]");
-        	String pathForImage = urll.replace(".eml", "_images");
-        	File file6 = new File(pathForImage);
+        	String rootpathForImage = urll.replace(".eml", "_images");
+        	File file6 = new File(rootpathForImage);
 				if (!file6.exists()) {
 					file6.mkdir();
 					
@@ -89,7 +89,7 @@ public class HtmlAndEmlParser {
      			System.out.println("No of links got for mail  " + links.size());
 					
      			for (Element link : links) {
-     				pathForImage = pathForImage + File.separator  + "-" + i++ + ".jpg";
+     				String pathForImage = rootpathForImage + File.separator  + "_" + i++ + ".jpg";
      				BufferedImage image = null;
      				System.out.println("Looking for URL " + link.attr("src"));
      				//UrlValidator urlValidator = new UrlValidator();
