@@ -89,26 +89,25 @@ public class HtmlAndEmlParser {
      			System.out.println("No of links got for mail  " + links.size());
 					
      			for (Element link : links) {
-     				
      				pathForImage = pathForImage + File.separator  + "-" + i++ + ".jpg";
-     	        	
      				BufferedImage image = null;
      				System.out.println("Looking for URL " + link.attr("src"));
- 					
-     				UrlValidator urlValidator = new UrlValidator();
-     				System.out.println("Looking for URL validation " + link.attr("src"));
- 					if(urlValidator.isValid(link.attr("src"))){
- 						URL imageUrl = new URL(link.attr("src"));
- 	     				
- 						System.out.println("Saving image to FS from " + imageUrl.toString());
- 						
+     				//UrlValidator urlValidator = new UrlValidator();
+     				//System.out.println("Looking for URL validation " + link.attr("src"));
+ 					//if(urlValidator.isValid(link.attr("src"))){
+ 					try {
+     					URL imageUrl = new URL(link.attr("src"));
+ 						//System.out.println("Saving image to FS from " + imageUrl.toString());
  	    				image = ImageIO.read(imageUrl);
  	    				int h = image.getHeight();
  	    				int w = image.getWidth();
  	    				if(h > 100 && w > 100) {
  						  ImageIO.write(image, "jpg",new File(pathForImage));
  	    				}
- 					}
+ 					} catch (Exception e) {
+ 		 		 		System.out.println(e.getMessage());
+ 		 	    	}
+ 					//}
  				}		
  	    	} catch (Exception e) {
  		 		e.printStackTrace();
@@ -179,12 +178,11 @@ public class HtmlAndEmlParser {
 			
 	}
 
-    public static void saveLinksInDb(MailObjectModel mm,Element link, List<indexing.Links> nestedHtml)  {
+    public static void saveLinksInDb(MailObjectModel mm, Element link, List<indexing.Links> nestedHtml)  {
 		String urlLink = link.attr("href").replaceAll(" ", "");
-		UrlValidator urlValidator = new UrlValidator();
-		if(urlValidator.isValid(urlLink)) {
+		//UrlValidator urlValidator = new UrlValidator();
+		//if(urlValidator.isValid(urlLink)) {
 			System.out.println("Saving link in mail  " + urlLink);
-				
 			Links linkDB = new Links();
 			linkDB.setMail_id(mm);
 			linkDB.setUrl(urlLink);
@@ -196,10 +194,10 @@ public class HtmlAndEmlParser {
 				linkDB.setHtmlcontent(text);
 				linkDB.save();
 				nestedHtml.add(new indexing.Links(linkDB.id, text));
-			} catch (IOException e) {
+			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
-		}
+		//}
 			
 	}
    
