@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+<title>page thumbnails using iframes and CSS3</title>
+<meta charset="utf-8">
+<style>
+ .thumbnail {
+	float: left;
+	width: 100%;
+}
+
+ .thumbnail iframe {
+	width: 800px;
+	height: 420px;
+ 
+	-webkit-transform-origin: 0 0;
+	-moz-transform-origin: 0 0;
+	transform-origin: 0 0;
+ 
+	-webkit-transform:  scale(0.3, 0.3);
+	-moz-transform:  scale(0.3, 0.3);
+	transform:  scale(0.3, 0.3);
+ 
+	overflow: hidden;
+} 
+/*  
+.thumbnail.overlay {
+	position: relative;
+}
+ 
+.thumbnail.overlay iframe {
+	position: relative;
+	z-index: 1;
+}
+ 
+ .thumbnail.overlay a {
+	display: block;
+	position: absolute;
+	z-index: 2;
+ 
+	top: 0;
+	left: 0;
+ 
+	width: 100%;
+	height: 100%;
+ 
+	color: #fff;
+	background-color: #fff;
+	opacity: 0;
+} 
+  */
+</style>
+</head>
+<body>
+    <div class="thumbnail">
+    <h6 class="modal-header">Show Images</h6>
+    	<div style="float: left; width: 100%;">
+	        <div data-ng-repeat="vm in s1"  style="width: 40%; float: left; margin-left: 5%; height: 155px;"> 
+		   		<iframe ng-src="{{trustSrc(vm.url)}}" ></iframe>
+		    </div>
+	    </div>
+	   
+	</div>
+	
+</body>
+</html>

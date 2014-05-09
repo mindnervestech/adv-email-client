@@ -22,6 +22,7 @@ import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import models.Links;
 import models.MailObjectModel;
 import models.SaveSearchSet;
 
@@ -46,6 +47,7 @@ import play.data.Form;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
+import vm.UrlMapVM;
 
 import com.avaje.ebean.annotation.Transactional;
 import com.github.cleverage.elasticsearch.IndexResults;
@@ -362,4 +364,14 @@ public class Application  extends Controller {
 	 return ok("no image set");
 	}
 	
+	@Transactional
+	public static Result getlinkImageByID(long id) {
+		List<Links>links = Links.find.where().eq("mail_id.id",id).findList();
+		List<UrlMapVM> urlMap = new ArrayList<UrlMapVM>();
+		for(Links link : links){
+			UrlMapVM vm = new UrlMapVM(link.getUrl());
+			urlMap.add(vm);
+	    }
+		return ok(Json.toJson(urlMap));
+	}
 }

@@ -7,7 +7,7 @@ emailclient.controller('ApplicationController',function($scope){
 
 });
 
-emailclient.controller('SearchController',function($scope, $http, $modal, usSpinnerService){
+emailclient.controller('SearchController',function($scope, $http, $modal,$sce, usSpinnerService){
 	
 	/*  Below Section for modal  */
 	  var modalInstance;
@@ -17,7 +17,7 @@ emailclient.controller('SearchController',function($scope, $http, $modal, usSpin
 		      scope : $scope
 		    });
 	  };
-		  
+	  $scope.s1 = null;
 	  $scope.ok = function () {
 		  usSpinnerService.spin('loading...');
 		  $http.get('/saveEmailSearchSet',{params:$scope.searchForm})
@@ -46,6 +46,26 @@ emailclient.controller('SearchController',function($scope, $http, $modal, usSpin
 		      scope : $scope
 		    });
 	  };
+	  $scope.trustSrc = function (url) {
+		  return $sce.trustAsResourceUrl(url);
+	  }
+	  $scope.getlinkImageByID1=function (popUpId) {
+		  $scope.searchForm.popUpId = popUpId;
+		  usSpinnerService.spin('loading...');
+		  $http.get('/get-link-image-by-id/'+popUpId, {params:$scope.searchForm})
+			.success(function(data, status, headers, config){
+				$scope.s1= data;
+				
+				$('.modal-bodyPopUp').append(data.htmlToShowMailPopUp);
+				usSpinnerService.stop('loading...');
+			});
+		  modalInstance = $modal.open({
+		      templateUrl: '/assets/app/views/iframe.html',
+		      scope : $scope
+		    });
+	  };
+	  
+	  
     /*  Above Section for email popup modal  */ 
 	
 	  /*  below Section for email images modal  */ 
