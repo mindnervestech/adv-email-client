@@ -223,9 +223,9 @@ public class EmailWriteFile {
 	
 	public static class MailConnection {
 		static MailConnection connection;
-		    String host = "pop.gmail.com";
-		    String user = "admin@lab104.net";
-		    String password = "dipesh104";
+		private static String host = "pop.gmail.com";
+		private static String user = "admin@lab104.net";
+		private static String password = "dipesh104";
 
 		Store store;
 		private MailConnection() {
