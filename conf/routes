@@ -9,6 +9,7 @@ GET     /filterSearch              controllers.Application.searchForEmails()
 
 GET		/searchForEmails				 controllers.Application.searchForEmails()
 GET		/get-cover-image-by-id/:id		 controllers.Application.getCoverImageByID(id :Long)
+GET		/get-link-image-by-id/:id		 	controllers.Application.getlinkImageByID(id :Long)
 GET     /showPopUpModal                  controllers.Application.showPopUpModal()
 GET     /showPopUpImages                 controllers.Application.showPopUpImages()
 GET     /showPopUpLinks                  controllers.Application.showPopUpLinks()
