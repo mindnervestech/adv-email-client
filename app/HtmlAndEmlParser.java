@@ -27,10 +27,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Entities.EscapeMode;
 import org.jsoup.select.Elements;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
-
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 public class HtmlAndEmlParser {
  
@@ -199,6 +195,24 @@ public class HtmlAndEmlParser {
 		//}
 			
 	}
+    
+    /*public static void main(String[] args) {
+    	Document doc;
+		try {
+			//HtmlUnitDriver driver = new HtmlUnitDriver(true);
+			final WebClient webClient = new WebClient();
+			final HtmlPage startPage = webClient.getPage("http://en.wikipedia.org/wiki/Screen_Award_for_Best_Film");
+			
+			 
+			//driver.get("http://sm.labx.com:80/track?type=click&enid=ZWFzPTEmbWFpbGluZ2lkPTEzNTYxNiZtZXNzYWdlaWQ9OTM1MDAmZGF0YWJhc2VpZD0xMDAwJnNlcmlhbD0xNjc4OTQxNSZlbWFpbGlkPWFkbWluQGxhYjEwNC5uZXQmdXNlcmlkPTFfMTA4OTUmdGFyZ2V0aWQ9JmZsPSZleHRyYT1NdWx0aXZhcmlhdGVJZD0mJiY=&&&2058&&&http://www.labx.com/v2/adsearch/detail3.cfm?adnumb=510254");
+			
+			//doc = Jsoup.connect("").userAgent("Mozilla").get();
+			//String text = doc.toString();
+			System.out.println(startPage.asText());
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}*/
    
 
 }
