@@ -4,12 +4,9 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Properties;
 
@@ -19,19 +16,21 @@ import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-
 import models.ImageInfo;
 import models.Links;
 import models.MailObjectModel;
 
 import org.apache.commons.validator.UrlValidator;
 import org.apache.http.util.ByteArrayBuffer;
-import org.elasticsearch.common.collect.Lists;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Entities.EscapeMode;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 public class HtmlAndEmlParser {
  
@@ -86,12 +85,12 @@ public class HtmlAndEmlParser {
      			links = new Elements();
      			links =	doc.select("img[src]");
      			int i = 0;
-     			System.out.println("No of links got for mail  " + links.size());
+     			//System.out.println("No of links got for mail  " + links.size());
 					
      			for (Element link : links) {
      				String pathForImage = rootpathForImage + File.separator  + "_" + i++ + ".jpg";
      				BufferedImage image = null;
-     				System.out.println("Looking for URL " + link.attr("src"));
+     				//System.out.println("Looking for URL " + link.attr("src"));
      				//UrlValidator urlValidator = new UrlValidator();
      				//System.out.println("Looking for URL validation " + link.attr("src"));
  					//if(urlValidator.isValid(link.attr("src"))){
@@ -182,7 +181,7 @@ public class HtmlAndEmlParser {
 		String urlLink = link.attr("href").replaceAll(" ", "");
 		//UrlValidator urlValidator = new UrlValidator();
 		//if(urlValidator.isValid(urlLink)) {
-			System.out.println("Saving link in mail  " + urlLink);
+			//System.out.println("Saving link in mail  " + urlLink);
 			Links linkDB = new Links();
 			linkDB.setMail_id(mm);
 			linkDB.setUrl(urlLink);

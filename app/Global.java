@@ -81,8 +81,8 @@ public class Global extends GlobalSettings {
 								try {
 									HtmlImageGenerator imageGenerator1 = new HtmlImageGenerator();
 									imageGenerator1.loadUrl(link.getUrl());
-									imageGenerator1.saveAsImage(file +File.separator+ imageName);
-									link.setPath(file + imageName);
+									imageGenerator1.saveAsImage(file + File.separator + imageName);
+									link.setPath(file + File.separator + imageName);
 									link.update();
 								} catch (Exception e) {
 									System.out.println("while parsing links in global " + e.getMessage());
