@@ -180,9 +180,7 @@ public class Application  extends Controller {
 				 for(Text _t : e.searchHit.getHighlightFields().get("description").fragments()){
 					 extract += _t.string() + "\n";
 				 }
-				 for(Text _t : e.searchHit.getHighlightFields().get("nestedHtml").fragments()){
-					 extract += _t.string() + "\n";
-				 }
+				 
 			 }
 			 
 			 if(e.searchHit.getHighlightFields() != null && e.searchHit.getHighlightFields().get("nestedHtml.description") != null) {
@@ -352,7 +350,7 @@ public class Application  extends Controller {
 	@Transactional
 	public static Result getCoverImageByID(long id) {
 	MailObjectModel mailObjectModel = MailObjectModel.findMailObjectModelById(id);
-	if(mailObjectModel.mailPath != null)
+	if(mailObjectModel != null && mailObjectModel.mailPath != null)
 	{
 		String filePath= mailObjectModel.mailPath.replace(".eml", ".png");
 		try {
