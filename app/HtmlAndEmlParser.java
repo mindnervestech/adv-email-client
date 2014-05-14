@@ -28,6 +28,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Entities.EscapeMode;
 import org.jsoup.select.Elements;
 
+import com.google.common.base.Strings;
+
 public class HtmlAndEmlParser {
  
     public static void emlParse() throws Exception  {
@@ -181,11 +183,15 @@ public class HtmlAndEmlParser {
 			Links linkDB = new Links();
 			linkDB.setMail_id(mm);
 			linkDB.setUrl(urlLink);
-			linkDB.setStatus(true);
+			linkDB.setStatus(1);
 			Document doc;
 			try {
 				doc = Jsoup.connect(urlLink).get();
 				String text = doc.body().text();
+				if(Strings.isNullOrEmpty(text))
+				{
+					linkDB.setStatus(2);
+				}
 				linkDB.setHtmlcontent(text);
 				linkDB.save();
 				nestedHtml.add(new indexing.Links(linkDB.id, text));
