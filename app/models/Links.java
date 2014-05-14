@@ -20,7 +20,7 @@ public class Links extends Model {
 	@ManyToOne(cascade=CascadeType.ALL)
 	public MailObjectModel mail_id;
 	
-	public boolean status=false;
+	public int status=0;
 	
 	@Lob
 	public String htmlcontent;
@@ -54,11 +54,11 @@ public class Links extends Model {
 		this.mail_id = mail_id;
 	}
 
-	public boolean isStatus() {
+	public int isStatus() {
 		return status;
 	}
 
-	public void setStatus(boolean status) {
+	public void setStatus(int status) {
 		this.status = status;
 	}
 
