@@ -13,6 +13,7 @@ GET		/get-link-image-by-id/:id		 	controllers.Application.getlinkImageByID(id :L
 GET     /showPopUpModal                  controllers.Application.showPopUpModal()
 GET     /showPopUpImages                 controllers.Application.showPopUpImages()
 GET     /showPopUpLinks                  controllers.Application.showPopUpLinks()
+GET     /downloademl/:id                  controllers.Application.download(id :Long)
 
 # Table Data
 GET     /showTables/:id                     controllers.ShowTab.showTables(id :Long)

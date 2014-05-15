@@ -63,6 +63,20 @@ public class Application  extends Controller {
 		return ok(views.html.home.render());
 	}
 	
+	public static Result download(Long id) {
+		MailObjectModel mailObjectModel = MailObjectModel.findMailObjectModelById(id);
+		if(mailObjectModel != null && mailObjectModel.mailPath != null)
+		{
+			String filePath= mailObjectModel.mailPath;
+			try {
+			return ok(new File(filePath));
+			} catch(Exception e) {
+				
+			}
+		}
+		 return ok("no image set");
+	}
+	
 	public static Result searchForEmails() {
 		Form<SearchFilter> searchFilter = DynamicForm.form(SearchFilter.class).bindFromRequest();
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("\"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'\"");
