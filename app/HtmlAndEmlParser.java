@@ -88,13 +88,14 @@ public class HtmlAndEmlParser {
 			// System.out.println(doc.toString());
 			htmlText = doc.toString();
         	
-			final String  html=adjustHtml(htmlText.toString());
+			final String  html=/*adjustHtml(*/htmlText.toString()/*)*/;
     		ActorSystem  actorSystem = Akka.system();
    		    actorSystem.scheduler().scheduleOnce(Duration.create(0, TimeUnit.MILLISECONDS), 
    				 new Runnable() {
 
 						@Override
 						public void run() {
+							System.out.println("Saving Mail Image now");
 							HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
 							imageGenerator.loadHtml(html);
 				    		imageGenerator.saveAsImage(urll.replace(".eml",".png"));
@@ -113,7 +114,7 @@ public class HtmlAndEmlParser {
      			links = new Elements();
      			links =	doc.select("img[src]");
      			int i = 0;
-					
+     			System.out.println("Saving Images now");	
      			for (Element link : links) {
      				String pathForImage = rootpathForImage + File.separator  + "_" + i++ + ".jpg";
      				BufferedImage image = null;
@@ -152,7 +153,7 @@ public class HtmlAndEmlParser {
 			email.sendersEmail = mm.sendersEmail;
 			
 			Elements linksHref = doc.select("a[href]");
-        	
+			System.out.println("Saving Links now");
 			for (Element link : linksHref) {
 				saveLinksInDb(mm, link , email.nestedHtml);
 			}
