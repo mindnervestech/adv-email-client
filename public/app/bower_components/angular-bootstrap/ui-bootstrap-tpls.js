@@ -1935,8 +1935,8 @@ angular.module('ui.bootstrap.pagination', [])
 
 .constant('pagerConfig', {
   itemsPerPage: 10,
-  previousText: 'Â« Previous',
-  nextText: 'Next Â»',
+  previousText: '« Previous',
+  nextText: 'Next »',
   align: true
 })
 

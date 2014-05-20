@@ -1,8 +1,7 @@
 <!doctype html>
-<html>
+<html ng-app>
 <head>
-<title>page thumbnails using iframes and CSS3</title>
-<meta charset="utf-8">
+
 <style>
  .thumbnail {
 	float: left;
@@ -10,57 +9,50 @@
 }
 
  .thumbnail iframe {
-	width: 800px;
-	height: 420px;
+	width: 510px;
+
  
 	-webkit-transform-origin: 0 0;
 	-moz-transform-origin: 0 0;
 	transform-origin: 0 0;
  
-	-webkit-transform:  scale(0.3, 0.3);
+	-webkit-transform:  scale(0.3, 0.6);
 	-moz-transform:  scale(0.3, 0.3);
 	transform:  scale(0.3, 0.3);
  
 	overflow: hidden;
 } 
-/*  
-.thumbnail.overlay {
-	position: relative;
+
+
+.modal-footer {
+	border-top: 0px solid #e5e5e5;
 }
- 
-.thumbnail.overlay iframe {
-	position: relative;
-	z-index: 1;
-}
- 
- .thumbnail.overlay a {
-	display: block;
-	position: absolute;
-	z-index: 2;
- 
-	top: 0;
-	left: 0;
- 
-	width: 100%;
-	height: 100%;
- 
-	color: #fff;
-	background-color: #fff;
-	opacity: 0;
-} 
-  */
+
 </style>
 </head>
-<body>
-    <div class="thumbnail">
-    <h6 class="modal-header">Show Images</h6>
-    	<div style="float: left; width: 100%;">
-	        <div data-ng-repeat="vm in s1"  style="width: 40%; float: left; margin-left: 5%; height: 155px;"> 
-		   		<iframe ng-src="{{trustSrc(vm.url)}}" ></iframe>
-		    </div>
-	    </div>
-	   
-	</div>
+
+ <body>
 	
-</body>
+	<div class="thumbnail modal-dialog" style="min-height: 375px;">
+		<div style="width: 100%;margin-bottom: 2%;">
+		<button type="button" class="close" ng-click="cancel()">&times;</button>
+			<button class="btn btn-primary" ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
+        		Previous
+   		 	</button>
+   				<label> {{currentPage+1}}/{{numberOfPages()}}</label>
+   			 <button class="btn btn-primary" ng-disabled="currentPage >= s1.length/pageSize - 1" ng-click="currentPage=currentPage+1">
+       			 Next
+    		</button>
+    	</div>
+    		<div style="float: left;">
+	        	 <div  ng-repeat="vm in s1 | startFrom:currentPage*pageSize | limitTo:pageSize" style="float: left;margin-left: 1%;margin-right: 1%;width: 30%;">
+	            		<iframe ng-src="{{trustSrc(vm.url)}}" ></iframe>
+			   				 <a ng-href="{{trustSrc(vm.url)}}" target="_blank" style="margin-left: 30%;float: left;margin-top: -34%;">open to</a> 
+	        	</div>
+        	</div>
+        	<div class="modal-footer">
+      <button type="button" class="btn btn-default" ng-click="cancel()">Close</button>
+    </div>
+   </div> 
+</body> 
 </html>

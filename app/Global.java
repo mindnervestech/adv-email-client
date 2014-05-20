@@ -11,6 +11,11 @@ import javax.validation.ConstraintValidatorContext;
 
 import org.apache.commons.validator.UrlValidator;
 import org.hibernate.validator.internal.constraintvalidators.URLValidator;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Entities.EscapeMode;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 import models.Links;
 import play.Application;
@@ -21,7 +26,7 @@ import scala.concurrent.duration.Duration;
 import akka.actor.ActorSystem;
 
 public class Global extends GlobalSettings {
-	
+	public static final int CHAR_LEN=200;
 	public static final String  APP_ENV_LOCAL = "local";
 	public static final String  APP_ENV_VAR = "CURRENT_APPNAME";
 	@Override
@@ -44,7 +49,7 @@ public class Global extends GlobalSettings {
 		 ActorSystem  actorSystem1 = Akka.system();
 		 actorSystem1.scheduler().schedule(
 				Duration.create(0, TimeUnit.MILLISECONDS),
-				Duration.create(1, TimeUnit.MINUTES),
+				Duration.create(10, TimeUnit.MINUTES),
 				new Runnable() {
 					public void run() {
 							try {
@@ -56,7 +61,7 @@ public class Global extends GlobalSettings {
 					}, actorSystem1.dispatcher()
 				);
 		 
-		 ActorSystem actorSystemJob = Akka.system();
+		/* ActorSystem actorSystemJob = Akka.system();
 			actorSystemJob.scheduler().schedule(
 					Duration.create(0, TimeUnit.MILLISECONDS),
 					Duration.create(1, TimeUnit.MINUTES), new Runnable() {
@@ -78,9 +83,25 @@ public class Global extends GlobalSettings {
 								String imageName = link.id + ".png";
 								//UrlValidator urlValidator = new UrlValidator();
 								//if(urlValidator.isValid(link.getUrl())){
+								Document doc;
 								try {
+									WebDriver driver = new HtmlUnitDriver();
+							        driver.get(link.getUrl());
+							        String htmlText=driver.getPageSource();
+							        doc =  Jsoup.parse(htmlText, "ISO-8859-1");
+									doc.select("style").remove();
+									doc.select("meta").remove();
+									doc.select("script").remove();
+									doc.select("link").remove();
+									// System.out.println(doc.toString());
+									htmlText = doc.toString();
+						        	//htmlText = htmlText.substring(0, htmlText.length() > 16000 ? 16000 : htmlText.length()-1);
+						        	doc = Jsoup.parseBodyFragment(htmlText, "ISO-8859-1");
+						        	doc.outputSettings().escapeMode(EscapeMode.xhtml);
 									HtmlImageGenerator imageGenerator1 = new HtmlImageGenerator();
+									String html=adjustHtml(doc.toString());
 									imageGenerator1.loadUrl(link.getUrl());
+									imageGenerator1.loadHtml(html);
 									imageGenerator1.saveAsImage(file + File.separator + imageName);
 									link.setPath(file + File.separator + imageName);
 									link.update();
@@ -92,7 +113,58 @@ public class Global extends GlobalSettings {
 									
 							}
 						}
-					}, actorSystemJob.dispatcher());
+					}, actorSystemJob.dispatcher());*/
+	}
+	private static String adjustHtml(String original)
+	{
+		String find="<br/>";
+		 int pIndex=original.indexOf("<p");
+		 while(pIndex!=-1)
+		 {
+			 int lastPIndex=original.indexOf("</p>",pIndex+"<p>".length());
+			 int lastIndex = 0;
+			 int firstIndex=pIndex;
+			 while (firstIndex != -1 && firstIndex<lastPIndex) 
+			 {
+		    	firstIndex = original.indexOf(find, firstIndex);
+		    	if (firstIndex != -1) {
+		    		firstIndex += find.length();
+		    		lastIndex=original.indexOf(find, firstIndex);
+			    	if(lastIndex!=-1&&lastIndex<lastPIndex)
+			    	{
+			    		if(firstIndex+CHAR_LEN<lastIndex)
+			    		{
+			    			original=original.substring(0, firstIndex+CHAR_LEN)+find+original.substring(firstIndex+CHAR_LEN);
+			    		}
+			    	}
+			    	else if(firstIndex+CHAR_LEN<lastPIndex)
+			    	{
+			    		while(firstIndex+CHAR_LEN<lastPIndex)
+			    		{
+			    			if(firstIndex+CHAR_LEN<original.length())
+			    			{
+			    				original=original.substring(0, firstIndex+CHAR_LEN)+find+original.substring(firstIndex+CHAR_LEN);
+			    				firstIndex=firstIndex+CHAR_LEN+find.length();
+			    			}
+			    		}
+			    	}
+		    	}
+		    	else if(firstIndex+CHAR_LEN<lastPIndex)
+		    	{
+		    		while(firstIndex+CHAR_LEN<lastPIndex)
+		    		{
+		    			if(firstIndex+CHAR_LEN<original.length())
+		    			{
+		    				original=original.substring(0, firstIndex+CHAR_LEN)+find+original.substring(firstIndex+CHAR_LEN);
+		    				firstIndex=firstIndex+CHAR_LEN+find.length();
+		    			}
+		    		}
+		    	}
+		    		
+		    }
+			 pIndex=original.indexOf("<p",pIndex+"<p>".length());
+		 }
+		return original;
 	}
 	@Override
 	  public void onStop(Application app) {

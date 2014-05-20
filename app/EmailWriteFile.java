@@ -64,7 +64,6 @@ public class EmailWriteFile {
             createRootDir();
             String domain = createDomainDir(message, i);
             String dateStr=message[i].getSentDate().toString();
-        	String contentType=message[i].getContentType().substring(0,message[i].getContentType().indexOf('/'));
         	Date dt = sdf.parse(dateStr);
         	Calendar calendar = Calendar.getInstance();
         	calendar.setTime(dt);
@@ -74,53 +73,23 @@ public class EmailWriteFile {
             createDayDir(domain, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
             createimgDir(domain, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE),fileName,i);
             
-            Document doc;
-            String htmlText = "";
-        	MimeMultipart obj = null;
         	String path = rootDir + File.separator + domain + File.separator + calendar.get(Calendar.YEAR) + File.separator + calendar.get(Calendar.MONTH) + File.separator + calendar.get(Calendar.DATE) + File.separator + fileName+"-"+i+".eml";
-        	
-        	try {
-	        	if("multipart".equals(contentType)) {
-	    				obj = (MimeMultipart)message[i].getContent();
-	    				OutputStream out = new FileOutputStream(path);
-	    				message[i].writeTo(out);
-	    				out.close();
-	    				if(obj.getCount() == 0) {
-	    					htmlText = obj.getBodyPart(0).getContent().toString();
-	    				} else {
-	    					htmlText = obj.getBodyPart(obj.getCount() -1 ).getContent().toString();
-	    				}
-	        			
-	    		} else {
-	    			htmlText= message[i].getContent().toString();
-	    		}
-        	} catch (IOException e) {
-				e.printStackTrace();
-				doc = null;
-			}
-        	
-        	
-        	htmlText = htmlText.substring(0, htmlText.length() > 5000 ? 5000 : htmlText.length()-1);
-        	doc = Jsoup.parseBodyFragment(htmlText, "ISO-8859-1");
-        	doc.outputSettings().escapeMode(EscapeMode.xhtml);
     		mm.receivedDate = message[i].getReceivedDate();
             mm.sentDate = message[i].getSentDate();
             mm.mailPath = path;
             mm.domain = domain;
     		mm.save();
     		
-    		final String imgPath=mm.mailPath;
-    		final Document doc1 = doc;
     	
-    		 ActorSystem  actorSystem = Akka.system();
+    		 /*ActorSystem  actorSystem = Akka.system();
     		 actorSystem.scheduler().scheduleOnce(Duration.create(0, TimeUnit.MILLISECONDS), 
     				 new Runnable() {
 
 						@Override
 						public void run() {
-							/*Html2Image.fromHtml(doc1.toString()).getImageRenderer()
+							Html2Image.fromHtml(doc1.toString()).getImageRenderer()
 				    		.setWidth(200).setAutoHeight(true).setWriteCompressionQuality(0.7f)
-				    		.saveImage(imgPath.replace(".eml",".png"));*/
+				    		.saveImage(imgPath.replace(".eml",".png"));
 							HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
 				    		imageGenerator.loadHtml(doc1.toString());
 				    		imageGenerator.saveAsImage(imgPath.replace(".eml",".png"));
@@ -128,7 +97,7 @@ public class EmailWriteFile {
 				    		
 				    	}
     			 
-    		 }, actorSystem.dispatcher());
+    		 }, actorSystem.dispatcher());*/
     		 
     		
     		 
