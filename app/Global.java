@@ -31,6 +31,22 @@ public class Global extends GlobalSettings {
 	public static final String  APP_ENV_VAR = "CURRENT_APPNAME";
 	@Override
 	public void onStart(Application app) {
+		
+		ActorSystem  actorSystem1 = Akka.system();
+		 actorSystem1.scheduler().schedule(
+				Duration.create(0, TimeUnit.MILLISECONDS),
+				Duration.create(1, TimeUnit.MINUTES),
+				new Runnable() {
+					public void run() {
+							try {
+								HtmlAndEmlParser.emlParse();
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+					}
+					}, actorSystem1.dispatcher()
+				);
+		 
 		ActorSystem  actorSystem = Akka.system();
 		 actorSystem.scheduler().schedule(
 				Duration.create(0, TimeUnit.MILLISECONDS),
@@ -46,20 +62,7 @@ public class Global extends GlobalSettings {
 					}, actorSystem.dispatcher()
 				);
 		
-		 ActorSystem  actorSystem1 = Akka.system();
-		 actorSystem1.scheduler().schedule(
-				Duration.create(1000, TimeUnit.MILLISECONDS),
-				Duration.create(1, TimeUnit.MINUTES),
-				new Runnable() {
-					public void run() {
-							try {
-								HtmlAndEmlParser.emlParse();
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-					}
-					}, actorSystem1.dispatcher()
-				);
+		 
 		 
 		/* ActorSystem actorSystemJob = Akka.system();
 			actorSystemJob.scheduler().schedule(
