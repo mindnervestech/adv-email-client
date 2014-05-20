@@ -48,8 +48,8 @@ public class Global extends GlobalSettings {
 		
 		 ActorSystem  actorSystem1 = Akka.system();
 		 actorSystem1.scheduler().schedule(
-				Duration.create(0, TimeUnit.MILLISECONDS),
-				Duration.create(10, TimeUnit.MINUTES),
+				Duration.create(1000, TimeUnit.MILLISECONDS),
+				Duration.create(1, TimeUnit.MINUTES),
 				new Runnable() {
 					public void run() {
 							try {
