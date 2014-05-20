@@ -1,3 +1,4 @@
+import gui.ava.html.image.generator.HtmlImageGenerator;
 import indexing.Email;
 
 import java.awt.image.BufferedImage;
@@ -9,6 +10,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.mail.Message;
@@ -27,11 +29,17 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Entities.EscapeMode;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+
+import play.libs.Akka;
+import scala.concurrent.duration.Duration;
+import akka.actor.ActorSystem;
 
 import com.google.common.base.Strings;
 
 public class HtmlAndEmlParser {
- 
+	static final int CHAR_LEN=200;
     public static void emlParse() throws Exception  {
     	Document doc= null;
     	List <MailObjectModel> moList =MailObjectModel.find.where().eq("status", false).findList();
@@ -39,7 +47,7 @@ public class HtmlAndEmlParser {
 		for (MailObjectModel mm:moList)
 		{
 			Session session = Session.getDefaultInstance(new Properties());
-			String urll=mm.mailPath;
+			final String  urll=mm.mailPath;
 			
 			System.out.println("Processing mail from FS" + urll);
 			
@@ -71,8 +79,28 @@ public class HtmlAndEmlParser {
 			}
         	doc = Jsoup.parseBodyFragment(htmlText, "ISO-8859-1");
         	doc.outputSettings().escapeMode(EscapeMode.xhtml);
-        	Elements linksHref = doc.select("a[href]");
-        	String rootpathForImage = urll.replace(".eml", "_images");
+        	doc.select("style").remove();
+			doc.select("meta").remove();
+			doc.select("script").remove();
+			doc.select("link").remove();
+			// System.out.println(doc.toString());
+			htmlText = doc.toString();
+        	
+			final String  html=adjustHtml(htmlText.toString());
+    		ActorSystem  actorSystem = Akka.system();
+   		    actorSystem.scheduler().scheduleOnce(Duration.create(0, TimeUnit.MILLISECONDS), 
+   				 new Runnable() {
+
+						@Override
+						public void run() {
+							HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
+							imageGenerator.loadHtml(html);
+				    		imageGenerator.saveAsImage(urll.replace(".eml",".png"));
+				    	}
+   			 
+   		     }, actorSystem.dispatcher());
+   		    
+    		String rootpathForImage = urll.replace(".eml", "_images");
         	File file6 = new File(rootpathForImage);
 				if (!file6.exists()) {
 					file6.mkdir();
@@ -83,15 +111,10 @@ public class HtmlAndEmlParser {
      			links = new Elements();
      			links =	doc.select("img[src]");
      			int i = 0;
-     			//System.out.println("No of links got for mail  " + links.size());
 					
      			for (Element link : links) {
      				String pathForImage = rootpathForImage + File.separator  + "_" + i++ + ".jpg";
      				BufferedImage image = null;
-     				//System.out.println("Looking for URL " + link.attr("src"));
-     				//UrlValidator urlValidator = new UrlValidator();
-     				//System.out.println("Looking for URL validation " + link.attr("src"));
- 					//if(urlValidator.isValid(link.attr("src"))){
  					try {
      					URL imageUrl = new URL(link.attr("src"));
  						//System.out.println("Saving image to FS from " + imageUrl.toString());
@@ -104,18 +127,17 @@ public class HtmlAndEmlParser {
  					} catch (Exception e) {
  		 		 		System.out.println(e.getMessage());
  		 	    	}
- 					//}
  				}		
  	    	} catch (Exception e) {
  		 		e.printStackTrace();
  	    	}
 			
-			models.Content content= new models.Content();
-			content.setDescription(doc.text());
-			content.save();
+//			models.Content content= new models.Content();
+//			content.setDescription(doc.text());
+//			content.save();
 			
 			mm.setStatus(true);
-			mm.setContent(content);
+			//mm.setContent(content);
 			mm.update();
 			
 			// THIS IS FOR ELASTIC SEARCH....
@@ -127,6 +149,8 @@ public class HtmlAndEmlParser {
 			email.mail_objectId = mm.id;
 			email.sendersEmail = mm.sendersEmail;
 			
+			Elements linksHref = doc.select("a[href]");
+        	
 			for (Element link : linksHref) {
 				saveLinksInDb(mm, link , email.nestedHtml);
 			}
@@ -138,48 +162,64 @@ public class HtmlAndEmlParser {
 			//}
 		}
     }
-
-    public static void saveImageInDb(MailObjectModel mm,Element link)  {
-		ByteArrayBuffer baf = new ByteArrayBuffer(1000);
-		String srcAttr=link.attr("src").replaceAll(" ", "");
-		String altAttr=link.attr("alt");
-		UrlValidator urlValidator = new UrlValidator();
-		if(!urlValidator.isValid(srcAttr)) {
-			return;
+    public static String adjustHtml(String original) {
+		try {
+    	String find="<br />";
+		int pIndex=original.indexOf("<p");
+		while(pIndex!=-1)
+		{
+			 int lastPIndex=original.indexOf("</p>",pIndex+"<p>".length());
+			 int lastIndex = 0;
+			 int firstIndex=pIndex;
+			 while (firstIndex != -1 && firstIndex<lastPIndex) 
+			 {
+		    	firstIndex = original.indexOf(find, firstIndex);
+		    	if (firstIndex != -1) {
+		    		firstIndex += find.length();
+		    		lastIndex=original.indexOf(find, firstIndex);
+			    	if(lastIndex!=-1&&lastIndex<lastPIndex)
+			    	{
+			    		if(firstIndex+CHAR_LEN<lastIndex)
+			    		{
+			    			original=original.substring(0, firstIndex+CHAR_LEN)+find+original.substring(firstIndex+CHAR_LEN);
+			    		}
+			    	}
+			    	else if(firstIndex+CHAR_LEN<lastPIndex)
+			    	{
+			    		while(firstIndex+CHAR_LEN<lastPIndex)
+			    		{
+			    			if(firstIndex+CHAR_LEN<original.length())
+			    			{
+			    				original=original.substring(0, firstIndex+CHAR_LEN)+find+original.substring(firstIndex+CHAR_LEN);
+			    				firstIndex=firstIndex+CHAR_LEN+find.length();
+			    			}
+			    		}
+			    	}
+		    	}
+		    	else if(firstIndex+CHAR_LEN<lastPIndex)
+		    	{
+		    		while(firstIndex+CHAR_LEN<lastPIndex)
+		    		{
+		    			if(firstIndex+CHAR_LEN<original.length())
+		    			{
+		    				original=original.substring(0, firstIndex+CHAR_LEN)+find+original.substring(firstIndex+CHAR_LEN);
+		    				firstIndex=firstIndex+CHAR_LEN+find.length();
+		    			}
+		    		}
+		    	}
+		    		
+		    }
+			 pIndex=original.indexOf("<p",pIndex+"<p>".length());
+		 }
+		return original;
+		} catch(Exception e) {
+			e.printStackTrace();
+			return original;
 		}
-		URLConnection ucon;
-		BufferedInputStream bis =null;
-	    try {
-			URL imageUrl = new URL(srcAttr);
-			ucon = imageUrl.openConnection();
-			InputStream is = ucon.getInputStream();
-			bis = new BufferedInputStream(is);
-			int current = 0;
-			while ((current = bis.read()) != -1) {
-			    baf.append((byte) current);
-			}
-			ImageInfo img = new ImageInfo();
-			img.image_byte = baf.toByteArray();
-			img.mailObjectModel=mm;
-			img.url=srcAttr;
-			img.alt=altAttr;
-			img.save();
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		} finally{
-			try {
-				bis.close();
-			} catch (Exception e) {
-			}
-		}
-			
 	}
-
+   
     public static void saveLinksInDb(MailObjectModel mm, Element link, List<indexing.Links> nestedHtml)  {
 		String urlLink = link.attr("href").replaceAll(" ", "");
-		//UrlValidator urlValidator = new UrlValidator();
-		//if(urlValidator.isValid(urlLink)) {
-			//System.out.println("Saving link in mail  " + urlLink);
 			Links linkDB = new Links();
 			linkDB.setMail_id(mm);
 			linkDB.setUrl(urlLink);
@@ -190,15 +230,22 @@ public class HtmlAndEmlParser {
 				String text = doc.body().text();
 				if(Strings.isNullOrEmpty(text))
 				{
+					//linkDB.setStatus(2);
+					WebDriver driver = new HtmlUnitDriver();
+			        driver.get(urlLink);
+			        doc = Jsoup.parse(driver.getPageSource());
+					text = doc.body().text();
+				}
+				if(Strings.isNullOrEmpty(text))
+				{
+					linkDB.setHtmlcontent("UNPROCESSED");
 					linkDB.setStatus(2);
 				}
-				linkDB.setHtmlcontent(text);
 				linkDB.save();
 				nestedHtml.add(new indexing.Links(linkDB.id, text));
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
-		//}
 			
 	}
     

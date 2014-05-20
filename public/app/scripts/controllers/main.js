@@ -7,6 +7,14 @@ emailclient.controller('ApplicationController',function($scope){
 
 });
 
+
+emailclient.filter('startFrom', function() {
+    return function(input, start) {
+        start = +start; 
+        return input.slice(start);
+    }
+});
+
 emailclient.controller('SearchController',function($scope, $http, $modal,$sce, usSpinnerService){
 	
 	/*  Below Section for modal  */
@@ -49,13 +57,21 @@ emailclient.controller('SearchController',function($scope, $http, $modal,$sce, u
 	  $scope.trustSrc = function (url) {
 		  return $sce.trustAsResourceUrl(url);
 	  }
+	  
+	  $scope.currentPage = 0;
+	    $scope.pageSize = 6;
+	    $scope.data = [];
+	    $scope.s1 = [];
+	    for (var i=0; i<45; i++) {
+	        $scope.data.push("Item11 "+i);
+	    }
+		
 	  $scope.getlinkImageByID1=function (popUpId) {
 		  $scope.searchForm.popUpId = popUpId;
 		  usSpinnerService.spin('loading...');
 		  $http.get('/get-link-image-by-id/'+popUpId, {params:$scope.searchForm})
 			.success(function(data, status, headers, config){
 				$scope.s1= data;
-				
 				$('.modal-bodyPopUp').append(data.htmlToShowMailPopUp);
 				usSpinnerService.stop('loading...');
 			});
@@ -64,6 +80,12 @@ emailclient.controller('SearchController',function($scope, $http, $modal,$sce, u
 		      scope : $scope
 		    });
 	  };
+	  
+	  $scope.numberOfPages=function(){
+	        return Math.ceil($scope.s1.length/$scope.pageSize);                
+	    }
+
+	
 	  
 	  
     /*  Above Section for email popup modal  */ 
@@ -161,6 +183,7 @@ emailclient.controller('SearchController',function($scope, $http, $modal,$sce, u
 			$scope.noOfRows = count;
 			$scope.searchForm.rowCount = count;
 		}
+		$scope.isVisible = true;
 		
 		search(function(data) {
 			
@@ -181,6 +204,7 @@ emailclient.controller('SearchController',function($scope, $http, $modal,$sce, u
 		$scope.searchForm.domainChecked = "";
 		$http.get('/searchForEmails', {params:$scope.searchForm})
 		.success(function(data, status, headers, config){
+			$("#test").click()
 			if(callback) {
 				callback(data);
 			}

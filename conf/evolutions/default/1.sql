@@ -22,7 +22,7 @@ create table links (
   id                        bigint auto_increment not null,
   url                       longtext,
   mail_id_id                bigint,
-  status                    tinyint(1) default 0,
+  status                    integer,
   htmlcontent               longtext,
   path                      varchar(255),
   constraint pk_links primary key (id))

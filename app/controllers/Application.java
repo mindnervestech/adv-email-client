@@ -4,6 +4,7 @@ package controllers;
 
 import indexing.Email;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import javax.imageio.ImageIO;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -25,6 +27,7 @@ import javax.mail.internet.MimeMultipart;
 import models.Links;
 import models.MailObjectModel;
 import models.SaveSearchSet;
+import net.coobird.thumbnailator.Thumbnails;
 
 import org.apache.lucene.queryparser.xml.builders.BooleanQueryBuilder;
 import org.elasticsearch.common.collect.Iterables;
@@ -58,7 +61,7 @@ import elastic.MntHighlightBuilder;
 import elastic.MntIndexQuery;
 
 public class Application  extends Controller {
-	
+	static int IMGWIDTH=270;
 	public static Result index() {
 		return ok(views.html.home.render());
 	}
@@ -363,16 +366,40 @@ public class Application  extends Controller {
 	}
 	@Transactional
 	public static Result getCoverImageByID(long id) {
-	MailObjectModel mailObjectModel = MailObjectModel.findMailObjectModelById(id);
-	if(mailObjectModel != null && mailObjectModel.mailPath != null)
-	{
-		String filePath= mailObjectModel.mailPath.replace(".eml", ".png");
-		try {
-		return ok(new File(filePath));
-		} catch(Exception e) {
-			
+		MailObjectModel mailObjectModel = MailObjectModel.findMailObjectModelById(id);
+		if(mailObjectModel != null && mailObjectModel.mailPath != null)
+		{
+			double factor;
+			String filePath= mailObjectModel.mailPath.replace(".eml", "_thumbnail.png");
+			File f=new File(filePath);
+			if(!f.exists())
+			{
+				try 
+				{
+					filePath=mailObjectModel.mailPath.replace(".eml", ".png");
+					BufferedImage originalImage = ImageIO.read(new File(filePath));
+					if(originalImage.getWidth()>IMGWIDTH)
+					{
+						factor=IMGWIDTH*1.0/originalImage.getWidth();
+						Thumbnails.of(originalImage)
+						.scale(factor).toFile(f);
+					}
+				} 
+				catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				try 
+				{
+					return ok(f);
+				} 
+				catch(Exception e) {	
+				}
+			}
+			else
+			{
+				return ok(f);
+			}
 		}
-	}
 	 return ok("no image set");
 	}
 	

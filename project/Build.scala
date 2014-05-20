@@ -16,6 +16,8 @@ object ApplicationBuild extends Build {
     "com.clever-age" % "play2-elasticsearch" % "0.7-SNAPSHOT",
     "oro" % "oro" % "2.0.8",
     "commons-validator" % "commons-validator" % "1.3.1",
+    "org.seleniumhq.selenium" % "selenium-htmlunit-driver" % "2.25.0",
+    "net.coobird" % "thumbnailator" % "0.4.7",
     javaCore,
     javaJdbc,
     javaEbean
