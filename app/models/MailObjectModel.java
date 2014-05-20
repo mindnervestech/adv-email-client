@@ -68,17 +68,10 @@ public class MailObjectModel extends Model{
 		return strList;
 	}
 	
-	public String getContents() {
-		if(content == null ) return "";
-		return content.getDescription().substring(0,content.getDescription().length() > 1000 ? 1000 : content.getDescription().length()) +" ...";
-	}
+	
 
-	public void setStatus(boolean status) {
-		this.status = status;
-	}
+	
 
-	public void setContent(Content content) {
-		this.content = content;
-	}
+	
 	
 }
