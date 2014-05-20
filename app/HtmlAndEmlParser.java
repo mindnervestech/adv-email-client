@@ -42,6 +42,8 @@ public class HtmlAndEmlParser {
 	static final int CHAR_LEN=200;
     public static void emlParse() throws Exception  {
     	Document doc= null;
+    	System.out.println("Reading from FS" );
+		
     	List <MailObjectModel> moList =MailObjectModel.find.where().eq("status", false).findList();
     	System.out.println("No of mails to be processed  from FS" + moList.size());
 		for (MailObjectModel mm:moList)
@@ -136,7 +138,7 @@ public class HtmlAndEmlParser {
 //			content.setDescription(doc.text());
 //			content.save();
 			
-			mm.setStatus(true);
+			mm.status = true;
 			//mm.setContent(content);
 			mm.update();
 			
