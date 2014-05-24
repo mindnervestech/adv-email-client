@@ -139,9 +139,7 @@ public class HtmlAndEmlParser {
 //			content.setDescription(doc.text());
 //			content.save();
 			
-			mm.status = true;
-			//mm.setContent(content);
-			mm.update();
+		
 			
 			// THIS IS FOR ELASTIC SEARCH....
 			Email email = new Email();
@@ -159,7 +157,9 @@ public class HtmlAndEmlParser {
 			}
 			
 			email.index();
-			
+			mm.status = true;
+			//mm.setContent(content);
+			mm.update();
 			//for (Element link : links) {
 				//saveImageInDb(mm, hp, link);
 			//}
