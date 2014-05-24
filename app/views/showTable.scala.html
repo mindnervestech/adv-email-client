@@ -14,7 +14,29 @@
 <link  href="@routes.Assets.at("app/bower_components/bootstrap/dist/css/bootstrap.min.css")" rel="stylesheet">
    <script src="@routes.Assets.at("app/bower_components/jquery/dist/jquery.min.js")"></script>
       <script src="@routes.Assets.at("app/bower_components/bootstrap/dist/js/bootstrap.js")"></script>
-  <body style="background: #222 url('/assets/app/images/page_wrapper.png') no-repeat 50% top;" ng-app="email-client" ng-controller="ApplicationController">
+       <script src="@routes.Assets.at("app/bower_components/jquery/dist/jquery.min.js")"></script>
+    <script src="@routes.Assets.at("app/bower_components/ng-file-upload/angular-file-upload-shim.min.js")"></script>
+    <script src="@routes.Assets.at("app/bower_components/angular/angular.js")"></script>
+    <script src="@routes.Assets.at("app/bower_components/angular-resource/angular-resource.js")"></script>
+    <script src="@routes.Assets.at("app/bower_components/angular-route/angular-route.js")"></script>
+    <script src="@routes.Assets.at("app/bower_components/ngInfiniteScroll/ng-infinite-scroll.js")"></script>
+    <script src="@routes.Assets.at("app/bower_components/angular-route/angular-route.js")"></script>
+    <script src="@routes.Assets.at("app/bower_components/angular-animate/angular-animate.min.js")"></script>
+    <script src="@routes.Assets.at("app/bower_components/angular-bootstrap/ui-bootstrap.js")"></script>
+	<script src="@routes.Assets.at("app/bower_components/angular-bootstrap/ui-bootstrap-tpls.js")"></script> 
+	<script src="@routes.Assets.at("app/bower_components/ng-file-upload/angular-file-upload.min.js")"></script> 
+	<script src="@routes.Assets.at("app/bower_components/angular-xeditable/dist/js/xeditable.js")"></script>
+    <script src="@routes.Assets.at("app/bower_components/moment/moment.js")"></script>
+    <script src="@routes.Assets.at("app/bower_components/angular-validator/dist/angular-validator.js")"></script>
+    <script src="@routes.Assets.at("app/bower_components/angular-validator/dist/angular-validator-rules.js")"></script>
+    <script src="@routes.Assets.at("app/bower_components/bootstrap/dist/js/bootstrap.min.js")"></script>
+    <script src="@routes.Assets.at("app/bower_components/angular-bootstrap-datetimepicker/src/js/datetimepicker.js")"></script>
+	<script src="@routes.Assets.at("app/bower_components/spin.js/spin.js")"></script>
+	<script src="@routes.Assets.at("app/bower_components/angular-spinner/angular-spinner.min.js")"></script>
+	<script src="@routes.Assets.at("app/bower_components/angular-sanitize/angular-sanitize.min.js")"></script>    
+      <script src="@routes.Assets.at("app/scripts/app.js")"></script>
+    <script src="@routes.Assets.at("app/scripts/controllers/main.js")"></script>
+  <body style="background: #222 url('/assets/app/images/page_wrapper.png') no-repeat 50% top;" ng-app="email-client" ng-controller="SearchController">
  
  <div class="container-fluid">
  <nav class="navbar" role="navigation" style="color: #bbb;border-bottom: 1px solid #444;">
@@ -55,73 +77,74 @@
                <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">
                  @if(c.monthDates.get("Jan").size()!=0){
                   @for( d <- c.monthDates.get("Jan")){
-                   <a onclick="getEmailPage(@d.emailId)" data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                   <a data-ng-click="showPopUpModal(@d.emailId)" data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                  
                   }
                    }</td> 
                <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);"> 
                 @if(c.monthDates.get("Feb").size()!=0){
                 @for( d <- c.monthDates.get("Feb")){
-                   <a onclick="getEmailPage(@d.emailId)"  data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                   <a data-ng-click="showPopUpModal(@d.emailId)"  data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
                   }
                    }</td> 
                <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">
                @if(c.monthDates.get("Mar").size()!=0){
                 @for( d <- c.monthDates.get("Mar")){
-                   <a onclick="getEmailPage(@d.emailId)"  data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                   <a data-ng-click="showPopUpModal(@d.emailId)"  data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
                   }
                    }</td> 
                <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">
                @if(c.monthDates.get("Apr").size()!=0){
                     @for( d <- c.monthDates.get("Apr")){
-                   <a onclick="getEmailPage(@d.emailId)"  data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date</a></br>
+                   <a data-ng-click="showPopUpModal(@d.emailId)"  data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date</a></br>
                   }
                    }</td> 
                <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);"> 
                   @if(c.monthDates.get("May").size()!=0){
                   @for(d<- c.monthDates.get("May")){
-                    <a onclick="getEmailPage(@d.emailId)"  data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                    <a data-ng-click="showPopUpModal(@d.emailId)"  data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
                   }
                    }</td> 
                <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">  
                 @if(c.monthDates.get("Jun").size()!=0){
                  @for(d <- c.monthDates.get("Jun") ){
-                  <a onclick="getEmailPage(@d.emailId)"  data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                  <a data-ng-click="showPopUpModal(@d.emailId)"  data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
                  }
                  }
                <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">   
                 @if(c.monthDates.get("Jul").size()!=0){
                  @for(d <- c.monthDates.get("Jul")){
-                  <a onclick="getEmailPage(@d.emailId)" data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                  <a data-ng-click="showPopUpModal(@d.emailId)" data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
                  }
                  }</td> 
                <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);"> 
                   @if(c.monthDates.get("Aug").size()!=0){
                      @for(d <- c.monthDates.get("Aug")){
-                  <a onclick="getEmailPage(@d.emailId)" data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                  <a data-ng-click="showPopUpModal(@d.emailId)" data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
                  }
                  }</td>
                <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);"> 
                   @if(c.monthDates.get("Sep").size()!=0){
                       @for(d <- c.monthDates.get("Sep")){
-                  <a onclick="getEmailPage(@d.emailId)" data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                  <a data-ng-click="showPopUpModal(@d.emailId)" data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
                  }
                  }</td>
                <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">
                   @if(c.monthDates.get("Oct").size()!=0){
                        @for(d <- c.monthDates.get("Oct")){
-                  <a onclick="getEmailPage(@d.emailId)" data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                  <a data-ng-click="showPopUpModal(@d.emailId)" data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
                  }
                  }</td>
                <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);"> 
                 @if(c.monthDates.get("Nov").size()!=0){
               	 @for(d <- c.monthDates.get("Oct")){
-                  <a onclick="getEmailPage(@d.emailId)" data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                  <a data-ng-click="showPopUpModal(@d.emailId)" data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
                  }
                  }</td>
                <td style="font-size: small;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">
                @if(c.monthDates.get("Dec").size()!=0){
                  @for(d <- c.monthDates.get("Oct")){
-                  <a onclick="getEmailPage(@d.emailId)" data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
+                  <a data-ng-click="showPopUpModal(@d.emailId)" data-toggle="tooltip" data-tooltip-placement="bottom" class="tip-bottom" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
                  }
                  }</td>
            </td> 
