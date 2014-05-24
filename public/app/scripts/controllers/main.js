@@ -131,7 +131,7 @@ emailclient.controller('SearchController',function($scope, $http, $modal,$sce, u
        		
 	  
 	$scope.$watch('currentPage', function(newPage){
-		if($scope.soButton) {
+		if($scope.toggle) {
 		$scope.searchForm.page =  $scope.currentPage ;
 		
 			  search(function(data){
