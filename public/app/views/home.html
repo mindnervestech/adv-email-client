@@ -313,10 +313,10 @@ background-color: #E2E6E9;
 							</div>  
 							
 							<div class="btn-group" style="margin-top: 0.5%;margin-left: 5%;">
-							 <button type="button" data-ng-click="toggle = 0" tooltip="Images" class="btn btn-primary btn-sm">
+							 <button type="button"  data-ng-click="soButton = 0"  class="btn btn-primary btn-sm">
 							 <span class="glyphicon glyphicon-th"></span>
 							 </button>
-							<button type="button" data-ng-click="toggle = 1" tooltip="Lists" class="btn btn-primary btn-sm">
+							<button type="button" data-ng-click="soButton = 1"  class="btn btn-primary btn-sm">
 							<span class="glyphicon glyphicon-list-alt"></span>
 							</button> 
 							</div>
@@ -351,7 +351,7 @@ background-color: #E2E6E9;
      	
      				<div  id="wrapper">
 										<div  id="columns">
-							<div data-ng-repeat="email in emails" ng-hide="toggle" class="pin" style="width:100%;">
+							<div data-ng-repeat="email in emails" ng-hide="soButton" class="pin" style="width:100%;">
 								 			<p style="margin-left: 65%;">{{email.date | date:'MM-dd-yyyy'}}</p>
 												 <img data-ng-src="/get-cover-image-by-id/{{email.id}}" style="cursor: pointer;" tooltip="Click Image to view" data-ng-click="showPopUpModal(email.id)"/>
 												<p class="text-primary textStyle" style="text-align: center;border-bottom: 1px solid #ccc;padding-bottom: 3%;">{{email.domain}}</p>
@@ -369,7 +369,7 @@ background-color: #E2E6E9;
 							
 						
      	
-   <table ng-show="toggle"  class="table Contextual  table-striped table-bordered table-condensed table-hover"  style="margin-bottom: 1px;overflow: auto; border: 1px solid;">
+   <table ng-show="soButton"  class="table Contextual  table-striped table-bordered table-condensed table-hover"  style="margin-bottom: 1px;overflow: auto; border: 1px solid;">
 							<tr data-ng-repeat="email in emails" style="background-color: #fff !important;height: 140px;">
 									<p  style="float: right;margin: 0 0 0px;" class="textStyle">{{email.date | date:'MMMM-dd-yyyy'}}</p>
 								<!-- Image -->
