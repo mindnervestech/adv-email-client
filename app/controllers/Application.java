@@ -102,6 +102,7 @@ public class Application  extends Controller {
 		if(toDateStr !=null && toDateStr.length() > 10 ) {
 			try {
 				toDate = simpleDateFormat.parse(toDateStr);
+				toDate=new Date(toDate.getTime()+(1000 * 60 * 60 * 24));
 				if(rangeFilterBuilder == null)
 					rangeFilterBuilder = FilterBuilders.rangeFilter("sentDate");
 				rangeFilterBuilder.to(toDate);

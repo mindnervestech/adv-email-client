@@ -15,6 +15,27 @@ emailclient.filter('startFrom', function() {
     }
 });
 
+emailclient.service('BlacklistedDomains', function($resource){
+	this.getDomains =  = $resource(
+			'/get-blacklisted-domains',
+			{alt:'json',callback:'JSON_CALLBACK'},
+			{
+				get: {method:'GET'}
+			}
+	);
+});
+
+emailclient.controller('AdminController',function($scope,$http, BlacklistedDomains) {
+	$scope.blDomains = BlacklistedDomains.getDomains.get();
+	$scope.domainToBeAdded;
+	$scope.addDomainToBL = function () {
+		$http.post('/addDomainToBL/' + $scope.domainToBeAdded, fuiction(data){  // {id:21, text:"gmail"}
+			$scope.blDomains.push(data);		
+		});
+	}
+	//// POST /addDomainToBL/:domain    con.App.addDomaintoBL(domain :String)
+})
+
 emailclient.controller('SearchController',function($scope, $http, $modal,$sce, usSpinnerService){
 	
 	/*  Below Section for modal  */
@@ -67,14 +88,13 @@ emailclient.controller('SearchController',function($scope, $http, $modal,$sce, u
 	    }
 		
 	  $scope.getlinkImageByID1=function (popUpId) {
-		  usSpinnerService.spin('loading...');
 		  $scope.searchForm.popUpId = popUpId;
+		  usSpinnerService.spin('loading...');
 		  $http.get('/get-link-image-by-id/'+popUpId, {params:$scope.searchForm})
 			.success(function(data, status, headers, config){
-				usSpinnerService.stop('loading...');
 				$scope.s1= data;
 				$('.modal-bodyPopUp').append(data.htmlToShowMailPopUp);
-				
+				usSpinnerService.stop('loading...');
 			});
 		  modalInstance = $modal.open({
 		      templateUrl: '/assets/app/views/iframe.html',
@@ -94,11 +114,9 @@ emailclient.controller('SearchController',function($scope, $http, $modal,$sce, u
 	  /*  below Section for email images modal  */ 
 	  $scope.showPopUpImages=function (eIdForImages) {
 		  $scope.searchForm.eIdForImages = eIdForImages;
-		  usSpinnerService.spin('loading...');
 		  $http.get('/showPopUpForImages', {params:$scope.searchForm})
 			.success(function(data, status, headers, config){
 				$('.modal-headerPopUp').append(data.htmlToShowMailPopUp);
-				usSpinnerService.stop('loading...');
 			});
 		  modalInstance = $modal.open({
 		      templateUrl: '/assets/app/views/myEmailModal.html',
@@ -123,17 +141,15 @@ emailclient.controller('SearchController',function($scope, $http, $modal,$sce, u
 	  
 	  
 	/*  Below Section for pagination  */
+	$scope.totalItems = 0;
+	$scope.currentPage = 0;
+	$scope.prevPage = -1;
+	$scope.maxSize = 5;
 	
-	  $scope.totalItems = 0;
-		$scope.currentPage = 0;
-		$scope.prevPage = -1;
-		$scope.maxSize = 5;
-       		
-	  
+	
 	$scope.$watch('currentPage', function(newPage){
-		if($scope.soButton) {
-		$scope.searchForm.page =  $scope.currentPage ;
-		
+		  if($scope.prevPage != newPage && newPage != 0) {
+			  $scope.searchForm.page = newPage - 1 ;
 			  search(function(data){
 					$scope.emails = data.emails;
 					$scope.hasSearchResult = data.emails.length != 0;
@@ -188,8 +204,7 @@ emailclient.controller('SearchController',function($scope, $http, $modal,$sce, u
 			$scope.noOfRows = count;
 			$scope.searchForm.rowCount = count;
 		}
-		$scope.toggle = true;
-		$scope.soButton = true;
+		$scope.isVisible = true;
 		
 		search(function(data) {
 			

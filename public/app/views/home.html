@@ -35,7 +35,7 @@
 	column-break-inside: avoid;
 	padding: 15px;
 	padding-bottom: 5px;
-	background: -webkit-linear-gradient(45deg, #9D9A9A, #F9F9F9);
+	background: -webkit-linear-gradient(45deg, #E6E0E0, #F9F9F9);
 	opacity: 1;
 	
 	-webkit-transition: all .2s ease;
@@ -136,6 +136,11 @@ background-color: #E2E6E9;
  .nav{
 	margin-bottom: 0px;
 } 
+.cal:hover{
+	color: white !important;
+	text-decoration: none;
+}
+
 </style>  
 
 <script language="javascript">
@@ -156,13 +161,14 @@ background-color: #E2E6E9;
 	 	<a href="">
 	 		<img src="/assets/app/images/logo_agora.png" style="width: 21%;float: left;" alt="Your Brand" >
 	 	</a>
+	 	<a class="cal" href="/showTables/0" target="_blank" style="color: rgba(255,255,255,0.5);margin-left: 3%;">collection/calender</a>
 	 	<div style="float: right;width: 24%;">
 	 	<!-- <input type="text" class="col-xs-3 form-control" style="width: 80%; margin-right: 4%;" placeholder="Search"> -->
 	 	<form data-ng-submit="submitSearch()" class="navbar-form navbar-left  form-inline" role="search">
 	 		
 	 		 <div class="form-group has-success has-feedback">
-    				<input type="text" class="input-sm form-control textStyle"  data-ng-model="searchForm.cntKeyWord" id="Content_Keyword" placeholder="Content Keyword">
-    				<span class="glyphicon glyphicon-search form-control-feedback"></span>
+    				<input type="text" class="input-sm form-control textStyle"  data-ng-model="searchForm.cntKeyWord" id="Content_Keyword" placeholder="Content Keyword" style="width: 100%;">
+    				<span id="test" class="glyphicon glyphicon-search form-control-feedback" style="cursor: pointer;" data-ng-click="submitSearch()"></span>
   			</div>
 	 		
 		  </form>
@@ -211,9 +217,7 @@ background-color: #E2E6E9;
 		  </div>
 		  
 		  <button type="submit" class="btn btn-primary btn-xs" >Search</button>
-		  <div class="btn-group">
-			<a class="btn btn-default btn-xs" href="/showTables/0" >Report</a>
-		  </div>
+		  
       	</form>
 	</div>
 	</div> 	
@@ -282,13 +286,21 @@ background-color: #E2E6E9;
   
   
   
-  <div class="col-xs-12 col-md-8" style="float: left;margin-left: 1%;cursor: pointer;">
+  <div class="col-xs-12 col-md-8" style="float: right;margin-left: 1%;cursor: pointer;">
 			<div ng-show="hasSearchResult">
-						<pagination  max-size="maxSize" class="pagination-small pagination-mnt pagination_adv col-xs-12 col-sm-8 col-md-8" boundary-links="true" rotate="false" 
+						<!-- <pagination  max-size="maxSize" class="pagination-small pagination-mnt pagination_adv col-xs-12 col-sm-8 col-md-8" boundary-links="true" rotate="false" 
 							ng-show="totalItems != 0" total-items="totalItems" page="currentPage" 
 							items-per-page="searchForm.rowCount" >
-						</pagination>
-						
+						</pagination> -->
+						<div style="width: 50%;float: right;margin-bottom: 2%;">
+							<button type="button" ng-disabled="currentPage == 0"  class="btn btn-primary btn-sm" ng-click="currentPage=currentPage-1" style="margin-top: 0.5%;margin-left: 5%;">
+							<span class="glyphicon glyphicon-chevron-left"></span>
+							</button> 
+   								<label> {{currentPage+1}}/{{noOFPages}}</label>
+    						<button type="button"  ng-disabled="currentPage+1 == noOFPages"  class="btn btn-primary btn-sm" ng-click="currentPage=currentPage+1" style="margin-top: 0.5%;">
+							<span class="glyphicon glyphicon-chevron-right"></span>
+							</button> 
+							
 							<div class="btn-group " style="float: left;margin-right: 1%;margin-top: 1%;">
 								<a type="text" class="dropdown-toggle" data-toggle="dropdown">
 							    	{{noOfRows}} <span class="caret"></span>
@@ -299,6 +311,18 @@ background-color: #E2E6E9;
 							    	<li><a  ng-click="submitSearch(30,relevance)">30</a></li>
 							  	</ul>
 							</div>  
+							
+							<div class="btn-group" style="margin-top: 0.5%;margin-left: 5%;">
+							 <button type="button" data-ng-click="toggle = 0" tooltip="Images" class="btn btn-primary btn-sm">
+							 <span class="glyphicon glyphicon-th"></span>
+							 </button>
+							<button type="button" data-ng-click="toggle = 1" tooltip="Lists" class="btn btn-primary btn-sm">
+							<span class="glyphicon glyphicon-list-alt"></span>
+							</button> 
+							</div>
+						</div>	
+							
+							
 						
 			 <div ng-show="hasQuickSearch" class="row">
 				<div class=" ">
@@ -327,7 +351,7 @@ background-color: #E2E6E9;
      	
      				<div  id="wrapper">
 										<div  id="columns">
-							<div data-ng-repeat="email in emails" class="pin" style="width:100%;">
+							<div data-ng-repeat="email in emails" ng-hide="toggle" class="pin" style="width:100%;">
 								 			<p style="margin-left: 65%;">{{email.date | date:'MM-dd-yyyy'}}</p>
 												 <img data-ng-src="/get-cover-image-by-id/{{email.id}}" style="cursor: pointer;" tooltip="Click Image to view" data-ng-click="showPopUpModal(email.id)"/>
 												<p class="text-primary textStyle" style="text-align: center;border-bottom: 1px solid #ccc;padding-bottom: 3%;">{{email.domain}}</p>
@@ -336,7 +360,7 @@ background-color: #E2E6E9;
 													<a data-ng-click="getlinkImageByID1(email.id)" style="float: left;font-family: -webkit-pictograph;text-align: center; cursor: pointer;">show all internal links</a>
 													<a class="" data-toggle="collapse" data-target="#ext{{email.id}}" style="float: right;font-family: -webkit-pictograph;text-align: center; cursor: pointer;">snippet</a>
 												</div>
-											<div id="ext{{email.id}}" ng-bind-html="email.extract" style="float: left;width: 95%;" class="collapse">{{email.extract}}</div>
+											<div id="ext{{email.id}}" ng-bind-html="email.extract" style="float: left;width: 100%;font-weight: bold;font-size: small;background-color: aquamarine;" class="collapse">{{email.extract}}</div>
 										</div>
 									</div>
 									
@@ -345,7 +369,34 @@ background-color: #E2E6E9;
 							
 						
      	
-   
+   <table ng-show="toggle"  class="table Contextual  table-striped table-bordered table-condensed table-hover"  style="margin-bottom: 1px;overflow: auto; border: 1px solid;">
+							<tr data-ng-repeat="email in emails" style="background-color: #fff !important;height: 140px;">
+									<p  style="float: right;margin: 0 0 0px;" class="textStyle">{{email.date | date:'MMMM-dd-yyyy'}}</p>
+								<!-- Image -->
+								<td style="padding: 1%;width: 10%;">
+									<img data-ng-src="/get-cover-image-by-id/{{email.id}}" style="width:120px; cursor: pointer; height: 90px;border: 1px solid gray;" data-ng-click="showPopUpModal(email.id)" />
+									<!-- Domain -->
+									<p class="text-primary textStyle" style="text-align: center;">{{email.domain}}</p>
+								</td>
+								
+								<td>
+								<div>
+								<!-- Subject -->
+									 <blockquote class="text-primary blockquote_adv" style="float: left;font-size: 15px !important;">{{email.subject}}</blockquote>
+								
+								<!-- Date -->
+								 	<p  style="float: right;margin-right: 2%;">{{email.date | date:'MMMM-dd-yyyy'}}</p> 
+									
+								</div>
+								<!-- Extract -->
+									<div ng-bind-html="email.extract" style="float: left;" class="textStyle col-xs-12 col-sm-10 col-md-12"></div>
+									
+									<!-- <button type="button" style="float: right;margin-right: 2%;" class="btn btn-primary">Show</button> -->
+								</td>
+							
+							</tr>
+							
+						</table>
 
 						
 						
