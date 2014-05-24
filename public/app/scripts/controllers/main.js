@@ -188,6 +188,7 @@ emailclient.controller('SearchController',function($scope, $http, $modal,$sce, u
 			$scope.noOfRows = count;
 			$scope.searchForm.rowCount = count;
 		}
+		$scope.page = 0;
 		$scope.toggle = true;
 		$scope.soButton = true;
 		
