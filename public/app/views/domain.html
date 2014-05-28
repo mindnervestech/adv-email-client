@@ -1,0 +1,18 @@
+<div>
+<table class="table table-bordered table-hover table-responsive">
+<tr class="success">
+<th colspan="2">Black Listed Domains</th>
+</tr>
+<tr data-ng-repeat="blDomain in blDomains" class="active">
+<td style="width:98%;text-align: center;">{{blDomain.domain}}</td>
+<td style="float: right;"><span class="glyphicon glyphicon-remove inline" style="cursor: pointer;" ng-click="removeBLDomain(blDomain.id)"></span></td>
+</tr>
+</table>
+<div>
+<form class="form-inline">
+<input type="text" class="input-sm form-control textStyle" style="width: 20%;" data-ng-model="formData.domainToBeAdded" placeholder="Domain Name(eg. xyz.com)">
+<button type="submit" data-ng-click="addDomainToBL()" class="btn btn-primary btn-xs" >Add to Black List </button>
+</form>
+</div>
+
+</div>

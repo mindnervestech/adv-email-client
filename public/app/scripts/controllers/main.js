@@ -14,10 +14,107 @@ emailclient.filter('startFrom', function() {
         return input.slice(start);
     }
 });
+emailclient.service('BlacklistedDomains', function($resource){
+    this.getDomains = $resource('/get-blacklisted-domains',
+                           {alt:'json',callback:'JSON_CALLBACK'},{
+                                     get: {method:'GET'}
+                           }
+    );
+    });
 
-emailclient.controller('SearchController',function($scope, $http, $modal,$sce, usSpinnerService){
+emailclient.controller('AdminController',function($scope,$location,$http,usSpinnerService,BlacklistedDomains){
+	$scope.isadmin = true;
+	$scope.blDomains;
+	$scope.blAddresses;
+	$scope.tabs = [
+	               { title:'Black List',active: true, content:'/assets/app/views/blacklist.html' }
+	              // ,{ title:'Upcomings', content:'/assets/app/views/upcoming.html'}
+	               ];
+	
+	$scope.tabs.blacklist = [
+	                          { title:'By Domain',active: true, content:'/assets/app/views/domain.html' },
+	                          { title:'By Email Address', content:'/assets/app/views/address.html' }
+	                          ];
+	
+	/*$scope.getDomainBL = function () { 
+		
+        	$scope.blDomains = BlacklistedDomains.getDomains.get();
+        	console.log($scope.blDomains);
+		};
+	*/
+	$scope.removeBLDomain= function(domainId)
+	{
+		$http.get('/remove-BLDomain/'+domainId)
+		.success(function(data, status, headers, config){
+			//alert(data);
+			if(data)
+			{
+				$scope.getBlackList();
+			}
+		});
+	};
+	$scope.removeBLEmail=function(emailId)
+	{
+		$http.get('/remove-BLEmail/'+emailId)
+		.success(function(data, status, headers, config){
+			if(data)
+			{
+				$scope.getBlackList();
+			}
+		});
+	};
+	$scope.getBlackList=function()
+	{
+		$http.get('/get-blacklisted')
+		.success(function(data, status, headers, config){
+			$scope.blDomains = data.domainList;
+			$scope.blAddresses = data.emailList;
+			usSpinnerService.stop('loading...');
+		});
+	};
+	
+	$scope.formData = {
+			domainToBeAdded : '',
+			email:''
+	};
+	
+	$scope.addDomainToBL = function () { 
+		$http.get('/addDomainToBL/' + $scope.formData.domainToBeAdded)
+		.success(function(data, status, headers, config){
+			$scope.formData.domainToBeAdded='';
+			if(data.domainList[0]!=null)
+			{
+				$scope.blDomains.push(data.domainList[0]);
+			}
+		
+		});
+		
+	}
+	$scope.addEmailToBL = function () { 
+		$http.get('/addEmailToBL/' + $scope.formData.email)
+		.success(function(data, status, headers, config){
+			$scope.formData.email='';
+			if(data.emailList[0]!=null)
+			{
+				$scope.blAddresses.push(data.emailList[0]);
+			}
+		});
+	}
+	
+
+	});
+
+emailclient.controller('SearchController',function($scope, $location,$http, $modal,$sce, usSpinnerService){
 	
 	/*  Below Section for modal  */
+	if($location.path()=="/admin")
+	{
+		$scope.isadmin = true;
+	}
+	else
+	{
+		$scope.isadmin = false;
+	}
 	  var modalInstance;
 	  $scope.open = function () {
 		    modalInstance = $modal.open({
@@ -40,7 +137,21 @@ emailclient.controller('SearchController',function($scope, $http, $modal,$sce, u
 	  };
     /*  Above Section for modal  */  
 	 
-	  /*  below Section for email popup modal  */ 
+	  /*  below Section for email popup modal  */
+	  $scope.removeEmailData=function(id,indexId)
+	  {
+		  //alert("in remove "+id+" "+indexId);
+		  $http.get('/remove-Email-Data/'+id+'/'+indexId)
+			.success(function(data, status, headers, config){
+				//alert("data "+data);
+				$scope.submitSearch();
+				/*if(data)
+				{
+					//alert("in if");
+					$scope.getBlackList();
+				}*/
+			});
+	  };
 	  $scope.showPopUpModal=function (popUpId) {
 		  $scope.searchForm.popUpId = popUpId;
 		  usSpinnerService.spin('loading...');
@@ -67,14 +178,13 @@ emailclient.controller('SearchController',function($scope, $http, $modal,$sce, u
 	    }
 		
 	  $scope.getlinkImageByID1=function (popUpId) {
-		  usSpinnerService.spin('loading...');
 		  $scope.searchForm.popUpId = popUpId;
+		  usSpinnerService.spin('loading...');
 		  $http.get('/get-link-image-by-id/'+popUpId, {params:$scope.searchForm})
 			.success(function(data, status, headers, config){
-				usSpinnerService.stop('loading...');
 				$scope.s1= data;
 				$('.modal-bodyPopUp').append(data.htmlToShowMailPopUp);
-				
+				usSpinnerService.stop('loading...');
 			});
 		  modalInstance = $modal.open({
 		      templateUrl: '/assets/app/views/iframe.html',
@@ -131,7 +241,7 @@ emailclient.controller('SearchController',function($scope, $http, $modal,$sce, u
        		
 	  
 	$scope.$watch('currentPage', function(newPage){
-		if($scope.toggle) {
+		if($scope.toggle && !($scope.currentPage == 0 && $scope.searchForm.page == 0) {
 		$scope.searchForm.page =  $scope.currentPage ;
 		
 			  search(function(data){
@@ -189,6 +299,7 @@ emailclient.controller('SearchController',function($scope, $http, $modal,$sce, u
 			$scope.searchForm.rowCount = count;
 		}
 		$scope.searchForm.page = 0;
+		$scope.currentPage = 0;
 		$scope.toggle = true;
 		$scope.soButton = true;
 		

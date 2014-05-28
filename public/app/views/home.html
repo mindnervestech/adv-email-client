@@ -161,7 +161,8 @@ background-color: #E2E6E9;
 	 	<a href="">
 	 		<img src="/assets/app/images/logo_agora.png" style="width: 21%;float: left;" alt="Your Brand" >
 	 	</a>
-	 	<a class="cal" href="/showTables/0" target="_blank" style="color: rgba(255,255,255,0.5);margin-left: 3%;">collection/calender</a>
+	 	<a class="cal" href="/showTables/0" target="_blank" style="color: rgba(255,255,255,0.5);margin-left: 3%;">Collection/Calender</a>
+	 	<a ng-show="isadmin" class="cal" href="/#/adminBL" style="color: rgba(255,255,255,0.5);margin-left: 5%;">Black List</a>
 	 	<div style="float: right;width: 24%;">
 	 	<!-- <input type="text" class="col-xs-3 form-control" style="width: 80%; margin-right: 4%;" placeholder="Search"> -->
 	 	<form data-ng-submit="submitSearch()" class="navbar-form navbar-left  form-inline" role="search">
@@ -348,6 +349,7 @@ background-color: #E2E6E9;
      				<div  id="wrapper">
 										<div  id="columns">
 							<div data-ng-repeat="email in emails" ng-hide="soButton" class="pin" style="width:100%;">
+									<span ng-show="isadmin" ng-click="removeEmailData(email.id,email.indexId)" style="cursor: pointer;">remove this</span>
 								 			<p style="margin-left: 65%;">{{email.date | date:'MM-dd-yyyy'}}</p>
 												 <img data-ng-src="/get-cover-image-by-id/{{email.id}}" style="cursor: pointer;" tooltip="Click Image to view" data-ng-click="showPopUpModal(email.id)"/>
 												<p class="text-primary textStyle" style="text-align: center;border-bottom: 1px solid #ccc;padding-bottom: 3%;">{{email.domain}}</p>

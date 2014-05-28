@@ -1,0 +1,33 @@
+<div ng-controller="AdminController" >
+<nav class="navbar bg-primary nav" role="navigation" style="color: #bbb;border-bottom: 1px solid #444;min-height: 70px;">
+    
+   <!-- <div class="col-xs-3">
+    <input type="text" class="form-control" placeholder="Search">
+  </div> -->
+	 <div class="navbar-header " style="width: 100%;margin-left: 2%;margin-top: 0.5%;">
+	 	<a href="">
+	 		<img src="/assets/app/images/logo_agora.png" style="width: 21%;float: left;" alt="Your Brand" >
+	 	</a>
+	 	<a class="cal" href="/showTables/0" target="_blank" style="color: rgba(255,255,255,0.5);margin-left: 3%;">Collection/Calender</a>
+	 	<a ng-show="isadmin" class="cal" href="/#/admin" style="color: rgba(255,255,255,0.5);margin-left: 5%;">Search</a>
+	 	<div style="float: right;width: 24%;">
+	 	<!-- <input type="text" class="col-xs-3 form-control" style="width: 80%; margin-right: 4%;" placeholder="Search"> -->
+	  </div>
+	
+      
+    </div>
+</nav>
+<div data-ng-init="getBlackList()">
+<tabset>
+   <tab ng-repeat="tab1 in tabs.blacklist" heading="{{tab1.title}}" active="tab1.active" ng-click="getDomains()">
+     <div data-ng-include style="width: 100%;" 
+                     data-src="tab1.content" ></div>
+   </tab>
+</tabset>
+</div>
+<!-- <tabset>
+   <tab ng-repeat="tab in tabs" heading="{{tab.title}}" active="tab.active">
+     <div data-ng-include style="width: 100%;" data-src="tab.content"></div>
+   </tab>
+</tabset> -->
+</div>

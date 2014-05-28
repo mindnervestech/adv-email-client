@@ -9,6 +9,18 @@ create table content (
   constraint pk_content primary key (id))
 ;
 
+create table domain_bl (
+  id                        bigint auto_increment not null,
+  domain                    varchar(255),
+  constraint pk_domain_bl primary key (id))
+;
+
+create table email_bl (
+  id                        bigint auto_increment not null,
+  email                     varchar(255),
+  constraint pk_email_bl primary key (id))
+;
+
 create table image_info (
   id                        bigint auto_increment not null,
   mail_object_model_id      bigint,
@@ -63,6 +75,10 @@ create index ix_mail_object_model_content_3 on mail_object_model (content_id);
 SET FOREIGN_KEY_CHECKS=0;
 
 drop table content;
+
+drop table domain_bl;
+
+drop table email_bl;
 
 drop table image_info;
 

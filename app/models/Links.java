@@ -1,10 +1,15 @@
 package models;
 
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.SqlUpdate;
+
 
 import play.db.ebean.Model;
 
@@ -28,6 +33,12 @@ public class Links extends Model {
 	public String path;
 	
 	public static Finder<Long, Links> find = new Finder<Long,Links>(Long.class, Links.class);
+	
+	public static void deleteLinksByMailObjectId(long id)
+	{
+		SqlUpdate list=Ebean.createSqlUpdate("DELETE FROM links WHERE mail_id_id="+id);
+		list.execute();
+	}
 
 	public Long getId() {
 		return id;

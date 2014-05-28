@@ -21,7 +21,14 @@ angular.module('email-client', [
         templateUrl: '/assets/app/views/home.html',
         controller: 'SearchController'	
       })
-      
+      .when('/admin', {
+        templateUrl: '/assets/app/views/home.html',
+        controller: 'SearchController'	
+      })
+      .when('/adminBL', {
+        templateUrl: '/assets/app/views/admin.html',
+        controller: 'AdminController'	
+      })
       .otherwise({
           redirectTo: '/'
       });

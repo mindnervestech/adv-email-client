@@ -24,12 +24,15 @@ import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import models.DomainBL;
+import models.EmailBL;
 import models.Links;
 import models.MailObjectModel;
 import models.SaveSearchSet;
 import net.coobird.thumbnailator.Thumbnails;
 
-import org.apache.lucene.queryparser.xml.builders.BooleanQueryBuilder;
+import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.common.collect.Iterables;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.AndFilterBuilder;
@@ -38,13 +41,13 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeFilterBuilder;
+import org.elasticsearch.node.Node;
 import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.facet.terms.strings.InternalStringTermsFacet;
 import org.elasticsearch.search.facet.terms.strings.InternalStringTermsFacet.TermEntry;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import play.api.libs.ws.WS;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.libs.Json;
@@ -55,6 +58,8 @@ import vm.UrlMapVM;
 import com.avaje.ebean.annotation.Transactional;
 import com.github.cleverage.elasticsearch.IndexResults;
 import com.google.common.base.Splitter;
+
+import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
 import controllers.Application.SearchResponse.Domain;
 import elastic.MntHighlightBuilder;
@@ -216,7 +221,7 @@ public class Application  extends Controller {
 				 extract = e.description.substring(0, e.description.length() > 300 ? 300 : e.description.length()) +" ...";
 			 }
 			 searchResponse.emails.add(new Application.SearchResponse.Email(e.subject,
-					 e.domain, e.sentDate, e.sendersEmail, extract, e.mail_objectId));
+					 e.domain, e.sentDate, e.sendersEmail, extract, e.mail_objectId,e.getId()));
 		 }
 		 searchResponse.saveSearchSets.addAll(SaveSearchSet.find.all());
 		 searchResponse.noOFPages = (int) Math.ceil((double)allAndFacetAge.getTotalCount()/10);
@@ -258,8 +263,8 @@ public class Application  extends Controller {
 		SearchResponse searchResponse = new SearchResponse();  
 		Document doc= null;
 		Form<SearchFilter> searchFilter = DynamicForm.form(SearchFilter.class).bindFromRequest();
-		int id= searchFilter.get().popUpId;
-		System.out.println("url="+id);
+		Long id= Long.valueOf(searchFilter.data().get("popUpId"));
+		System.out.println("url="+id );
 		MailObjectModel mailObjectModel =MailObjectModel.findMailObjectModelById(id);
 		File file= new File(mailObjectModel.mailPath);
 		Session session = Session.getDefaultInstance(new Properties());
@@ -312,8 +317,11 @@ public class Application  extends Controller {
 		public String domainChecked;
 		public int popUpId;
 	}
-	
-	
+	public static class BlackListedResponse
+	{
+		public List<DomainBL> domainList=new ArrayList<DomainBL>();
+		public List<EmailBL> emailList=new ArrayList<EmailBL>();
+	}
 	public static class SearchResponse {
 		
 		public List<Email> emails = new ArrayList<Email>();
@@ -324,7 +332,7 @@ public class Application  extends Controller {
 		public static class Email {
 			public Email(){}
 			public Email(String subject, String domain, Date date,
-					String sendersEmail, String extract, Long id) 
+					String sendersEmail, String extract, Long id,String indexId) 
 			{
 				super();
 				this.subject = subject;
@@ -333,6 +341,7 @@ public class Application  extends Controller {
 				this.sendersEmail = sendersEmail;
 				this.extract = extract;
 				this.id = id;
+				this.indexId=indexId;
 			}
 			public String subject;
 			public String domain;
@@ -340,6 +349,7 @@ public class Application  extends Controller {
 			public String sendersEmail;
 			public String extract;
 			public Long id;
+			public String indexId;
 		}
 		
 		public static class Domain {
@@ -378,12 +388,18 @@ public class Application  extends Controller {
 				try 
 				{
 					filePath=mailObjectModel.mailPath.replace(".eml", ".png");
-					BufferedImage originalImage = ImageIO.read(new File(filePath));
+					File file=new File(filePath);
+					BufferedImage originalImage = ImageIO.read(file);
+					
 					if(originalImage.getWidth()>IMGWIDTH)
 					{
 						factor=IMGWIDTH*1.0/originalImage.getWidth();
 						Thumbnails.of(originalImage)
 						.scale(factor).toFile(f);
+					}
+					else
+					{
+						return ok(file);
 					}
 				} 
 				catch (IOException e1) {
@@ -413,5 +429,68 @@ public class Application  extends Controller {
 			urlMap.add(vm);
 	    }
 		return ok(Json.toJson(urlMap));
+	}
+	
+	public static Result addDomainToBL(String domainName)
+	{
+		//System.out.println("in addDomain DomainName="+domainName);
+		DomainBL dom=DomainBL.findDomainblObjectByDomainName(domainName);
+		BlackListedResponse blackListedResponse=new BlackListedResponse();
+		if(dom == null) {
+			DomainBL domain=new DomainBL();
+			domain.domain=domainName;
+			domain.save();
+			dom=DomainBL.findDomainblObjectByDomainName(domainName);
+			blackListedResponse.domainList.add(dom);
+			return ok(Json.toJson(blackListedResponse));
+		}
+		blackListedResponse.domainList.add(null);
+		return ok(Json.toJson(blackListedResponse));
+	}
+	public static Result getBlackListed()
+	{
+		List<DomainBL> domainList=DomainBL.findDomainblAllObject();
+		BlackListedResponse blackListedResponse=new BlackListedResponse();
+		blackListedResponse.domainList=domainList;
+		List<EmailBL> emailList=EmailBL.findEmailblAllObject();
+		blackListedResponse.emailList=emailList;
+
+		return ok(Json.toJson(blackListedResponse));
+	}
+	public static Result addEmailToBL(String emailAddress)
+	{
+		//System.out.println("in addDomain DomainName="+domainName);
+		EmailBL dom=EmailBL.findEmailblObjectByEmailAddress(emailAddress);
+		BlackListedResponse blackListedResponse=new BlackListedResponse();
+		if(dom == null) {
+			EmailBL emailbl=new EmailBL();
+			emailbl.email=emailAddress;
+			emailbl.save();
+			dom=EmailBL.findEmailblObjectByEmailAddress(emailAddress);
+			blackListedResponse.emailList.add(dom);
+			return ok(Json.toJson(blackListedResponse));
+		}
+		blackListedResponse.emailList.add(null);
+		return ok(Json.toJson(blackListedResponse));
+	}
+	public static Result removeBLDomain(long id)
+	{
+		return ok(Json.toJson(DomainBL.deleteDomainBLById(id)));
+	}
+	public static Result removeBLEmail(long id)
+	{
+		return ok(Json.toJson(EmailBL.deleteEmailBLById(id)));
+	}
+	public static Result removeEmailData(long id,String indexId)
+	{
+		Email e=Email.find.byId(indexId);
+		if(e!=null)
+		{
+			e.delete();
+			//Links.deleteLinksByMailObjectId(id);
+			MailObjectModel.deleteMailObjectById(id);
+			return ok("record deleted successfully");
+		}
+		return ok("no record found");
 	}
 }
