@@ -23,6 +23,8 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.MimeMultipart;
 
+import models.DomainBL;
+import models.EmailBL;
 import models.MailObjectModel;
 
 import org.apache.commons.validator.UrlValidator;
@@ -78,7 +80,21 @@ public class EmailWriteFile {
             mm.sentDate = message[i].getSentDate();
             mm.mailPath = path;
             mm.domain = domain;
-    		mm.save();
+    		
+            DomainBL domainBL=DomainBL.findDomainblObjectByDomainName(domain);
+            String emailAddr=mm.sendersEmail;
+            int open=emailAddr.indexOf("<");
+    		int close=emailAddr.indexOf(">");
+    		if(open!=-1)
+    		{
+    			emailAddr=emailAddr.substring(open+1,close);
+    		}
+            EmailBL emailBL=EmailBL.findEmailblObjectByEmailAddress(emailAddr);
+            if(domainBL!=null||emailBL!=null)
+            {
+            	mm.status=2;
+            }
+            mm.save();
     		
     	
     		 /*ActorSystem  actorSystem = Akka.system();

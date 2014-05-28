@@ -1,0 +1,15 @@
+<div>
+<table class="table table-bordered table-hover table-responsive">
+<tr class="success">
+<th colspan="2">Black Listed Email Addresses</th>
+</tr>
+<tr data-ng-repeat="blAddress in blAddresses" class="active">
+<td style="width:98%;text-align: center;">{{blAddress.email}}</td> 
+<td><span class="glyphicon glyphicon-remove inline" style="cursor: pointer;" ng-click="removeBLEmail(blAddress.id)"></span></td>
+</tr>
+</table>
+<form class="form-inline">
+<input type="text" class="input-sm form-control textStyle" style="width:20%" data-ng-model="formData.email" placeholder="Email Address">
+<button type="submit" data-ng-click="addEmailToBL()" class="btn btn-primary btn-xs" >Add to Black List</button>
+</form>
+</div>

@@ -1,23 +1,4 @@
-import gui.ava.html.image.generator.HtmlImageGenerator;
-
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.UnknownHostException;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import javax.validation.ConstraintValidatorContext;
-
-import org.apache.commons.validator.UrlValidator;
-import org.hibernate.validator.internal.constraintvalidators.URLValidator;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Entities.EscapeMode;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
-
-import models.Links;
 import play.Application;
 import play.GlobalSettings;
 import play.Logger;

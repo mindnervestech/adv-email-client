@@ -17,6 +17,7 @@ import play.db.ebean.Model;
 
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.SqlRow;
+import com.avaje.ebean.SqlUpdate;
 @Entity
 public class MailObjectModel extends Model{
 	@Id
@@ -26,7 +27,7 @@ public class MailObjectModel extends Model{
 	
 	public String mailPath;
 	
-	public boolean status= false;
+	public byte status= 0;
 	
 	public String domain;
 	
@@ -54,7 +55,11 @@ public class MailObjectModel extends Model{
 		resultList = Ebean.createSqlQuery(query.toString()).findList();
 		return resultList;
 	}
-	
+	public static void deleteMailObjectById(long id)
+	{
+		SqlUpdate list=Ebean.createSqlUpdate("UPDATE mail_object_model SET status=3 WHERE id="+id);
+		list.execute();
+	}
 	public static List<String> getDisticntDate() {
 		StringBuilder query = new StringBuilder();
 		List<SqlRow> resultList = null;

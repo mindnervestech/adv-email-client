@@ -157,7 +157,7 @@ public class HtmlAndEmlParser {
 			}
 			
 			email.index();
-			mm.status = true;
+			mm.status = 1;
 			//mm.setContent(content);
 			mm.update();
 			//for (Element link : links) {

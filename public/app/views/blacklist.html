@@ -1,0 +1,8 @@
+<div data-ng-init="getBlackList()">
+<tabset>
+   <tab ng-repeat="tab1 in tabs.blacklist" heading="{{tab1.title}}" active="tab1.active" ng-click="getDomains()">
+     <div data-ng-include style="width: 100%;" 
+                     data-src="tab1.content" ></div>
+   </tab>
+</tabset>
+</div>
