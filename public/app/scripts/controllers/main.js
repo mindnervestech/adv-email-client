@@ -241,7 +241,7 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
        		
 	  
 	$scope.$watch('currentPage', function(newPage){
-		if($scope.toggle && !($scope.currentPage == 0 && $scope.searchForm.page == 0) {
+		if($scope.toggle && !($scope.currentPage == 0 && $scope.searchForm.page == 0)) {
 		$scope.searchForm.page =  $scope.currentPage ;
 		
 			  search(function(data){
