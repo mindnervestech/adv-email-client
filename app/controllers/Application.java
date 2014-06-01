@@ -26,22 +26,24 @@ import javax.mail.internet.MimeMultipart;
 
 import models.DomainBL;
 import models.EmailBL;
+import models.KeywordBL;
 import models.Links;
 import models.MailObjectModel;
 import models.SaveSearchSet;
 import net.coobird.thumbnailator.Thumbnails;
 
-import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.client.Client;
+
 import org.elasticsearch.common.collect.Iterables;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.AndFilterBuilder;
 import org.elasticsearch.index.query.BaseQueryBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.CommonTermsQueryBuilder;
+import org.elasticsearch.index.query.CommonTermsQueryBuilder.Operator;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeFilterBuilder;
-import org.elasticsearch.node.Node;
+
 import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.facet.terms.strings.InternalStringTermsFacet;
 import org.elasticsearch.search.facet.terms.strings.InternalStringTermsFacet.TermEntry;
@@ -59,7 +61,6 @@ import com.avaje.ebean.annotation.Transactional;
 import com.github.cleverage.elasticsearch.IndexResults;
 import com.google.common.base.Splitter;
 
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
 import controllers.Application.SearchResponse.Domain;
 import elastic.MntHighlightBuilder;
@@ -183,11 +184,13 @@ public class Application  extends Controller {
 		 }
 		 ;
 		 indexQuery.addHighlights(MntHighlightBuilder.instance().setField("description"));
-		 indexQuery.addHighlights(MntHighlightBuilder.instance().setField("nestedHtml.description"));
+		 if(isnestedHtml) {
+			 indexQuery.addHighlights(MntHighlightBuilder.instance().setField("nestedHtml.description"));
+		 }
 		 indexQuery.addFacet(FacetBuilders.termsFacet("domain").field("domain"));
 		 int count = Integer.parseInt(perPage);
 		 // below two lines are for Pagination ---
-		 indexQuery.from(searchFilter.get().page*count);
+		 indexQuery.from(Integer.parseInt(searchFilter.data().get("page")) * count);
 		 indexQuery.size(count);
 		 
 		 
@@ -201,14 +204,14 @@ public class Application  extends Controller {
 			 String extract = "";//e.searchHit.getScore();
 			 if(e.searchHit.getHighlightFields() != null && e.searchHit.getHighlightFields().get("description") != null) {
 				 for(Text _t : e.searchHit.getHighlightFields().get("description").fragments()){
-					 extract += _t.string() + "\n";
+					 extract += _t.string() + " <strong><font class='customFont'>&bull;&bull;&bull;</font></strong> ";
 				 }
 				 
 			 }
 			 
 			 if(e.searchHit.getHighlightFields() != null && e.searchHit.getHighlightFields().get("nestedHtml.description") != null) {
 				 for(Text _t : e.searchHit.getHighlightFields().get("nestedHtml.description").fragments()){
-					 extract += _t.string() + "\n";
+					 extract += _t.string() + " <strong><font class='customFont'>&bull;&bull;&bull;</font></strong> ";
 				 }
 				 
 			 }
@@ -238,13 +241,11 @@ public class Application  extends Controller {
 	
 	
 	@SuppressWarnings("rawtypes")
-	public static Result saveEmailSearchSet()
-	{
+	public static Result saveEmailSearchSet() {
 		Form<SearchFilter> searchFilter = DynamicForm.form(SearchFilter.class).bindFromRequest();
 		String name = searchFilter.data().get("saveSearchName");
 		SaveSearchSet saveSearchSet = SaveSearchSet.getSaveSearchSetName(name);
-		if(saveSearchSet!= null)
-		{
+		if(saveSearchSet!= null) {
 			return ok(Json.toJson("name is already in system please modify it."));
 		}
 		SearchResponse searchResponse = new SearchResponse();  
@@ -258,8 +259,7 @@ public class Application  extends Controller {
 		return ok(Json.toJson(searchResponse));
 	}
 
-	public static Result showPopUpModal()throws MessagingException, IOException
-	{
+	public static Result showPopUpModal()throws MessagingException, IOException {
 		SearchResponse searchResponse = new SearchResponse();  
 		Document doc= null;
 		Form<SearchFilter> searchFilter = DynamicForm.form(SearchFilter.class).bindFromRequest();
@@ -321,6 +321,7 @@ public class Application  extends Controller {
 	{
 		public List<DomainBL> domainList=new ArrayList<DomainBL>();
 		public List<EmailBL> emailList=new ArrayList<EmailBL>();
+		public List<KeywordBL> keywordList=new ArrayList<KeywordBL>();
 	}
 	public static class SearchResponse {
 		
@@ -449,12 +450,15 @@ public class Application  extends Controller {
 	}
 	public static Result getBlackListed()
 	{
-		List<DomainBL> domainList=DomainBL.findDomainblAllObject();
 		BlackListedResponse blackListedResponse=new BlackListedResponse();
-		blackListedResponse.domainList=domainList;
-		List<EmailBL> emailList=EmailBL.findEmailblAllObject();
-		blackListedResponse.emailList=emailList;
-
+		blackListedResponse.domainList=DomainBL.findDomainblAllObject();
+		blackListedResponse.emailList=EmailBL.findEmailblAllObject();
+		blackListedResponse.keywordList=KeywordBL.findKeywordblAllObject();
+		/*Iterator itr=li.iterator();
+		while(itr.hasNext())
+		{
+			System.out.println(((DomainBL)itr.next()).domain);
+		}*/
 		return ok(Json.toJson(blackListedResponse));
 	}
 	public static Result addEmailToBL(String emailAddress)
@@ -473,19 +477,33 @@ public class Application  extends Controller {
 		blackListedResponse.emailList.add(null);
 		return ok(Json.toJson(blackListedResponse));
 	}
-	public static Result removeBLDomain(long id)
-	{
+	public static Result addKeywordToBL(String keyword) {
+		//System.out.println("in addDomain DomainName="+domainName);
+		KeywordBL key=KeywordBL.findKeywordblObjectByKeyword(keyword);
+		BlackListedResponse blackListedResponse=new BlackListedResponse();
+		if(key == null) {
+			KeywordBL keywordbl=new KeywordBL();
+			keywordbl.keyword=keyword;
+			keywordbl.save();
+			key=KeywordBL.findKeywordblObjectByKeyword(keyword);
+			blackListedResponse.keywordList.add(key);
+			return ok(Json.toJson(blackListedResponse));
+		}
+		blackListedResponse.keywordList.add(null);
+		return ok(Json.toJson(blackListedResponse));
+	}
+	public static Result removeBLDomain(long id) {
 		return ok(Json.toJson(DomainBL.deleteDomainBLById(id)));
 	}
-	public static Result removeBLEmail(long id)
-	{
+	public static Result removeBLEmail(long id) {
 		return ok(Json.toJson(EmailBL.deleteEmailBLById(id)));
 	}
-	public static Result removeEmailData(long id,String indexId)
-	{
+	public static Result removeBLKeyword(long id) {
+		return ok(Json.toJson(KeywordBL.deleteKeywordBLById(id)));
+	}
+	public static Result removeEmailData(long id,String indexId) {
 		Email e=Email.find.byId(indexId);
-		if(e!=null)
-		{
+		if(e!=null) {
 			e.delete();
 			//Links.deleteLinksByMailObjectId(id);
 			MailObjectModel.deleteMailObjectById(id);

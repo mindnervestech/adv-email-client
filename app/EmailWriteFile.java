@@ -1,19 +1,13 @@
-import gui.ava.html.image.generator.HtmlImageGenerator;
-
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
-import javax.imageio.ImageIO;
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
@@ -21,23 +15,11 @@ import javax.mail.MessagingException;
 import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
-import javax.mail.internet.MimeMultipart;
 
 import models.DomainBL;
 import models.EmailBL;
 import models.MailObjectModel;
-
-import org.apache.commons.validator.UrlValidator;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Entities.EscapeMode;
-import org.jsoup.select.Elements;
-
 import play.Play;
-import play.libs.Akka;
-import scala.concurrent.duration.Duration;
-import akka.actor.ActorSystem;
 
 public class EmailWriteFile {
 	static final String rootDir = Play.application().configuration()

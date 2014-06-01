@@ -23,9 +23,11 @@ emailclient.service('BlacklistedDomains', function($resource){
     });
 
 emailclient.controller('AdminController',function($scope,$location,$http,usSpinnerService,BlacklistedDomains){
+	console.log($location.path());
 	$scope.isadmin = true;
 	$scope.blDomains;
 	$scope.blAddresses;
+	$scope.blKeywords;
 	$scope.tabs = [
 	               { title:'Black List',active: true, content:'/assets/app/views/blacklist.html' }
 	              // ,{ title:'Upcomings', content:'/assets/app/views/upcoming.html'}
@@ -33,20 +35,14 @@ emailclient.controller('AdminController',function($scope,$location,$http,usSpinn
 	
 	$scope.tabs.blacklist = [
 	                          { title:'By Domain',active: true, content:'/assets/app/views/domain.html' },
-	                          { title:'By Email Address', content:'/assets/app/views/address.html' }
+	                          { title:'By Email Address', content:'/assets/app/views/address.html' },
+	                          { title:'By Subject Keyword', content:'/assets/app/views/token.html' }
 	                          ];
 	
-	/*$scope.getDomainBL = function () { 
-		
-        	$scope.blDomains = BlacklistedDomains.getDomains.get();
-        	console.log($scope.blDomains);
-		};
-	*/
 	$scope.removeBLDomain= function(domainId)
 	{
 		$http.get('/remove-BLDomain/'+domainId)
 		.success(function(data, status, headers, config){
-			//alert(data);
 			if(data)
 			{
 				$scope.getBlackList();
@@ -63,19 +59,49 @@ emailclient.controller('AdminController',function($scope,$location,$http,usSpinn
 			}
 		});
 	};
+	
+	$scope.removeBLKeyword=function(keywordId)
+	{
+		$http.get('/remove-BLKeyword/'+keywordId)
+		.success(function(data, status, headers, config){
+			if(data)
+			{
+				$scope.getBlackList();
+			}
+		});
+	};
+	
 	$scope.getBlackList=function()
 	{
 		$http.get('/get-blacklisted')
 		.success(function(data, status, headers, config){
 			$scope.blDomains = data.domainList;
 			$scope.blAddresses = data.emailList;
+			$scope.blKeywords =data.keywordList;
+			//console.log($scope.blDomains);
 			usSpinnerService.stop('loading...');
 		});
 	};
 	
 	$scope.formData = {
 			domainToBeAdded : '',
-			email:''
+			email:'',
+			keyword : ''
+	};
+	
+	$scope.addKeywordToBL = function () { 
+		
+		$http.get('/addKeywordToBL/' + $scope.formData.keyword)
+		.success(function(data, status, headers, config){
+			//alert(data.domainList[0]);
+			//alert(data.list[0]!=null);
+			$scope.formData.domainToBeAdded='';
+			if(data.keywordList[0]!=null)
+			{
+				//alert("1");
+				$scope.blKeywords.push(data.keywordList[0]);
+			}
+		});
 	};
 	
 	$scope.addDomainToBL = function () { 
@@ -86,10 +112,9 @@ emailclient.controller('AdminController',function($scope,$location,$http,usSpinn
 			{
 				$scope.blDomains.push(data.domainList[0]);
 			}
-		
 		});
-		
-	}
+	};
+	
 	$scope.addEmailToBL = function () { 
 		$http.get('/addEmailToBL/' + $scope.formData.email)
 		.success(function(data, status, headers, config){
@@ -102,7 +127,7 @@ emailclient.controller('AdminController',function($scope,$location,$http,usSpinn
 	}
 	
 
-	});
+});
 
 emailclient.controller('SearchController',function($scope, $location,$http, $modal,$sce, usSpinnerService){
 	
@@ -233,13 +258,12 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 	  
 	  
 	/*  Below Section for pagination  */
+	$scope.totalItems = 0;
+	$scope.currentPage = 0;
+	$scope.prevPage = -1;
+	$scope.maxSize = 5;
 	
-	  $scope.totalItems = 0;
-		$scope.currentPage = 0;
-		$scope.prevPage = -1;
-		$scope.maxSize = 5;
-       		
-	  
+	
 	$scope.$watch('currentPage', function(newPage){
 		if($scope.toggle && !($scope.currentPage == 0 && $scope.searchForm.page == 0)) {
 		$scope.searchForm.page =  $scope.currentPage ;

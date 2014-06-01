@@ -28,7 +28,7 @@ public class MntIndexQuery<T extends Index> extends com.github.cleverage.elastic
 		SearchRequestBuilder requestBuilder =  super.getSearchRequestBuilder(indexQueryPath);
         for (MntHighlightBuilder highlight : highlights) {
             requestBuilder.addHighlightedField(highlight.field, highlight.fragmentSize/*, highlight.numberOfFragments*/);
-            requestBuilder.setHighlighterPreTags("<strong style='background-color: aquamarine;'>");
+            requestBuilder.setHighlighterPreTags("<strong 	class='highlight-search'>");
             requestBuilder.setHighlighterPostTags("</strong>");
         }
         

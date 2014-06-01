@@ -19,11 +19,15 @@ GET 	/addDomainToBL/:domain				controllers.Application.addDomainToBL(domain :Str
 
 GET		/addEmailToBL/:email				controllers.Application.addEmailToBL(email :String)
 
+GET		/addKeywordToBL/:keyword			controllers.Application.addKeywordToBL(keyword :String)
+
 GET  	/get-blacklisted					controllers.Application.getBlackListed()
 
 GET 	/remove-BLDomain/:id				controllers.Application.removeBLDomain(id :Long)
 
 GET 	/remove-BLEmail/:id					controllers.Application.removeBLEmail(id :Long)
+
+GET		/remove-BLKeyword/:id					controllers.Application.removeBLKeyword(id :Long)
 
 GET		/remove-Email-Data/:id/:indexId		controllers.Application.removeEmailData(id :Long,indexId :String)
 
