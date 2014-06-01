@@ -231,9 +231,17 @@ public class HtmlAndEmlParser {
 				{
 					//linkDB.setStatus(2);
 					WebDriver driver = new HtmlUnitDriver();
-			        driver.get(urlLink);
-			        doc = Jsoup.parse(driver.getPageSource());
-					text = doc.body().text();
+			        try {
+			        	driver.get(urlLink);
+			        	doc = Jsoup.parse(driver.getPageSource());
+			        	text = doc.body().text();
+			        } finally {
+			        	try {
+			        		driver.close();
+			        	} catch(Exception e){
+			        		
+			        	}
+			        }
 				}
 				if(Strings.isNullOrEmpty(text))
 				{
