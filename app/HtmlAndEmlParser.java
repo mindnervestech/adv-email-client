@@ -2,12 +2,10 @@ import gui.ava.html.image.generator.HtmlImageGenerator;
 import indexing.Email;
 
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -18,12 +16,9 @@ import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import models.ImageInfo;
 import models.Links;
 import models.MailObjectModel;
 
-import org.apache.commons.validator.UrlValidator;
-import org.apache.http.util.ByteArrayBuffer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -44,7 +39,7 @@ public class HtmlAndEmlParser {
     	Document doc= null;
     	System.out.println("Reading from FS" );
 		
-    	List <MailObjectModel> moList =MailObjectModel.find.where().eq("status", false).findList();
+    	List <MailObjectModel> moList =MailObjectModel.find.where().eq("status", 0).setMaxRows(10).findList();
     	System.out.println("No of mails to be processed  from FS" + moList.size());
 		for (MailObjectModel mm:moList)
 		{
@@ -155,9 +150,10 @@ public class HtmlAndEmlParser {
 			for (Element link : linksHref) {
 				saveLinksInDb(mm, link , email.nestedHtml);
 			}
+			System.out.println("Saving Links Done");
 			
 			email.index();
-			mm.status = 1;
+			mm.setStatus(1);
 			//mm.setContent(content);
 			mm.update();
 			//for (Element link : links) {
@@ -235,9 +231,17 @@ public class HtmlAndEmlParser {
 				{
 					//linkDB.setStatus(2);
 					WebDriver driver = new HtmlUnitDriver();
-			        driver.get(urlLink);
-			        doc = Jsoup.parse(driver.getPageSource());
-					text = doc.body().text();
+			        try {
+			        	driver.get(urlLink);
+			        	doc = Jsoup.parse(driver.getPageSource());
+			        	text = doc.body().text();
+			        } finally {
+			        	try {
+			        		driver.close();
+			        	} catch(Exception e){
+			        		
+			        	}
+			        }
 				}
 				if(Strings.isNullOrEmpty(text))
 				{

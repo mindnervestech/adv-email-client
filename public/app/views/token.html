@@ -1,0 +1,15 @@
+<div>
+<table class="table table-bordered table-hover table-responsive">
+<tr class="success">
+<th colspan="2">Black Listed Keywords</th>
+</tr>
+<tr data-ng-repeat="blKeyword in blKeywords" class="active">
+<td style="width:98%;text-align: center;">{{blKeyword.keyword}}</td> 
+<td><span class="glyphicon glyphicon-remove inline" style="cursor: pointer;" ng-click="removeBLKeyword(blKeyword.id)"></span></td>
+</tr>
+</table>
+<form class="form-inline">
+<input type="text" class="input-sm form-control textStyle" style="width:20%" data-ng-model="formData.keyword" placeholder="Keyword">
+<button type="submit" data-ng-click="addKeywordToBL()" class="btn btn-primary btn-xs" >Add to Black List</button>
+</form>
+</div>
