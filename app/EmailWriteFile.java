@@ -4,10 +4,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
-
+import java.util.StringTokenizer;
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
@@ -18,6 +20,7 @@ import javax.mail.Store;
 
 import models.DomainBL;
 import models.EmailBL;
+import models.KeywordBL;
 import models.MailObjectModel;
 import play.Play;
 
@@ -62,7 +65,11 @@ public class EmailWriteFile {
             mm.sentDate = message[i].getSentDate();
             mm.mailPath = path;
             mm.domain = domain;
-    		
+            StringTokenizer st = new StringTokenizer(mm.mailName);
+			List<String> tokenList=new ArrayList<String>();
+            while(st.hasMoreElements()) {
+				tokenList.add(st.nextElement().toString().toUpperCase());
+			}
             DomainBL domainBL=DomainBL.findDomainblObjectByDomainName(domain);
             String emailAddr=mm.sendersEmail;
             int open=emailAddr.indexOf("<");
@@ -72,7 +79,7 @@ public class EmailWriteFile {
     			emailAddr=emailAddr.substring(open+1,close);
     		}
             EmailBL emailBL=EmailBL.findEmailblObjectByEmailAddress(emailAddr);
-            if(domainBL!=null||emailBL!=null)
+            if(domainBL!=null||emailBL!=null||KeywordBL.findKeywordblObjectFromKeywordList(tokenList))
             {
             	mm.status=2;
             }

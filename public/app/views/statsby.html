@@ -1,0 +1,35 @@
+<!-- <tabset>
+   <tab ng-repeat="statby in tabs.statsby" heading="{{statby.title}}" active="statby.active">
+     <div data-ng-include style="width: 100%;" 
+                     data-src="statby.content" ></div>
+   </tab>
+</tabset> -->
+<div>
+<div class="col-xs-12 col-sm-6 col-md-8">
+<div class="ui-datepicker-header ui-widget-header ui-helper-clearfix ui-corner-all" style="float:left;">
+<select ng-model="PieChart.year" class="ui-datepicker-year" style="margin-left:1px">
+		<option value="none" selected>Select Year</option>
+		<option value="current">Current Year</option>
+		<option value="last">Last Year</option>
+		<option value="all">All</option>
+</select>
+<select ng-model="PieChart.monthYear" class="ui-datepicker-year" style="margin-left:1px">
+	<option value="none" selected>Select Month</option>
+	<option value="1">Jan</option>
+	<option value="2">Feb</option>
+	<option value="3">Mar</option>
+	<option value="4">Apr</option>
+	<option value="5">May</option>
+	<option value="6">Jun</option>
+	<option value="7">Jul</option>
+	<option value="8">Aug</option>
+	<option value="9">Sep</option>
+	<option value="10">Oct</option>
+	<option value="11">Nov</option>
+	<option value="12">Dec</option>
+</select>
+</div>
+<input type="button" class="btn btn-primary" value="Get Data" ng-click="getChart()" style="margin-left:1px">
+</div>
+<div id="pie-container" style="min-width: 310px; height: 400px; max-width: 600px;"></div>
+</div>

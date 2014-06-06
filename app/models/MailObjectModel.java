@@ -78,10 +78,59 @@ public class MailObjectModel extends Model{
 		strList.removeAll(Collections.singleton(null));  
 		return strList;
 	}
-	
-	
-
-	
+	public static int getTotalCount(String month){
+		String arr[]=month.split("-");
+		int year=Integer.parseInt(arr[0]);
+		int monthInt=Integer.parseInt(arr[1]);
+		StringBuilder query = new StringBuilder();
+		List<SqlRow> resultList = null;
+		query.append("SELECT COUNT(*) as count FROM mail_object_model WHERE MONTH(sent_date)="+monthInt+" and YEAR(sent_date)="+year +" and (status=1 or status=0)");
+		resultList = Ebean.createSqlQuery(query.toString()).findList();
+		return resultList.get(0).getInteger("count");
+	}
+	public static int getTotalCountForYear(String year){
+		int yearInt=Integer.parseInt(year);
+		StringBuilder query = new StringBuilder();
+		List<SqlRow> resultList = null;
+		query.append("SELECT COUNT(*) as count FROM mail_object_model WHERE YEAR(sent_date)="+yearInt +" and (status=1 or status=0)");
+		resultList = Ebean.createSqlQuery(query.toString()).findList();
+		return resultList.get(0).getInteger("count");
+	}
+	public static int getTotalCountForAll(){
+		StringBuilder query = new StringBuilder();
+		List<SqlRow> resultList = null;
+		query.append("SELECT COUNT(*) as count FROM mail_object_model WHERE status=1 or status=0");
+		resultList = Ebean.createSqlQuery(query.toString()).findList();
+		return resultList.get(0).getInteger("count");
+	}
+	public static List<SqlRow> getMonthChartData(String month)
+	{
+		String arr[]=month.split("-");
+		int year=Integer.parseInt(arr[0]);
+		int monthInt=Integer.parseInt(arr[1]);
+		StringBuilder query = new StringBuilder();
+		List<SqlRow> resultList = null;
+		query.append("SELECT domain, COUNT(*) as count FROM mail_object_model WHERE MONTH(sent_date)="+monthInt+" and YEAR(sent_date)="+year +" and (status=1 or status=0) GROUP BY domain");
+		resultList = Ebean.createSqlQuery(query.toString()).findList();
+		return resultList;
+	}
+	public static List<SqlRow> getYearChartData(String year)
+	{
+		int yearInt=Integer.parseInt(year);
+		StringBuilder query = new StringBuilder();
+		List<SqlRow> resultList = null;
+		query.append("SELECT domain, COUNT(*) as count FROM mail_object_model WHERE YEAR(sent_date)="+year +" and (status=1 or status=0) GROUP BY domain");
+		resultList = Ebean.createSqlQuery(query.toString()).findList();
+		return resultList;
+	}
+	public static List<SqlRow> getAllChartData()
+	{
+		StringBuilder query = new StringBuilder();
+		List<SqlRow> resultList = null;
+		query.append("SELECT domain, COUNT(*) as count FROM mail_object_model WHERE status=1 or status=0 GROUP BY domain");
+		resultList = Ebean.createSqlQuery(query.toString()).findList();
+		return resultList;
+	}
 
 	
 	

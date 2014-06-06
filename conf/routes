@@ -5,9 +5,9 @@
 # Home page
 
 GET     /                                controllers.Application.index()
-GET     /filterSearch              controllers.Application.searchForEmails()
+GET     /filterSearch              controllers.Application.searchForEmails(predicate :String,reverse :Boolean)
 
-GET		/searchForEmails				 controllers.Application.searchForEmails()
+GET		/searchForEmails/:predicate/:reverse				 controllers.Application.searchForEmails(predicate :String,reverse :Boolean)
 GET		/get-cover-image-by-id/:id		 controllers.Application.getCoverImageByID(id :Long)
 GET		/get-link-image-by-id/:id		 	controllers.Application.getlinkImageByID(id :Long)
 GET     /showPopUpModal                  controllers.Application.showPopUpModal()
@@ -30,6 +30,14 @@ GET 	/remove-BLEmail/:id					controllers.Application.removeBLEmail(id :Long)
 GET		/remove-BLKeyword/:id					controllers.Application.removeBLKeyword(id :Long)
 
 GET		/remove-Email-Data/:id/:indexId		controllers.Application.removeEmailData(id :Long,indexId :String)
+
+GET		/get-month-chart/:month				controllers.Application.getMonthChart(month : String)
+
+GET		/get-year-chart/:year				controllers.Application.getYearChart(year : String)
+
+GET		/get-all-chart						controllers.Application.getAllChart()
+
+GET		/downloadPdf/:id					controllres.Application.downloadPdf(id :Long)
 
 # Table Data
 GET     /showTables/:id                     controllers.ShowTab.showTables(id :Long)

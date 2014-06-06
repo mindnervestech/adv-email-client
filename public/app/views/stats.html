@@ -10,7 +10,7 @@
 	 	</a>
 	 	<a class="cal" href="/showTables/0" target="_blank" style="color: rgba(255,255,255,0.5);margin-left: 3%;">Collection/Calender</a>
 	 	<a ng-show="isadmin" class="cal" href="/#/admin" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Search</a>
-	 	<a ng-show="isadmin" class="cal" href="/#/stats" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Statics</a>
+	 	<a ng-show="isadmin" class="cal" href="/#/adminBL" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Black List</a>
 	 	<div style="float: right;width: 24%;">
 	 	<!-- <input type="text" class="col-xs-3 form-control" style="width: 80%; margin-right: 4%;" placeholder="Search"> -->
 	  </div>
@@ -18,14 +18,12 @@
       
     </div>
 </nav>
-<div data-ng-init="getBlackList()">
 <tabset>
-   <tab ng-repeat="tab1 in tabs.blacklist" heading="{{tab1.title}}" active="tab1.active" ng-click="getDomains()">
+   <tab ng-repeat="tab1 in tabs.stats" heading="{{tab1.title}}" active="tab1.active">
      <div data-ng-include style="width: 100%;" 
                      data-src="tab1.content" ></div>
    </tab>
 </tabset>
-</div>
 <!-- <tabset>
    <tab ng-repeat="tab in tabs" heading="{{tab.title}}" active="tab.active">
      <div data-ng-include style="width: 100%;" data-src="tab.content"></div>

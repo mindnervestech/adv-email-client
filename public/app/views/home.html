@@ -151,6 +151,30 @@ blockquote{
 .highlight-search {
 background: yellow;
 }
+
+.vertical{
+-webkit-transform: rotate(-90deg);
+-o-transform: rotate(-90deg);
+-moz-transform: rotate(-90deg);
+position: fixed;
+background: rgb(155, 6, 24);
+left: -115px;
+top: 241px;
+border-top-left-radius: 0px;
+border-top-right-radius: 0px;
+border-bottom-left-radius: 8px;
+border-bottom-right-radius: 8px;
+box-shadow: 2px 3px 5px #888;
+cursor:pointer;
+color: white;
+height: 13%;
+text-align: -webkit-center;
+text-align: -moz-center;
+text-align: -o-center;
+width: 17%;
+height: 50px;
+}
+
 </style>  
 
 <script language="javascript">
@@ -162,10 +186,9 @@ background: yellow;
 		   deltaDirection: 'down',
 		   delayHide:0
 	   });
-    });
-</script>
-
-
+	   
+	});
+</script>		
 <nav class="navbar bg-primary nav" role="navigation" style="color: #bbb;border-bottom: 1px solid #444;min-height: 70px;">
     
    <!-- <div class="col-xs-3">
@@ -176,7 +199,8 @@ background: yellow;
 	 		<img src="/assets/app/images/logo_agora.png" style="width: 21%;float: left;" alt="Your Brand" >
 	 	</a>
 	 	<a class="cal" href="/showTables/0" target="_blank" style="color: rgba(255,255,255,0.5);margin-left: 3%;">Collection/Calender</a>
-	 	<a ng-show="isadmin" class="cal" href="/#/adminBL" style="color: rgba(255,255,255,0.5);margin-left: 5%;">Black List</a>
+	 	<a ng-show="isadmin" class="cal" href="/#/adminBL" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Black List</a>
+	 	<a ng-show="isadmin" class="cal" href="/#/stats" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Statics</a>
 	 	<div style="float: right;width: 24%;">
 	 	<!-- <input type="text" class="col-xs-3 form-control" style="width: 80%; margin-right: 4%;" placeholder="Search"> -->
 	 	<form data-ng-submit="submitSearch()" class="navbar-form navbar-left  form-inline" role="search">
@@ -354,7 +378,7 @@ background: yellow;
 		</div> 
 		 
  </div> 
-		
+	
 </div>
 	
 	
@@ -381,15 +405,14 @@ background: yellow;
 			
 	
 	</div>
-     	
      				<div  id="wrapper">
-										<div  id="columns">
+						<div  id="columns">
 							<div data-ng-repeat="email in emails" ng-hide="soButton" class="pin" style="width:100%;">
 									<span ng-show="isadmin" ng-click="removeEmailData(email.id,email.indexId)" style="cursor: pointer;">remove this</span>
 								 			<p style="margin-left: 65%;">{{email.date | date:'MM-dd-yyyy'}}</p>
 												 <img data-ng-src="/get-cover-image-by-id/{{email.id}}" style="cursor: pointer;" tooltip="Click Image to view" data-ng-click="showPopUpModal(email.id)"/>
 												<p class="text-primary textStyle" style="text-align: center;border-bottom: 1px solid #ccc;padding-bottom: 3%;">{{email.domain}}</p>
-												<p>{{email.subject}}</p>
+												<p>{{ email.subject | limitTo:20 }}</p>
 												<div style="border-top: 1px solid #ccc;width: 100%;">
 													<a data-ng-click="getlinkImageByID1(email.id)" style="float: left;font-family: -webkit-pictograph;text-align: center; cursor: pointer;">show all internal links</a>
 													<a class="" data-toggle="collapse" data-target="#ext{{email.id}}" style="float: right;font-family: -webkit-pictograph;text-align: center; cursor: pointer;">snippet</a>
@@ -397,30 +420,30 @@ background: yellow;
 											<div id="ext{{email.id}}" ng-bind-html="email.extract" style="float: left;width: 100%;font-weight: bold;font-size: small;background-color: aquamarine;" class="collapse">{{email.extract}}</div>
 										</div>
 									</div>
-									
-							
 							</div>
-							
-						
-     	
-   <table ng-show="soButton"  class="table Contextual  table-striped table-bordered table-condensed table-hover"  style="margin-bottom: 1px;overflow: auto; border: 1px solid;">
-							<tr data-ng-repeat="email in emails" style="background-color: #fff !important;height: 140px;">
+
+
+<div ng-show="soButton" ng-click="isHide = !isHide" class="vertical"><p style="margin-top: 15%;font-size: 12px;">Show&nbsp;or&nbsp;Hide&nbsp;Images&nbsp;Panel</p>
+   </div><!-- style="float:left;position: fixed;width:1.8%"  -->	
+   <table ng-show="soButton" class="table Contextual  table-striped table-bordered table-condensed table-hover"  style="margin-bottom: 1px;overflow: auto; border: 1px solid;">
+							<tr data-ng-repeat="email in emails | orderBy:predicate:reverse" style="background-color: #fff !important;height: 140px;left:-900" class="panel{{email.id}}">
+									
 									<p  style="float: right;margin: 0 0 0px;" class="textStyle">{{email.date | date:'MMMM-dd-yyyy'}}</p>
 								<!-- Image -->
-								<td style="padding: 1%;width: 10%;">
+								<td ng-show="isHide" style="padding: 1%;width: 10%;">
 									<img data-ng-src="/get-cover-image-by-id/{{email.id}}" style="width:120px; cursor: pointer; height: 90px;border: 1px solid gray;" data-ng-click="showPopUpModal(email.id)" />
 									<!-- Domain -->
-									<p class="text-primary textStyle" style="text-align: center;">{{email.domain}}</p>
+									<span class="text-primary textStyle" style="text-align: center;margin-left: 9%;">Appx. Size {{ email.length | number:2}}kbs</span>
 								</td>
 								
 								<td>
 								<div>
 								<!-- Subject -->
-									 <blockquote class="text-primary blockquote_adv" style="float: left;font-size: 15px !important;">{{email.subject}}</blockquote>
+									 <blockquote class="text-primary blockquote_adv" style="float: left;font-size: 15px !important;">{{email.subject}} <span ng-show="$first" style="cursor: pointer;" ng-click="subjectSort(false)" class="glyphicon glyphicon-sort-by-alphabet"></span> <span ng-show="$first" style="cursor: pointer;" ng-click="subjectSort(true)" class="glyphicon glyphicon-sort-by-alphabet-alt"></span></blockquote>
 								
 								<!-- Date -->
-								 	<p  style="float: right;margin-right: 2%;">{{email.date | date:'MMMM-dd-yyyy'}}</p> 
-									
+								 	<span  style="float: right;margin-right: 2%;" class="text-primary textStyle">{{email.date | date:'MMMM-dd-yyyy'}} <span ng-show="$first" style="cursor: pointer;" ng-click="dateSort(true)" class="glyphicon glyphicon-sort-by-order"></span> <span ng-show="$first" style="cursor: pointer;" ng-click="dateSort(false)" class="glyphicon glyphicon-sort-by-order-alt"></span></span><br> 
+									<span style="float: right;margin-right: 21px;margin-top: -0.6%;" class="text-primary textStyle">{{email.domain}} <span ng-show="$first" style="cursor: pointer;" ng-click="domainSort(true)" class="glyphicon glyphicon-sort-by-alphabet"></span> <span ng-show="$first" style="cursor: pointer;" ng-click="domainSort(false)" class="glyphicon glyphicon-sort-by-alphabet-alt"></span></span>
 								</div>
 								<!-- Extract -->
 									<div ng-bind-html="email.extract" style="float: left;" class="textStyle col-xs-12 col-sm-10 col-md-12"></div>
@@ -432,7 +455,6 @@ background: yellow;
 							
 						</table>
 
-						
 						
 						<!--  <table   class="table Contextual  table-striped table-bordered table-condensed table-hover"  style="margin-bottom: 1px;overflow: auto; border: 1px solid;">
 							<tr data-ng-repeat="email in emails" style="background-color: #fff !important;height: 140px;">

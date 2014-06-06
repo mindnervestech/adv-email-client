@@ -24,6 +24,8 @@ emailclient.service('BlacklistedDomains', function($resource){
 
 emailclient.controller('AdminController',function($scope,$location,$http,usSpinnerService,BlacklistedDomains){
 	console.log($location.path());
+	$scope.predicate = 'sentDate';
+	$scope.reverse=true;
 	$scope.isadmin = true;
 	$scope.blDomains;
 	$scope.blAddresses;
@@ -32,13 +34,89 @@ emailclient.controller('AdminController',function($scope,$location,$http,usSpinn
 	               { title:'Black List',active: true, content:'/assets/app/views/blacklist.html' }
 	              // ,{ title:'Upcomings', content:'/assets/app/views/upcoming.html'}
 	               ];
-	
+	$scope.PieChart= {
+			monthYear:'none',
+			year:'none',
+			stat:''
+	}
 	$scope.tabs.blacklist = [
 	                          { title:'By Domain',active: true, content:'/assets/app/views/domain.html' },
 	                          { title:'By Email Address', content:'/assets/app/views/address.html' },
 	                          { title:'By Subject Keyword', content:'/assets/app/views/token.html' }
 	                          ];
+	$scope.tabs.stats = [
+	                     {title:'Pie',active:true,content:'/assets/app/views/statsby.html'}
+	                     ];
 	
+	$scope.getChart = function(){
+		var month=$scope.PieChart.monthYear;
+		var year=$scope.PieChart.year;
+		if(year=="all"){
+			$scope.PieChart.stat="All";
+			$http.get('/get-all-chart')
+			.success(function(data, status, headers, config){
+				$scope.dataAssingment(data);
+			});
+		}else if(year!="none" && month=="none"){
+			if(year=="current"){
+				year=new Date().getFullYear();
+			} else {
+				year=new Date().getFullYear()-1;
+			}
+			$scope.PieChart.stat=year;
+			$http.get('/get-year-chart/'+year)
+			.success(function(data, status, headers, config){
+				$scope.dataAssingment(data);
+			});
+		}else if(year!="none" && month!="none"){
+			if(year=="current"){
+				year=new Date().getFullYear();
+			} else {
+				year=new Date().getFullYear()-1;
+			}
+			alert(year+'-'+month);
+			$scope.PieChart.stat=month+'-'+year;
+			$http.get('/get-month-chart/'+year+'-'+month)
+			.success(function(data, status, headers, config){
+				$scope.dataAssingment(data);
+			});
+		}else {
+			alert("Please Select Year!");
+		}
+	};
+	$scope.dataAssingment = function(data){
+		 $('#pie-container').highcharts({
+		        chart: {
+		            plotBackgroundColor: null,
+		            plotBorderWidth: null,
+		            plotShadow: false
+		        },
+		        title: {
+		            text: 'Statics of '+$scope.PieChart.stat
+		        },
+		        tooltip: {
+		            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+		        },
+		        plotOptions: {
+		            pie: {
+		                allowPointSelect: true,
+		                cursor: 'pointer',
+		                dataLabels: {
+		                    enabled: true,
+		                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+		                    style: {
+		                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+		                    }
+		                }
+		            }
+		        },
+		        series: [{
+		            type: 'pie',
+		            name: 'Domain',
+		            data: data
+		        }]
+		    });
+	}
 	$scope.removeBLDomain= function(domainId)
 	{
 		$http.get('/remove-BLDomain/'+domainId)
@@ -130,7 +208,9 @@ emailclient.controller('AdminController',function($scope,$location,$http,usSpinn
 });
 
 emailclient.controller('SearchController',function($scope, $location,$http, $modal,$sce, usSpinnerService){
-	
+	$scope.predicate = 'sentDate';
+	$scope.reverse=true;
+	$scope.isHide = true;
 	/*  Below Section for modal  */
 	if($location.path()=="/admin")
 	{
@@ -308,6 +388,22 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 				levelOnekeyWord :""
 	}
 	
+	$scope.subjectSort = function(reverse){
+		$scope.predicate='subject';
+		$scope.reverse=reverse;
+		$scope.submitSearch();
+	};
+	$scope.dateSort = function(reverse){
+		$scope.predicate='sentDate';
+		$scope.reverse=reverse;
+		$scope.submitSearch();
+	};
+	$scope.domainSort = function(reverse){
+		$scope.predicate='domain';
+		$scope.reverse=reverse;
+		$scope.submitSearch();
+	};
+	
 	$scope.submitSearch = function(count,sortText) {
 		if(sortText == null){
 			$scope.sortBy = 'Sort By';
@@ -330,6 +426,9 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 		search(function(data) {
 			
 			$scope.emails = data.emails;
+			if($scope.emails.length==0){
+				$scope.soButton = 0;
+				}
 			$scope.hasSearchResult = data.emails.length != 0;
 			$scope.domainCounts = data.domainCounts; 
 			$scope.noOFPages = data.noOFPages;
@@ -344,7 +443,8 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 	function search(callback) {
 		usSpinnerService.spin('loading...');
 		$scope.searchForm.domainChecked = "";
-		$http.get('/searchForEmails', {params:$scope.searchForm})
+		//alert($scope.predicate+'/'+$scope.reverse);
+		$http.get('/searchForEmails/'+$scope.predicate+'/'+$scope.reverse, {params:$scope.searchForm})
 		.success(function(data, status, headers, config){
 			$("#test").click()
 			if(callback) {

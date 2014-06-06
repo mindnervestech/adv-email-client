@@ -7,6 +7,7 @@ import indexing.Email;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
@@ -38,8 +39,6 @@ import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.AndFilterBuilder;
 import org.elasticsearch.index.query.BaseQueryBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.CommonTermsQueryBuilder;
-import org.elasticsearch.index.query.CommonTermsQueryBuilder.Operator;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeFilterBuilder;
@@ -47,6 +46,7 @@ import org.elasticsearch.index.query.RangeFilterBuilder;
 import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.facet.terms.strings.InternalStringTermsFacet;
 import org.elasticsearch.search.facet.terms.strings.InternalStringTermsFacet.TermEntry;
+import org.elasticsearch.search.sort.SortOrder;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -57,6 +57,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import vm.UrlMapVM;
 
+import com.avaje.ebean.SqlRow;
 import com.avaje.ebean.annotation.Transactional;
 import com.github.cleverage.elasticsearch.IndexResults;
 import com.google.common.base.Splitter;
@@ -86,7 +87,7 @@ public class Application  extends Controller {
 		 return ok("no image set");
 	}
 	
-	public static Result searchForEmails() {
+	public static Result searchForEmails(String predicate,boolean reverse) {
 		Form<SearchFilter> searchFilter = DynamicForm.form(SearchFilter.class).bindFromRequest();
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("\"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'\"");
 		
@@ -192,7 +193,11 @@ public class Application  extends Controller {
 		 // below two lines are for Pagination ---
 		 indexQuery.from(Integer.parseInt(searchFilter.data().get("page")) * count);
 		 indexQuery.size(count);
-		 
+		 if(reverse){
+			 indexQuery.addSort(predicate, SortOrder.ASC);
+		 } else {
+			 indexQuery.addSort(predicate, SortOrder.DESC);
+		 }
 		 
 		 IndexResults<Email> allAndFacetAge = Email.find.search(indexQuery);
 		 
@@ -200,7 +205,7 @@ public class Application  extends Controller {
 		 searchResponse.emails = new ArrayList<Application.SearchResponse.Email>();
 		 
 		 for(Email e : allAndFacetAge.results) {
-			 
+			 double length=e.description.length()*1.7/(1024.00);
 			 String extract = "";//e.searchHit.getScore();
 			 if(e.searchHit.getHighlightFields() != null && e.searchHit.getHighlightFields().get("description") != null) {
 				 for(Text _t : e.searchHit.getHighlightFields().get("description").fragments()){
@@ -224,7 +229,7 @@ public class Application  extends Controller {
 				 extract = e.description.substring(0, e.description.length() > 300 ? 300 : e.description.length()) +" ...";
 			 }
 			 searchResponse.emails.add(new Application.SearchResponse.Email(e.subject,
-					 e.domain, e.sentDate, e.sendersEmail, extract, e.mail_objectId,e.getId()));
+					 e.domain, e.sentDate, e.sendersEmail, extract, e.mail_objectId,e.getId(),length));
 		 }
 		 searchResponse.saveSearchSets.addAll(SaveSearchSet.find.all());
 		 searchResponse.noOFPages = (int) Math.ceil((double)allAndFacetAge.getTotalCount()/10);
@@ -333,7 +338,7 @@ public class Application  extends Controller {
 		public static class Email {
 			public Email(){}
 			public Email(String subject, String domain, Date date,
-					String sendersEmail, String extract, Long id,String indexId) 
+					String sendersEmail, String extract, Long id,String indexId,Double length) 
 			{
 				super();
 				this.subject = subject;
@@ -343,6 +348,7 @@ public class Application  extends Controller {
 				this.extract = extract;
 				this.id = id;
 				this.indexId=indexId;
+				this.length=length;
 			}
 			public String subject;
 			public String domain;
@@ -351,6 +357,7 @@ public class Application  extends Controller {
 			public String extract;
 			public Long id;
 			public String indexId;
+			public Double length;
 		}
 		
 		public static class Domain {
@@ -510,5 +517,83 @@ public class Application  extends Controller {
 			return ok("record deleted successfully");
 		}
 		return ok("no record found");
+	}
+	public static Result getMonthChart(String month)
+	{
+		int totalCount=MailObjectModel.getTotalCount(month);
+		List<SqlRow> list = MailObjectModel.getMonthChartData(month);
+		List<List<Object>> responseList = new ArrayList<List<Object>>();
+		for(SqlRow sr:list){
+			List<Object> _item = new ArrayList<Object>();
+			_item.add(sr.getString("domain"));
+			_item.add(sr.getInteger("count")*100/totalCount);
+			responseList.add(_item);
+		}
+		System.out.println(Json.toJson(responseList));
+		return ok(Json.toJson(responseList));
+	}
+	public static Result getYearChart(String year)
+	{
+		int totalCount=MailObjectModel.getTotalCountForYear(year);
+		List<SqlRow> list = MailObjectModel.getYearChartData(year);
+		List<List<Object>> responseList = new ArrayList<List<Object>>();
+		for(SqlRow sr:list){
+			List<Object> _item = new ArrayList<Object>();
+			_item.add(sr.getString("domain"));
+			_item.add(sr.getInteger("count")*100/totalCount);
+			responseList.add(_item);
+		}
+		System.out.println(Json.toJson(responseList));
+		return ok(Json.toJson(responseList));
+	}
+	public static Result getAllChart()
+	{
+		int totalCount=MailObjectModel.getTotalCountForAll();
+		List<SqlRow> list = MailObjectModel.getAllChartData();
+		List<List<Object>> responseList = new ArrayList<List<Object>>();
+		for(SqlRow sr:list){
+			List<Object> _item = new ArrayList<Object>();
+			_item.add(sr.getString("domain"));
+			_item.add(sr.getInteger("count")*100/totalCount);
+			responseList.add(_item);
+		}
+		System.out.println(Json.toJson(responseList));
+		return ok(Json.toJson(responseList));
+	}
+	public static Result downloadPdf(long id){
+		Document doc= null;
+		MailObjectModel mailObjectModel =MailObjectModel.findMailObjectModelById(id);
+		File file= new File(mailObjectModel.mailPath);
+		Session session = Session.getDefaultInstance(new Properties());
+		InputStream inMsg;
+		try {
+			inMsg = new FileInputStream(file);
+		
+		Message msg = new MimeMessage(session, inMsg);
+		String contentType=msg.getContentType().substring(0,msg.getContentType().indexOf('/'));
+		MimeMultipart obj=null;
+		if("multipart".equals(contentType))
+		{
+			obj = (MimeMultipart)msg.getContent();
+			if(obj.getCount()==0)
+			{
+				doc = Jsoup.parse(obj.getBodyPart(0).getContent().toString(), "ISO-8859-1");
+			}
+			else
+			for(int k=0;k<obj.getCount();k++) 
+			{
+				doc = Jsoup.parse(obj.getBodyPart(k).getContent().toString(), "ISO-8859-1");
+			}
+		}
+		else
+		{
+			doc = Jsoup.parse(msg.getContent().toString(), "ISO-8859-1");
+		}
+		doc.toString();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ok();
 	}
 }
