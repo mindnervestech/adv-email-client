@@ -226,7 +226,7 @@ public class Application  extends Controller {
 			 }
 			 
 			 if(extract.isEmpty()) {
-				 extract = e.description.substring(0, e.description.length() > 300 ? 300 : e.description.length()) +" ...";
+				 extract = e.description.substring(0, e.description.length() > 1400 ? 1400 : e.description.length()) +" ...";
 			 }
 			 searchResponse.emails.add(new Application.SearchResponse.Email(e.subject,
 					 e.domain, e.sentDate, e.sendersEmail, extract, e.mail_objectId,e.getId(),length));
@@ -559,41 +559,5 @@ public class Application  extends Controller {
 		}
 		System.out.println(Json.toJson(responseList));
 		return ok(Json.toJson(responseList));
-	}
-	public static Result downloadPdf(long id){
-		Document doc= null;
-		MailObjectModel mailObjectModel =MailObjectModel.findMailObjectModelById(id);
-		File file= new File(mailObjectModel.mailPath);
-		Session session = Session.getDefaultInstance(new Properties());
-		InputStream inMsg;
-		try {
-			inMsg = new FileInputStream(file);
-		
-		Message msg = new MimeMessage(session, inMsg);
-		String contentType=msg.getContentType().substring(0,msg.getContentType().indexOf('/'));
-		MimeMultipart obj=null;
-		if("multipart".equals(contentType))
-		{
-			obj = (MimeMultipart)msg.getContent();
-			if(obj.getCount()==0)
-			{
-				doc = Jsoup.parse(obj.getBodyPart(0).getContent().toString(), "ISO-8859-1");
-			}
-			else
-			for(int k=0;k<obj.getCount();k++) 
-			{
-				doc = Jsoup.parse(obj.getBodyPart(k).getContent().toString(), "ISO-8859-1");
-			}
-		}
-		else
-		{
-			doc = Jsoup.parse(msg.getContent().toString(), "ISO-8859-1");
-		}
-		doc.toString();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return ok();
 	}
 }
