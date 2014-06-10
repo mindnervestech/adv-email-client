@@ -45,17 +45,22 @@ emailclient.controller('AdminController',function($scope,$location,$http,usSpinn
 	                          { title:'By Subject Keyword', content:'/assets/app/views/token.html' }
 	                          ];
 	$scope.tabs.stats = [
-	                     {title:'Pie',active:true,content:'/assets/app/views/statsby.html'}
+	                     {title:'Pie',active:true,content:'/assets/app/views/statsby.html'},
+	                     {title:'Bar Chart',content:'/assets/app/views/barchart.html'}
 	                     ];
+	
+	$scope.s1="";
 	
 	$scope.getChart = function(){
 		var month=$scope.PieChart.monthYear;
 		var year=$scope.PieChart.year;
+		
 		if(year=="all"){
 			$scope.PieChart.stat="All";
 			$http.get('/get-all-chart')
 			.success(function(data, status, headers, config){
 				$scope.dataAssingment(data);
+				$scope.getChart1(data);
 			});
 		}else if(year!="none" && month=="none"){
 			if(year=="current"){
@@ -85,11 +90,15 @@ emailclient.controller('AdminController',function($scope,$location,$http,usSpinn
 		}
 	};
 	$scope.dataAssingment = function(data){
+		console.log(data);
+		
 		 $('#pie-container').highcharts({
 		        chart: {
 		            plotBackgroundColor: null,
 		            plotBorderWidth: null,
-		            plotShadow: false
+		            plotShadow: false,
+		            width:1250,
+		            height:500
 		        },
 		        title: {
 		            text: 'Statics of '+$scope.PieChart.stat
@@ -117,6 +126,102 @@ emailclient.controller('AdminController',function($scope,$location,$http,usSpinn
 		        }]
 		    });
 	}
+	
+	
+	
+		
+	
+	$scope.count=0;
+	$scope.getChart1 = function(count){
+		if($scope.count < 0){
+			$scope.count=30;
+		}
+			$scope.PieChart.stat="All";
+			$http.get('/get-all-chart1/'+$scope.count)
+			.success(function(data, status, headers, config){
+				$scope.dataAssingment1(data);
+				$scope.count=$scope.count+30;
+				
+			});
+	
+	};
+	
+	
+	$scope.dataAssingment1 = function(data){
+		console.log(data);
+        $('#container').highcharts({
+            chart: {
+                type: 'column',
+              width:1250
+             
+                	
+            },
+           
+            title: {
+                text: 'Status of Bar Chart'
+            },
+           
+            xAxis: {
+                type: 'category',
+                labels: {
+                    rotation: -45,
+                    style: {
+                        fontSize: '13px',
+                        fontFamily: 'Verdana, sans-serif'
+                    }
+                }
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Numbers'
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            tooltip: {
+                pointFormat: 'Population in 2008: <b>{point.y:.1f} millions</b>',
+            },
+            series: [{
+                name: 'Domain',
+                data: data,
+                dataLabels: {
+                    enabled: true,
+                    rotation: -90,
+                    color: '#FFFFFF',
+                    align: 'right',
+                    x: 4,
+                    y: 10,
+                    style: {
+                        fontSize: '13px',
+                        fontFamily: 'Verdana, sans-serif',
+                        textShadow: '0 0 3px black'
+                    }
+                }
+            }]
+        });
+    }
+    
+	
+	
+	$scope.getChartprev = function(count){
+		if($scope.count != 0){
+			$scope.count=$scope.count-30;
+		}
+		
+			$scope.PieChart.stat="All";
+			$http.get('/get-all-chartprev/'+$scope.count)
+			.success(function(data, status, headers, config){
+				$scope.dataAssingment1(data);
+				$scope.count=$scope.count-30;
+				
+			});
+			
+	};
+	
+	
+	
 	$scope.removeBLDomain= function(domainId)
 	{
 		$http.get('/remove-BLDomain/'+domainId)
@@ -255,6 +360,13 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 					//alert("in if");
 					$scope.getBlackList();
 				}*/
+			});
+	  };
+	  $scope.downloadPDF =function(popUpId) {
+		  $http.get('/downloadPdf/'+popUpId, {params:$scope.searchForm})
+			.success(function(data, status, headers, config){
+				$('.modal-headerPopUp').append(data.htmlToShowMailPopUp);
+				usSpinnerService.stop('loading...');
 			});
 	  };
 	  $scope.showPopUpModal=function (popUpId) {

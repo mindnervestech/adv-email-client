@@ -14,6 +14,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -203,7 +205,6 @@ public class Application  extends Controller {
 		 
 		 SearchResponse searchResponse = new SearchResponse(); 
 		 searchResponse.emails = new ArrayList<Application.SearchResponse.Email>();
-		 
 		 for(Email e : allAndFacetAge.results) {
 			 double length=e.description.length()*1.7/(1024.00);
 			 String extract = "";//e.searchHit.getScore();
@@ -226,7 +227,7 @@ public class Application  extends Controller {
 			 }
 			 
 			 if(extract.isEmpty()) {
-				 extract = e.description.substring(0, e.description.length() > 1400 ? 1400 : e.description.length()) +" ...";
+				 extract = e.description.substring(0, e.description.length() > 300 ? 300 : e.description.length()) +" ...";
 			 }
 			 searchResponse.emails.add(new Application.SearchResponse.Email(e.subject,
 					 e.domain, e.sentDate, e.sendersEmail, extract, e.mail_objectId,e.getId(),length));
@@ -559,5 +560,114 @@ public class Application  extends Controller {
 		}
 		System.out.println(Json.toJson(responseList));
 		return ok(Json.toJson(responseList));
+	}
+	
+	public static Result getAllChart1(int count)
+	{
+		int totalCount=MailObjectModel.getTotalCountForAll();
+		List<SqlRow> list = MailObjectModel.getAllChartData();
+		Collections.reverse(list);
+		System.out.println("hiiiiiii"+(list.size() - 1));
+		List<List<Object>> responseList = new ArrayList<List<Object>>();
+		
+		//System.out.println(list.get(index));
+		try {
+		for(int i=count;i<count+30;i++){
+			
+			List<Object> _item = new ArrayList<Object>();
+			_item.add(list.get(i).getString("domain"));
+			_item.add(list.get(i).getInteger("count"));
+			responseList.add(_item);
+			
+		}
+		}catch(IndexOutOfBoundsException e) {
+			
+			for(int i=count;i<list.size()-1;i++){
+				
+				List<Object> _item = new ArrayList<Object>();
+				_item.add(list.get(i).getString("domain"));
+				_item.add(list.get(i).getInteger("count"));
+				responseList.add(_item);
+				
+			}
+		}
+		System.out.println(Json.toJson(responseList));
+		return ok(Json.toJson(responseList));
+	}
+	
+	public static Result getAllChartprev(int prev)
+	{
+		
+		int totalCount=MailObjectModel.getTotalCountForAll();
+		List<SqlRow> list = MailObjectModel.getAllChartData();
+		Collections.reverse(list);
+		System.out.println("hiiiiiii"+(list.size() - 1));
+		List<List<Object>> responseList = new ArrayList<List<Object>>();
+		/*if(count>list.size()-1){
+			count=list.size();
+		}*/
+		//System.out.println(list.get(index));
+		try {
+		for(int i=prev-30;i<prev;i++){
+			
+			List<Object> _item = new ArrayList<Object>();
+			_item.add(list.get(i).getString("domain"));
+			_item.add(list.get(i).getInteger("count"));
+			responseList.add(_item);
+			
+		}
+		}catch(IndexOutOfBoundsException e) {
+			
+			for(int i=0;i<30;i++){
+				
+				List<Object> _item = new ArrayList<Object>();
+				_item.add(list.get(i).getString("domain"));
+				_item.add(list.get(i).getInteger("count"));
+				responseList.add(_item);
+				
+			}
+		}
+		System.out.println(Json.toJson(responseList));
+		return ok(Json.toJson(responseList));
+	}
+	
+	
+	
+	
+	public static Result downloadPdf(long id){
+		Document doc= null;
+		MailObjectModel mailObjectModel =MailObjectModel.findMailObjectModelById(id);
+		File file= new File(mailObjectModel.mailPath);
+		Session session = Session.getDefaultInstance(new Properties());
+		InputStream inMsg;
+		try {
+			inMsg = new FileInputStream(file);
+		
+		Message msg = new MimeMessage(session, inMsg);
+		String contentType=msg.getContentType().substring(0,msg.getContentType().indexOf('/'));
+		MimeMultipart obj=null;
+		if("multipart".equals(contentType))
+		{
+			obj = (MimeMultipart)msg.getContent();
+			if(obj.getCount()==0)
+			{
+				doc = Jsoup.parse(obj.getBodyPart(0).getContent().toString(), "ISO-8859-1");
+			}
+			else
+			for(int k=0;k<obj.getCount();k++) 
+			{
+				doc = Jsoup.parse(obj.getBodyPart(k).getContent().toString(), "ISO-8859-1");
+			}
+		}
+		else
+		{
+			doc = Jsoup.parse(msg.getContent().toString(), "ISO-8859-1");
+		}
+		doc.toString();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ok();
 	}
 }

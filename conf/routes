@@ -37,6 +37,12 @@ GET		/get-year-chart/:year				controllers.Application.getYearChart(year : String
 
 GET		/get-all-chart						controllers.Application.getAllChart()
 
+GET		/get-all-chart1/:count						controllers.Application.getAllChart1(count :Integer)
+
+GET		/get-all-chartprev/:prev						controllers.Application.getAllChartprev(prev :Integer)
+
+GET		/downloadPdf/:id					controllers.Application.downloadPdf(id :Long)
+
 # Table Data
 GET     /showTables/:id                     controllers.ShowTab.showTables(id :Long)
 GET		/saveEmailSearchSet				 	controllers.Application.saveEmailSearchSet()
