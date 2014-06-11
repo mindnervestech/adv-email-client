@@ -356,7 +356,7 @@ emailclient.controller('AdminController',function($scope,$location,$http,usSpinn
 
 emailclient.controller('SearchController',function($scope, $location,$http, $modal,$sce, usSpinnerService){
 	$scope.predicate = 'sentDate';
-	$scope.reverse=true;
+	$scope.reverse=false;
 	$scope.isHide = true;
 	/*  Below Section for modal  */
 	if($location.path()=="/admin")
@@ -416,7 +416,7 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 		  usSpinnerService.spin('loading...');
 		  $http.get('/showPopUpModal', {params:$scope.searchForm})
 			.success(function(data, status, headers, config){
-				$('.modal-headerPopUp').append(data.htmlToShowMailPopUp);
+				$('.modal-bodyPopUp').append(data.htmlToShowMailPopUp);
 				usSpinnerService.stop('loading...');
 			});
 		  modalInstance = $modal.open({

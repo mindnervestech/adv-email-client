@@ -178,6 +178,16 @@ height: 50px;
 </style>  
 
 <script language="javascript">
+$(function() {
+	$("#listprint").click(function() {
+		$("#nav").hide();
+		$("#results").hide();
+		window.print();
+		$("#nav").show();
+		$("#results").show();
+		return (false);
+		});
+	}); 
    $(document).ready(function(){
 	   $(".tip-bottom").tooltip({
 	        placement : 'bottom'
@@ -186,10 +196,9 @@ height: 50px;
 		   deltaDirection: 'down',
 		   delayHide:0
 	   });
-	   
 	});
 </script>		
-<nav class="navbar bg-primary nav" role="navigation" style="color: #bbb;border-bottom: 1px solid #444;min-height: 70px;">
+<nav class="navbar bg-primary nav" id="nav" role="navigation" style="color: #bbb;border-bottom: 1px solid #444;min-height: 70px;">
     
    <!-- <div class="col-xs-3">
     <input type="text" class="form-control" placeholder="Search">
@@ -263,7 +272,7 @@ height: 50px;
 
 
 
-<div class="container-fluid bg-info-cor " style="max-height: 38px;" ng-show="hasSearchResult">
+<div class="container-fluid bg-info-cor " style="max-height: 38px;" id="results" ng-show="hasSearchResult">
 	
 	
 		<div style="width: 100%;margin-left: 3%;">
@@ -354,6 +363,9 @@ height: 50px;
 							<button type="button" data-ng-click="soButton = 1"  class="btn btn-primary btn-sm">
 							<span class="glyphicon glyphicon-list-alt"></span>
 							</button> 
+							<button type="button"  class="btn btn-primary btn-sm" id="listprint">
+							<span class="glyphicon glyphicon-print"></span>
+							</button>
 							</div>
 						</div>	
 							
@@ -425,7 +437,7 @@ height: 50px;
 
 <div ng-show="soButton" ng-click="isHide = !isHide" class="vertical"><p style="margin-top: 15%;font-size: 12px;">Show&nbsp;or&nbsp;Hide&nbsp;Images&nbsp;Panel</p>
    </div><!-- style="float:left;position: fixed;width:1.8%"  -->	
-   <table ng-show="soButton" class="table Contextual  table-striped table-bordered table-condensed table-hover"  style="margin-bottom: 1px;overflow: auto; border: 1px solid;">
+   <table id="listcontainer" ng-show="soButton" class="table Contextual  table-striped table-bordered table-condensed table-hover"  style="margin-bottom: 1px;overflow: auto; border: 1px solid;">
 							<tr data-ng-repeat="email in emails | orderBy:predicate:reverse" style="background-color: #fff !important;height: 140px;left:-900" class="panel{{email.id}}">
 									
 									<p  style="float: right;margin: 0 0 0px;" class="textStyle">{{email.date | date:'MMMM-dd-yyyy'}}</p>

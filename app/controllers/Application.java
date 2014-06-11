@@ -227,7 +227,7 @@ public class Application  extends Controller {
 			 }
 			 
 			 if(extract.isEmpty()) {
-				 extract = e.description.substring(0, e.description.length() > 300 ? 300 : e.description.length()) +" ...";
+				 extract = e.description.substring(0, e.description.length() > 1400 ? 1400 : e.description.length()) +" ...";
 			 }
 			 searchResponse.emails.add(new Application.SearchResponse.Email(e.subject,
 					 e.domain, e.sentDate, e.sendersEmail, extract, e.mail_objectId,e.getId(),length));

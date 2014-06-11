@@ -1,11 +1,27 @@
- <div class="">
+<script type="text/javascript">
+$(function() {
+$("#hrefPrint").click(function() {
+// Print the DIV.
+$("#printdiv").print();
+return (false);
+});
+});
+</script>
+
+<div class="">
 
   <div class="modal-content" style="float: left;padding-left: 2%;padding-right: 2%">
     <div class="modal-headerPopUp">
-      <button type="button" class="close" ng-click="cancel()">&times;</button>
-      <h6 class="modal-header">Show Email</h6>
+      <div class="modal-header">
+       <button type="button" class="close" ng-click="cancel()">&times;</button>
+      <span>Show Email</span>
+      <button type="button" ng-show="soButton" ng-show="soButton" style="float: right;margin-right: 2%;height: 16px;" id="hrefPrint" class="btn btn-primary btn-sm">
+							<span class="glyphicon glyphicon-print" style="float: right;height: 53%;margin-top: -61%;"></span>
+							</button>
+      <!-- <a id="hrefPrint" href="#" style="margin-left: 21%;font-family: -webkit-pictograph;text-align: center; cursor: pointer;"><span class="glyphicon glyphicon-print"></span></a> -->
+      </div>
     </div>
-    <div class="modal-bodyPopUp">
+    <div class="modal-bodyPopUp" id="printdiv">
   <!--   <div class="thumbnail">
         <div data-ng-repeat="vm in s1" > 
         	<h1>{{vm.url}}</h1>
