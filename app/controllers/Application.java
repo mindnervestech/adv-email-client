@@ -527,7 +527,7 @@ public class Application  extends Controller {
 		for(SqlRow sr:list){
 			List<Object> _item = new ArrayList<Object>();
 			_item.add(sr.getString("domain"));
-			_item.add(sr.getInteger("count")*100/totalCount);
+			_item.add(sr.getInteger("count")*100.00/totalCount);
 			responseList.add(_item);
 		}
 		System.out.println(Json.toJson(responseList));
@@ -541,7 +541,7 @@ public class Application  extends Controller {
 		for(SqlRow sr:list){
 			List<Object> _item = new ArrayList<Object>();
 			_item.add(sr.getString("domain"));
-			_item.add(sr.getInteger("count")*100/totalCount);
+			_item.add(sr.getInteger("count")*100.00/totalCount);
 			responseList.add(_item);
 		}
 		System.out.println(Json.toJson(responseList));
@@ -555,7 +555,7 @@ public class Application  extends Controller {
 		for(SqlRow sr:list){
 			List<Object> _item = new ArrayList<Object>();
 			_item.add(sr.getString("domain"));
-			_item.add(sr.getInteger("count")*100/totalCount);
+			_item.add(sr.getInteger("count")*100.00/totalCount);
 			responseList.add(_item);
 		}
 		System.out.println(Json.toJson(responseList));
@@ -582,7 +582,7 @@ public class Application  extends Controller {
 		}
 		}catch(IndexOutOfBoundsException e) {
 			
-			for(int i=count;i<list.size()-1;i++){
+			for(int i=count;i>list.size()-1;i++){
 				
 				List<Object> _item = new ArrayList<Object>();
 				_item.add(list.get(i).getString("domain"));

@@ -60,7 +60,7 @@ emailclient.controller('AdminController',function($scope,$location,$http,usSpinn
 			$http.get('/get-all-chart')
 			.success(function(data, status, headers, config){
 				$scope.dataAssingment(data);
-				$scope.getChart1(data);
+				
 			});
 		}else if(year!="none" && month=="none"){
 			if(year=="current"){
@@ -79,10 +79,51 @@ emailclient.controller('AdminController',function($scope,$location,$http,usSpinn
 			} else {
 				year=new Date().getFullYear()-1;
 			}
-			alert(year+'-'+month);
+			
 			$scope.PieChart.stat=month+'-'+year;
 			$http.get('/get-month-chart/'+year+'-'+month)
 			.success(function(data, status, headers, config){
+				switch(month){
+				case "1":
+					$scope.PieChart.stat="Jan "+year;
+					break;
+				case "2":
+					$scope.PieChart.stat="Feb "+year;
+					break;
+				case "3":
+					$scope.PieChart.stat="Mar "+year;
+					break;
+				case "4":
+					$scope.PieChart.stat="Apr "+year;
+					break;
+				case "5":
+					$scope.PieChart.stat="May "+year;
+					break;
+				case "6":
+					$scope.PieChart.stat="Jun "+year;
+					break;
+				case "7":
+					$scope.PieChart.stat="Jul "+year;
+					break;
+				case "8":
+					$scope.PieChart.stat="Aug "+year;
+					break;
+				case "9":
+					$scope.PieChart.stat="Sep "+year;
+					break;
+				case "10":
+					$scope.PieChart.stat="Oct "+year;
+					break;
+				case "11":
+					$scope.PieChart.stat="Nov "+year;
+					break;
+				case "12":
+					$scope.PieChart.stat="Dec "+year;
+					break;
+				default:
+					$scope.PieChart.stat=year;
+				break;
+				}
 				$scope.dataAssingment(data);
 			});
 		}else {
@@ -90,7 +131,7 @@ emailclient.controller('AdminController',function($scope,$location,$http,usSpinn
 		}
 	};
 	$scope.dataAssingment = function(data){
-		console.log(data);
+		//console.log(data);
 		
 		 $('#pie-container').highcharts({
 		        chart: {
@@ -152,6 +193,7 @@ emailclient.controller('AdminController',function($scope,$location,$http,usSpinn
         $('#container').highcharts({
             chart: {
                 type: 'column',
+                marginBottom: 140,
               width:1250
              
                 	
@@ -181,7 +223,7 @@ emailclient.controller('AdminController',function($scope,$location,$http,usSpinn
                 enabled: false
             },
             tooltip: {
-                pointFormat: 'Population in 2008: <b>{point.y:.1f} millions</b>',
+                pointFormat: '<b>{point.y} Domains</b>',
             },
             series: [{
                 name: 'Domain',
