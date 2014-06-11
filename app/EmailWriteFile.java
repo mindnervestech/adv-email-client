@@ -20,7 +20,6 @@ import javax.mail.Store;
 
 import models.DomainBL;
 import models.EmailBL;
-import models.KeywordBL;
 import models.MailObjectModel;
 import play.Play;
 
@@ -79,7 +78,7 @@ public class EmailWriteFile {
     			emailAddr=emailAddr.substring(open+1,close);
     		}
             EmailBL emailBL=EmailBL.findEmailblObjectByEmailAddress(emailAddr);
-            if(domainBL!=null||emailBL!=null||KeywordBL.findKeywordblObjectFromKeywordList(tokenList))
+            if(domainBL!=null||emailBL!=null)
             {
             	mm.status=2;
             }
