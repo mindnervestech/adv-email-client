@@ -33,6 +33,10 @@ angular.module('email-client', [
     	  templateUrl: '/assets/app/views/stats.html',
           controller: 'AdminController'
       })
+      .when('/statictical',{
+    	  templateUrl: '/assets/app/views/statictical.html',
+          controller: 'AdminController'
+      })
       .otherwise({
           redirectTo: '/'
       });

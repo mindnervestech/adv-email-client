@@ -22,11 +22,14 @@ emailclient.service('BlacklistedDomains', function($resource){
     );
     });
 
-emailclient.controller('AdminController',function($scope,$location,$http,usSpinnerService,BlacklistedDomains){
+emailclient.controller('AdminController',function($scope,$location,$http,$modal,usSpinnerService,BlacklistedDomains){
 	console.log($location.path());
 	$scope.predicate = 'sentDate';
 	$scope.reverse=true;
 	$scope.isadmin = true;
+	$scope.isData=false;
+	$scope.isDivShow=false;
+	$scope.totalEmails;
 	$scope.blDomains;
 	$scope.blAddresses;
 	$scope.blKeywords;
@@ -37,7 +40,9 @@ emailclient.controller('AdminController',function($scope,$location,$http,usSpinn
 	$scope.PieChart= {
 			monthYear:'none',
 			year:'none',
-			stat:''
+			stat:'',
+			fromMonthYear:'',
+			toMonthYear:''
 	}
 	$scope.tabs.blacklist = [
 	                          { title:'By Domain',active: true, content:'/assets/app/views/domain.html' },
@@ -50,86 +55,162 @@ emailclient.controller('AdminController',function($scope,$location,$http,usSpinn
 	                     ];
 	
 	$scope.s1="";
-	
-	$scope.getChart = function(){
-		var month=$scope.PieChart.monthYear;
-		var year=$scope.PieChart.year;
-		
-		if(year=="all"){
-			$scope.PieChart.stat="All";
-			$http.get('/get-all-chart')
-			.success(function(data, status, headers, config){
-				$scope.dataAssingment(data);
-				
-			});
-		}else if(year!="none" && month=="none"){
-			if(year=="current"){
-				year=new Date().getFullYear();
+	var modalInstance;
+	$scope.open = function () {
+	    modalInstance = $modal.open({
+	      templateUrl: '/assets/app/views/myModal.html',
+	      scope : $scope
+	    });
+  };
+	$scope.cancel = function () {
+	    modalInstance.dismiss('cancel');
+	  };
+	$scope.getDomainStats = function() {
+		var fromMonthYear=$scope.PieChart.fromMonthYear;
+		var toMonthYear=$scope.PieChart.toMonthYear;
+		//alert(fromMonthYear);
+		//alert(toMonthYear);
+		if(fromMonthYear == '' || toMonthYear == '') {
+			alert("Please Select Start and End Month!");
+		} else {
+			var fromArr=$scope.PieChart.fromMonthYear.split("-");
+			var toArr=$scope.PieChart.toMonthYear.split("-");
+			var fromMonth=fromArr[0];
+			var fromYear=fromArr[1];
+			var toMonth=toArr[0];
+			var toYear=toArr[1];
+			//alert(fromArr);
+			//alert(toArr);
+			if(fromYear>=toYear && fromMonth>toMonth){
+				alert("please Select valid Period!");
 			} else {
-				year=new Date().getFullYear()-1;
+				usSpinnerService.spin('loading...');
+				$http.get('/get-period-stats/'+fromMonthYear+'/'+toMonthYear)
+				.success(function(data, status, headers, config){
+					console.log(data);
+					if(data.length>0) {
+						$scope.totalEmails=data[0].total;
+						$scope.isData=true;
+						$scope.statisticData=data;
+					} else {
+						$scope.isData=false;
+					}
+					usSpinnerService.stop('loading...');
+				});
 			}
-			$scope.PieChart.stat=year;
-			$http.get('/get-year-chart/'+year)
-			.success(function(data, status, headers, config){
-				$scope.dataAssingment(data);
-			});
-		}else if(year!="none" && month!="none"){
-			if(year=="current"){
-				year=new Date().getFullYear();
+		}
+	}
+		$scope.getChart = function(){
+		var fromMonthYear=$scope.PieChart.fromMonthYear;
+		var toMonthYear=$scope.PieChart.toMonthYear;
+		if(fromMonthYear == '' || toMonthYear == '') {
+			alert("Please Select Start and End Month!");
+		} else {
+			var fromArr=$scope.PieChart.fromMonthYear.split("-");
+			var toArr=$scope.PieChart.toMonthYear.split("-");
+			var fromMonth=fromArr[0];
+			var fromYear=fromArr[1];
+			var toMonth=toArr[0];
+			var toYear=toArr[1];
+			if(fromYear>=toYear && fromMonth>toMonth){
+				alert("please Select valid Period!");
 			} else {
-				year=new Date().getFullYear()-1;
+				usSpinnerService.spin('loading...');
+				$http.get('/get-month-chart/'+fromMonthYear+'/'+toMonthYear)
+				.success(function(data, status, headers, config){
+					switch(fromMonth) {
+						case "01":
+							$scope.PieChart.stat="Jan "+fromYear;
+							break;
+						case "02":
+							$scope.PieChart.stat="Feb "+fromYear;
+							break;
+						case "03":
+							$scope.PieChart.stat="Mar "+fromYear;
+							break;
+						case "04":
+							$scope.PieChart.stat="Apr "+fromYear;
+							break;
+						case "05":
+							$scope.PieChart.stat="May "+fromYear;
+							break;
+						case "06":
+							$scope.PieChart.stat="Jun "+fromYear;
+							break;
+						case "07":
+							$scope.PieChart.stat="Jul "+fromYear;
+							break;
+						case "08":
+							$scope.PieChart.stat="Aug "+fromYear;
+							break;
+						case "09":
+							$scope.PieChart.stat="Sep "+fromYear;
+							break;
+						case "10":
+							$scope.PieChart.stat="Oct "+fromYear;
+							break;
+						case "11":
+							$scope.PieChart.stat="Nov "+fromYear;
+							break;
+						case "12":
+							$scope.PieChart.stat="Dec "+fromYear;
+							break;
+						default:
+							$scope.PieChart.stat=fromYear;
+							break;
+					}
+					switch(toMonth) {
+						case "01":
+							$scope.PieChart.stat=$scope.PieChart.stat+" to Jan "+toYear;
+							break;
+						case "02":
+							$scope.PieChart.stat=$scope.PieChart.stat+" to Feb "+toYear;
+							break;
+						case "03":
+							$scope.PieChart.stat=$scope.PieChart.stat+" to Mar "+toYear;
+							break;
+						case "04":
+							$scope.PieChart.stat=$scope.PieChart.stat+" to Apr "+toYear;
+							break;
+						case "05":
+							$scope.PieChart.stat=$scope.PieChart.stat+" to May "+toYear;
+							break;
+						case "06":
+							$scope.PieChart.stat=$scope.PieChart.stat+" to Jun "+toYear;
+							break;
+						case "07":
+							$scope.PieChart.stat=$scope.PieChart.stat+" to Jul "+toYear;
+							break;
+						case "08":
+							$scope.PieChart.stat=$scope.PieChart.stat+" to Aug "+toYear;
+							break;
+						case "09":
+							$scope.PieChart.stat=$scope.PieChart.stat+" to Sep "+toYear;
+							break;
+						case "10":
+							$scope.PieChart.stat=$scope.PieChart.stat+" to Oct "+toYear;
+							break;
+						case "11":
+							$scope.PieChart.stat=$scope.PieChart.stat+" to Nov "+toYear;
+							break;
+						case "12":
+							$scope.PieChart.stat=$scope.PieChart.stat+" to Dec "+toYear;
+							break;
+						default:
+							$scope.PieChart.stat=$scope.PieChart.stat+" to "+toYear;
+						break;
+					}
+					$scope.dataAssingment(data);
+					usSpinnerService.stop('loading...');
+				});
+				 modalInstance = $modal.open({
+				      templateUrl: '/assets/app/views/statsby.html',
+				      scope : $scope
+				    });
 			}
-			
-			$scope.PieChart.stat=month+'-'+year;
-			$http.get('/get-month-chart/'+year+'-'+month)
-			.success(function(data, status, headers, config){
-				switch(month){
-				case "1":
-					$scope.PieChart.stat="Jan "+year;
-					break;
-				case "2":
-					$scope.PieChart.stat="Feb "+year;
-					break;
-				case "3":
-					$scope.PieChart.stat="Mar "+year;
-					break;
-				case "4":
-					$scope.PieChart.stat="Apr "+year;
-					break;
-				case "5":
-					$scope.PieChart.stat="May "+year;
-					break;
-				case "6":
-					$scope.PieChart.stat="Jun "+year;
-					break;
-				case "7":
-					$scope.PieChart.stat="Jul "+year;
-					break;
-				case "8":
-					$scope.PieChart.stat="Aug "+year;
-					break;
-				case "9":
-					$scope.PieChart.stat="Sep "+year;
-					break;
-				case "10":
-					$scope.PieChart.stat="Oct "+year;
-					break;
-				case "11":
-					$scope.PieChart.stat="Nov "+year;
-					break;
-				case "12":
-					$scope.PieChart.stat="Dec "+year;
-					break;
-				default:
-					$scope.PieChart.stat=year;
-				break;
-				}
-				$scope.dataAssingment(data);
-			});
-		}else {
-			alert("Please Select Year!");
 		}
 	};
+	
 	$scope.dataAssingment = function(data){
 		//console.log(data);
 		
@@ -138,8 +219,8 @@ emailclient.controller('AdminController',function($scope,$location,$http,usSpinn
 		            plotBackgroundColor: null,
 		            plotBorderWidth: null,
 		            plotShadow: false,
-		            width:1250,
-		            height:500
+		            width:1050,
+		            height:400
 		        },
 		        title: {
 		            text: 'Statics of '+$scope.PieChart.stat
@@ -350,7 +431,36 @@ emailclient.controller('AdminController',function($scope,$location,$http,usSpinn
 			}
 		});
 	}
-	
+	$scope.showPopUpModal=function (popUpId) {
+		  $scope.searchForm.popUpId = popUpId;
+		  usSpinnerService.spin('loading...');
+		  $http.get('/showPopUpModal', {params:$scope.searchForm})
+			.success(function(data, status, headers, config){
+				$('.modal-bodyPopUp').append(data.htmlToShowMailPopUp);
+				usSpinnerService.stop('loading...');
+			});
+		  modalInstance = $modal.open({
+		      templateUrl: '/assets/app/views/myEmailModal.html',
+		      scope : $scope
+		    });
+	  };
+	  $scope.searchForm= {
+				from : '',
+				to : new Date(),
+				domain : [],
+				domainChecked:"",
+				cntKeyWord : "",
+				subKeyWord : "",
+				page : 0,
+				saveSearchId: 0,
+				rowCount : 10,
+				url:"",
+				popUpId:0,
+				eIdForImages :0,
+				eIdForLinks : 0,
+				saveSearchName :"",
+				levelOnekeyWord :""
+	}
 
 });
 
@@ -578,7 +688,6 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 		$scope.soButton = true;
 		
 		search(function(data) {
-			
 			$scope.emails = data.emails;
 			if($scope.emails.length==0){
 				$scope.soButton = 0;

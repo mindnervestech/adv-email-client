@@ -5,32 +5,22 @@
    </tab>
 </tabset> -->
 <div>
-<div class="col-xs-12 col-sm-6 col-md-8" style="margin-bottom: 1%;">
-<div class="ui-datepicker-header ui-widget-header ui-helper-clearfix ui-corner-all" style="float:left;">
-<select ng-model="PieChart.year" class="ui-datepicker-year" style="margin-left:1px">
-		<option value="none" selected>Select Year</option>
-		<option value="current">Current Year</option>
-		<option value="last">Last Year</option>
-		<option value="all">All</option>
-</select>
-<select ng-model="PieChart.monthYear" class="ui-datepicker-year" style="margin-left:1px">
-	<option value="none" selected>Select Month</option>
-	<option value="1">Jan</option>
-	<option value="2">Feb</option>
-	<option value="3">Mar</option>
-	<option value="4">Apr</option>
-	<option value="5">May</option>
-	<option value="6">Jun</option>
-	<option value="7">Jul</option>
-	<option value="8">Aug</option>
-	<option value="9">Sep</option>
-	<option value="10">Oct</option>
-	<option value="11">Nov</option>
-	<option value="12">Dec</option>
-</select>
+ <div class="modal-content" style="float: left;padding-left: 2%;padding-right: 2%;margin-left: -40%;width:1100px;height: 700px;">
+    <div class="modal-headerPopUp">
+      <div class="modal-header">
+       <button type="button" class="close" ng-click="cancel()">&times;</button>
+      <span>Pie Chart</span>
+      <button type="button" ng-show="soButton" ng-show="soButton" style="float: right;margin-right: 2%;height: 16px;" id="hrefPrint" class="btn btn-primary btn-sm">
+							<span class="glyphicon glyphicon-print" style="float: right;height: 53%;margin-top: -61%;"></span>
+							</button>
+      <!-- <a id="hrefPrint" href="#" style="margin-left: 21%;font-family: -webkit-pictograph;text-align: center; cursor: pointer;"><span class="glyphicon glyphicon-print"></span></a> -->
+      </div>
+    </div>
+    <div class="modal-bodyPopUp" id="printdiv">
+		<div id="pie-container" style="min-width: 310px; height: 400px; max-width: 600px;margin-top: 1%;"></div>
+	</div>
+    <div class="modal-footer" style="border-top: 0px solid #e5e5e5;">
+      <button type="button" class="btn btn-default" ng-click="cancel()">Close</button>
+    </div>
+	</div
 </div>
-<input type="button" class="btn btn-primary btn-xs" value="Get Data" ng-click="getChart()" style="margin-left:10px">
-</div>
-<div id="pie-container" style="min-width: 310px; height: 400px; max-width: 600px;margin-top: 1%;"></div>
-</div>
-

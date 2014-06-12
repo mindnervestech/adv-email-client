@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
+import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ import play.data.Form;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
+import vm.MailsIDToDisplay;
 import vm.UrlMapVM;
 
 import com.avaje.ebean.SqlRow;
@@ -519,10 +521,10 @@ public class Application  extends Controller {
 		}
 		return ok("no record found");
 	}
-	public static Result getMonthChart(String month)
+	public static Result getMonthChart(String fromMonth,String toMonth)
 	{
-		int totalCount=MailObjectModel.getTotalCount(month);
-		List<SqlRow> list = MailObjectModel.getMonthChartData(month);
+		int totalCount=MailObjectModel.getTotalCount(fromMonth,toMonth);
+		List<SqlRow> list = MailObjectModel.getMonthChartData(fromMonth,toMonth);
 		List<List<Object>> responseList = new ArrayList<List<Object>>();
 		for(SqlRow sr:list){
 			List<Object> _item = new ArrayList<Object>();
@@ -630,7 +632,89 @@ public class Application  extends Controller {
 		System.out.println(Json.toJson(responseList));
 		return ok(Json.toJson(responseList));
 	}
+	public static List<Date> stringToDate(String fromMonth,String toMonth) {
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+		Date toDate;
+		Date fromDate;
+		try {
+			fromMonth="01-"+fromMonth;
+			fromDate=formatter.parse(fromMonth);
+			String toArr[]=toMonth.split("-");
+			int toMonthInt=Integer.parseInt(toArr[0]);
+			if(toMonthInt==1||toMonthInt==3||toMonthInt==5||toMonthInt==7||toMonthInt==8||toMonthInt==10||toMonthInt==12) {
+				toMonth="31-"+toMonth;
+				toDate=formatter.parse(toMonth);
+			} else if(toMonthInt==4||toMonthInt==6||toMonthInt==9||toMonthInt==11) {
+				toMonth="30-"+toMonth;
+				toDate=formatter.parse(toMonth);
+			} else {
+				int year=Integer.parseInt(toArr[1]);
+				if(year%400==0||(year%4==0 && year%100 !=0 && year%200 != 0 && year%300 != 0)) {
+					toMonth="29-"+toMonth;
+					toDate=formatter.parse(toMonth);
+				} else {
+					toMonth="28-"+toMonth;
+					toDate=formatter.parse(toMonth);
+				}
+			}
+			List<Date> dateList=new ArrayList<Date>();
+			dateList.add(fromDate);
+			dateList.add(toDate);
+			return dateList;
+		} catch (ParseException e) {
+			e.printStackTrace();
+		};
+		return null;
+	}
+	public  static Result statistic(String fromMonth,String toMonth) {
+		/// TODO: Ahemd
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+		Date toDate;
+		List<StatsVM_1> statsVM_1s = new ArrayList<Application.StatsVM_1>();
+		List<Date> dateList=stringToDate(fromMonth, toMonth);
+		if(dateList!=null){
+			System.out.println("fromDate:"+fromMonth +" toDate:"+toMonth);
+			List<MailObjectModel> moms = MailObjectModel.find.where().between("sentDate", dateList.get(0), dateList.get(1)).eq("status", "1").orderBy("domain").findList();
+			String prevDomain = "";
+				
+			StatsVM_1 vm_1 = null;
+			int total = moms.size();
+			System.out.println("total Size :"+moms.size());
+			for (MailObjectModel mom : moms) {
+				if(!prevDomain.equalsIgnoreCase(mom.domain)) {
+					vm_1 = new StatsVM_1();
+					statsVM_1s.add(vm_1);
+					prevDomain=mom.domain;
+					vm_1.domain=mom.domain;
+				}
+				vm_1.add(mom,total);
+			}
+		}
+		/*} catch (ParseException e) {
+			e.printStackTrace();
+		};*/
+		return ok(Json.toJson(statsVM_1s));
+	}
 	
+	public static class StatsVM_1 {
+		public int total;
+		public String domain;
+		public int count = 0;
+		public double percentage; 
+		public List<MailsIDToDisplay> mails;
+		public void add(MailObjectModel mom,int total) {
+			this.total=total;
+			if(mails == null) {
+				mails = new ArrayList<MailsIDToDisplay>();
+			}
+			System.out.println(mom.id+" "+mom.mailName+" "+mom.sentDate);
+			mails.add(new MailsIDToDisplay(mom.id, mom.mailName, mom.sentDate));
+			count++;
+			percentage = count*100.00/total; 
+			System.out.println("count="+count +" percentage ="+percentage);
+		}
+		
+	}
 	
 	
 	

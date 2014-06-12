@@ -78,13 +78,17 @@ public class MailObjectModel extends Model{
 		strList.removeAll(Collections.singleton(null));  
 		return strList;
 	}
-	public static int getTotalCount(String month){
-		String arr[]=month.split("-");
-		int year=Integer.parseInt(arr[0]);
-		int monthInt=Integer.parseInt(arr[1]);
+	public static int getTotalCount(String fromMonth,String toMonth){
+		String fromArr[]=fromMonth.split("-");
+		int fromYear=Integer.parseInt(fromArr[1]);
+		int fromMonthInt=Integer.parseInt(fromArr[0]);
+		String toArr[]=toMonth.split("-");
+		int toYear=Integer.parseInt(toArr[1]);
+		int toMonthInt=Integer.parseInt(toArr[0]);
 		StringBuilder query = new StringBuilder();
 		List<SqlRow> resultList = null;
-		query.append("SELECT COUNT(*) as count FROM mail_object_model WHERE MONTH(sent_date)="+monthInt+" and YEAR(sent_date)="+year +" and (status=1 or status=0)");
+		System.out.println("SELECT COUNT(*) as count FROM mail_object_model WHERE MONTH(sent_date) >="+fromMonthInt+" and MONTH(sent_date) <="+toMonthInt+" and YEAR(sent_date) >= "+fromYear +" and YEAR(sent_date) <="+toYear+" and (status=1 or status=0)");
+		query.append("SELECT COUNT(*) as count FROM mail_object_model WHERE MONTH(sent_date) >="+fromMonthInt+" and MONTH(sent_date) <="+toMonthInt+" and YEAR(sent_date) >= "+fromYear +" and YEAR(sent_date) <="+toYear+" and (status=1 or status=0)");
 		resultList = Ebean.createSqlQuery(query.toString()).findList();
 		return resultList.get(0).getInteger("count");
 	}
@@ -103,14 +107,18 @@ public class MailObjectModel extends Model{
 		resultList = Ebean.createSqlQuery(query.toString()).findList();
 		return resultList.get(0).getInteger("count");
 	}
-	public static List<SqlRow> getMonthChartData(String month)
+	public static List<SqlRow> getMonthChartData(String fromMonth,String toMonth)
 	{
-		String arr[]=month.split("-");
-		int year=Integer.parseInt(arr[0]);
-		int monthInt=Integer.parseInt(arr[1]);
+		String fromArr[]=fromMonth.split("-");
+		int fromYear=Integer.parseInt(fromArr[1]);
+		int fromMonthInt=Integer.parseInt(fromArr[0]);
+		String toArr[]=toMonth.split("-");
+		int toYear=Integer.parseInt(toArr[1]);
+		int toMonthInt=Integer.parseInt(toArr[0]);
 		StringBuilder query = new StringBuilder();
 		List<SqlRow> resultList = null;
-		query.append("SELECT domain, COUNT(*) as count FROM mail_object_model WHERE MONTH(sent_date)="+monthInt+" and YEAR(sent_date)="+year +" and (status=1 or status=0) GROUP BY domain");
+		System.out.println("SELECT domain, COUNT(*) as count FROM mail_object_model WHERE MONTH(sent_date) >="+fromMonthInt+" and MONTH(sent_date) <="+toMonthInt+" and YEAR(sent_date) >= "+fromYear +" and YEAR(sent_date) <="+toYear+" and (status=1 or status=0) GROUP BY domain");
+		query.append("SELECT domain, COUNT(*) as count FROM mail_object_model WHERE MONTH(sent_date) >="+fromMonthInt+" and MONTH(sent_date) <="+toMonthInt+" and YEAR(sent_date) >= "+fromYear +" and YEAR(sent_date) <="+toYear+" and (status=1 or status=0) GROUP BY domain");
 		resultList = Ebean.createSqlQuery(query.toString()).findList();
 		return resultList;
 	}

@@ -1,0 +1,67 @@
+<script type="text/javascript">
+$(document).ready(function(){
+	var year=new Date().getFullYear();
+	options = {
+		    pattern: 'mm-yyyy', // Default is 'mm/yyyy' and separator char is not mandatory
+		    selectedYear: year,
+		    startYear: 2001,
+		    finalYear: year,
+		    monthNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+		};
+	$('#fromMonth').monthpicker(options);
+	$('#toMonth').monthpicker(options);
+	});
+	function collapseDiv(domain)
+	{
+		var div1Class =domain.className;
+		if(div1Class=="glyphicon glyphicon-plus") {
+			domain.className="glyphicon glyphicon-minus";
+		} else {
+			domain.className="glyphicon glyphicon-plus";
+		} 
+	}
+</script>
+<div ng-controller="AdminController" >
+<nav class="navbar bg-primary nav" role="navigation" style="color: #bbb;border-bottom: 1px solid #444;min-height: 70px;">
+    
+   <!-- <div class="col-xs-3">
+    <input type="text" class="form-control" placeholder="Search">
+  </div> -->
+	 <div class="navbar-header " style="width: 100%;margin-left: 2%;margin-top: 0.5%;">
+	 	<a href="">
+	 		<img src="/assets/app/images/logo_agora.png" style="width: 21%;float: left;" alt="Your Brand" >
+	 	</a>
+	 	<a class="cal" href="/showTables/0" target="_blank" style="color: rgba(255,255,255,0.5);margin-left: 3%;">Collection/Calender</a>
+	 	<a ng-show="isadmin" class="cal" href="/#/admin" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Search</a>
+	 	<a ng-show="isadmin" class="cal" href="/#/adminBL" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Black List</a>
+	 	<div style="float: right;width: 24%;">
+	 	<!-- <input type="text" class="col-xs-3 form-control" style="width: 80%; margin-right: 4%;" placeholder="Search"> -->
+	  </div>
+	
+      
+    </div>
+</nav>
+<div style="width:100%;background: rgb(194, 199, 212);margin-top: -1%;border-radius: 3px;">
+	<input type="text" placeholder="From:MM/YYYY" style="margin-left: 30%;" ng-model="PieChart.fromMonthYear" id="fromMonth" class="mtz-monthpicker-widgetcontainer"><input type="text" style="margin-left: 1%;" placeholder="To:MM/YYYY" ng-model="PieChart.toMonthYear" id="toMonth" class="mtz-monthpicker-widgetcontainer"><input class="btn btn-primary" style="margin-left: 1%;" type="button" value="Get Data" ng-click="getDomainStats()">
+</div>
+<table ng-show="isData" class="table Contextual  table-striped table-bordered table-condensed table-hover"  style="margin-bottom: 1px;overflow: auto; border: 1px solid;margin-top: 1%;">
+	<tbody>
+		<tr>
+			<th style="width: 10%;">Domain</th>
+			<th style="width: 20%;">Percentage (<a data-ng-click="getChart()">View in Graph</a>)</th>
+			<th style="width: 20%;">Number (Total Mails {{totalEmails}})<!-- (<a>View in Graph</a>) --></th>
+			<th style="width: 40%;">Details</th>
+		</tr>
+		<tr data-ng-repeat="statistic in statisticData" style="background-color: #fff !important;left:-900">
+			<td style="width: 20%;">{{statistic.domain}}</td>
+			<td style="width: 20%;">{{statistic.percentage | number:2}}</td>
+			<td style="width: 20%;">{{statistic.count}}</td>
+			<td style="width: 40%;">Details <span id="{{statistic.domain}}" class="glyphicon glyphicon-plus" onclick="collapseDiv(this)" ng-click="isDivShow =! isDivShow"></span>
+				<div ng-show="isDivShow" data-ng-repeat="mail in statistic.mails">
+				<span style="color: lightseagreen;">{{mail.date}}</span> - {{mail.emailSubject | limitTo:30}} <a data-ng-click="showPopUpModal(mail.emailId)" style="cursor: pointer;">View</a><br>
+				</div>
+			</td>
+		</tr>
+	</tbody>
+</table>
+</div>
