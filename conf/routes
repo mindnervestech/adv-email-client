@@ -33,6 +33,9 @@ GET		/remove-Email-Data/:id/:indexId		controllers.Application.removeEmailData(id
 
 GET		/get-month-chart/:fromMonth/:toMonth			controllers.Application.getMonthChart(fromMonth :String , toMonth :String)
 
+GET		/get-month-stats/:fromMonth/:toMonth			controllers.Application.statistic(fromMonth :String , toMonth :String)
+
+
 GET		/get-year-chart/:year				controllers.Application.getYearChart(year : String)
 
 GET		/get-all-chart						controllers.Application.getAllChart()
