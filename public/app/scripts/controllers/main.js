@@ -33,6 +33,9 @@ emailclient.controller('AdminController',function($scope,$location,$http,$modal,
 	$scope.blDomains;
 	$scope.blAddresses;
 	$scope.blKeywords;
+	$scope.domainBar;
+	$scope.emailBar;
+	$scope.keywordBar;
 	$scope.tabs = [
 	               { title:'Black List',active: true, content:'/assets/app/views/blacklist.html' }
 	              // ,{ title:'Upcomings', content:'/assets/app/views/upcoming.html'}
@@ -343,7 +346,13 @@ emailclient.controller('AdminController',function($scope,$location,$http,$modal,
 			
 	};
 	
-	
+	$scope.removeBLDomainFromStat =function(domainId) {
+		//$scope.removeBLDomain(domainId);
+		$http.get('/remove-BLDomain/'+domainId)
+		.success(function(data, status, headers, config){
+		});
+		$scope.getDomainStats()
+	};
 	
 	$scope.removeBLDomain= function(domainId)
 	{
@@ -382,8 +391,23 @@ emailclient.controller('AdminController',function($scope,$location,$http,$modal,
 		$http.get('/get-blacklisted')
 		.success(function(data, status, headers, config){
 			$scope.blDomains = data.domainList;
+			if(data.domainList.length>0) {
+				$scope.domainBar=true;
+			} else {
+				$scope.domainBar=false;
+			}
 			$scope.blAddresses = data.emailList;
+			if(data.emailList.length>0) {
+				$scope.emailBar=true;
+			} else {
+				$scope.emailBar=false;
+			}
 			$scope.blKeywords =data.keywordList;
+			if(data.keywordList.length>0) {
+				$scope.keywordBar=true;
+			} else {
+				$scope.keywordBar=false;
+			}
 			//console.log($scope.blDomains);
 			usSpinnerService.stop('loading...');
 		});
@@ -406,10 +430,19 @@ emailclient.controller('AdminController',function($scope,$location,$http,$modal,
 			{
 				//alert("1");
 				$scope.blKeywords.push(data.keywordList[0]);
+				$scope.keywordBar=true;
 			}
 		});
 	};
-	
+	$scope.addBLDomainFromStat = function(domainName) {
+		if(confirm("Are you sure you want to put "+domainName.toUpperCase()+" to Blacklist? Yes/No")) {
+			$scope.formData.domainToBeAdded=domainName;
+			$http.get('/addDomainToBL/' + $scope.formData.domainToBeAdded)
+			.success(function(data, status, headers, config){
+			});
+			$scope.getDomainStats();
+		}
+	};
 	$scope.addDomainToBL = function () { 
 		$http.get('/addDomainToBL/' + $scope.formData.domainToBeAdded)
 		.success(function(data, status, headers, config){
@@ -417,6 +450,7 @@ emailclient.controller('AdminController',function($scope,$location,$http,$modal,
 			if(data.domainList[0]!=null)
 			{
 				$scope.blDomains.push(data.domainList[0]);
+				$scope.domainBar=true;
 			}
 		});
 	};
@@ -428,6 +462,7 @@ emailclient.controller('AdminController',function($scope,$location,$http,$modal,
 			if(data.emailList[0]!=null)
 			{
 				$scope.blAddresses.push(data.emailList[0]);
+				$scope.emailBar=true;
 			}
 		});
 	}

@@ -18,7 +18,7 @@ public class DomainBL extends Model {
 	
 	public String domain;
 	
-	private static Finder<Long, DomainBL> find = new Finder<Long,DomainBL>(Long.class, DomainBL.class);
+	public static Finder<Long, DomainBL> find = new Finder<Long,DomainBL>(Long.class, DomainBL.class);
 
 	public static DomainBL findDomainBLById(long id) {
 		return Ebean.find(DomainBL.class, id);

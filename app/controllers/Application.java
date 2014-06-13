@@ -229,7 +229,7 @@ public class Application  extends Controller {
 			 }
 			 
 			 if(extract.isEmpty()) {
-				 extract = e.description.substring(0, e.description.length() > 1400 ? 1400 : e.description.length()) +" ...";
+				 extract = e.description.substring(0, e.description.length() > 1800 ? 1800 : e.description.length()) +" ...";
 			 }
 			 searchResponse.emails.add(new Application.SearchResponse.Email(e.subject,
 					 e.domain, e.sentDate, e.sendersEmail, extract, e.mail_objectId,e.getId(),length));
@@ -668,12 +668,11 @@ public class Application  extends Controller {
 	}
 	public  static Result statistic(String fromMonth,String toMonth) {
 		/// TODO: Ahemd
-		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-		Date toDate;
 		List<StatsVM_1> statsVM_1s = new ArrayList<Application.StatsVM_1>();
 		List<Date> dateList=stringToDate(fromMonth, toMonth);
 		if(dateList!=null){
 			System.out.println("fromDate:"+fromMonth +" toDate:"+toMonth);
+			List<DomainBL> domainBLs=DomainBL.findDomainblAllObject();
 			List<MailObjectModel> moms = MailObjectModel.find.where().between("sentDate", dateList.get(0), dateList.get(1)).eq("status", "1").orderBy("domain").findList();
 			String prevDomain = "";
 				
@@ -683,9 +682,15 @@ public class Application  extends Controller {
 			for (MailObjectModel mom : moms) {
 				if(!prevDomain.equalsIgnoreCase(mom.domain)) {
 					vm_1 = new StatsVM_1();
-					statsVM_1s.add(vm_1);
 					prevDomain=mom.domain;
 					vm_1.domain=mom.domain;
+					for(DomainBL domain: domainBLs) {
+						if(domain.domain.equalsIgnoreCase(mom.domain)) {
+							vm_1.domainStatus=true;
+							vm_1.blackDomainListedId=domain.id;
+						}
+					}
+					statsVM_1s.add(vm_1);
 				}
 				vm_1.add(mom,total);
 			}
@@ -701,6 +706,8 @@ public class Application  extends Controller {
 		public String domain;
 		public int count = 0;
 		public double percentage; 
+		public boolean domainStatus=false;
+		public Long blackDomainListedId;
 		public List<MailsIDToDisplay> mails;
 		public void add(MailObjectModel mom,int total) {
 			this.total=total;

@@ -203,11 +203,18 @@ $(function() {
    <!-- <div class="col-xs-3">
     <input type="text" class="form-control" placeholder="Search">
   </div> -->
-	 <div class="navbar-header " style="width: 100%;margin-left: 2%;margin-top: 0.5%;">
-	 	<a href="">
-	 		<img src="/assets/app/images/logo_agora.png" style="width: 21%;float: left;" alt="Your Brand" >
+	 <div class="navbar-header " style="width: 100%;margin-left: 2%;margin-top: 0.5%;margin-bottom: -0.7%;">
+	 	<div style="float:left;width: 21%;">
+	 	<a ng-show="isadmin" href="/#/admin">
+	 		<img src="/assets/app/images/logo_agora.png" style="width: 100%;" alt="Your Brand" >
 	 	</a>
+	 	<a ng-hide="isadmin" href="/">
+	 		<img src="/assets/app/images/logo_agora.png" style="width: 100%;" alt="Your Brand" >
+	 	</a>
+	 	<span class="textStyle" style="margin-left: 23%;color: white;">E-MAIL KNOWLEDGEBASE</span> 
+	 	</div>
 	 	<a class="cal" href="/showTables/0" target="_blank" style="color: rgba(255,255,255,0.5);margin-left: 3%;">Collection/Calender</a>
+	 	<a ng-hide="isadmin" class="cal" href="/#/statictical" ng-click="isadmin=false" style="color: rgba(255,255,255,0.5);margin-left: 1%;">By Domain</a>
 	 	<a ng-show="isadmin" class="cal" href="/#/adminBL" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Black List</a>
 	 	<a ng-show="isadmin" class="cal" href="/#/statictical" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Statics</a>
 	 	<div style="float: right;width: 24%;">
@@ -361,11 +368,19 @@ $(function() {
 							 <span class="glyphicon glyphicon-th"></span>
 							 </button>
 							<button type="button" data-ng-click="soButton = 1"  class="btn btn-primary btn-sm">
-							<span class="glyphicon glyphicon-list-alt"></span>
+							<span tooltip-placement="top" tooltip="List View" class="glyphicon glyphicon-list-alt"></span>
 							</button> 
-							<button type="button"  class="btn btn-primary btn-sm" id="listprint">
-							<span class="glyphicon glyphicon-print"></span>
+							<button type="button"  ng-show="soButton" class="btn btn-primary btn-sm" id="listprint">
+							<span class="glyphicon glyphicon-print" tooltip-placement="top" tooltip="Print"></span>
 							</button>
+							<span ng-show="soButton">
+							<button type="button" ng-show="isHide" class="btn btn-primary btn-sm" ng-click="isHide=false">
+							<span class="glyphicon glyphicon-hand-left" tooltip-placement="top" tooltip="Hide Images"></span>
+							</button>
+							<button type="button" ng-hide="isHide" class="btn btn-primary btn-sm" ng-click="isHide=true">
+							<span class="glyphicon glyphicon-hand-right" tooltip-placement="top" tooltip="Show Images"></span>
+							</button>
+							</span>
 							</div>
 						</div>	
 							
@@ -396,20 +411,20 @@ $(function() {
 	
 	<div id="tip" style="display:none;">
 		Search Tips:
-		<ul class="list-group" style="width: 350px">
-			<li class="list-group-item list-group-item-info">
+		<ul class="list-group textStyle" style="width: 275px;">
+			<li class="list-group-item list-group-item-info" style="padding-top: 1px;padding-bottom: 1px;">
 			Use <b>AND operator</b> (in CAPS) between words , e.g <b>Life AND Saver</b> will search for only those results which have both keyword Life and Saver
 			</li>
-			<li class="list-group-item list-group-item-info">
+			<li class="list-group-item list-group-item-info" style="padding-top: 1px;padding-bottom: 1px;">
 			Use <b>OR operator</b> (in CAPS) between words , e.g <b>Life OR Saver</b> will search for only those results which have either keyword Life and Saver
 			</li>
-			<li class="list-group-item list-group-item-info">
+			<li class="list-group-item list-group-item-info" style="padding-top: 1px;padding-bottom: 1px;">
 			Enclose <b>""  operator</b> (quotes)  , e.g <b>"Life  Saver"</b> will search for only those results which have  "Life  Saver" occurring together.
 			</li>
-			<li class="list-group-item list-group-item-info">
+			<li class="list-group-item list-group-item-info" style="padding-top: 1px;padding-bottom: 1px;">
 			User <b>- operator</b> (minus) to exclude word, e.g <b>Life AND Saver -Thermal</b> will search for only those results which have both keyword Life and Saver but <b>NOT</b> Thermal
 			</li>
-			<li class="list-group-item list-group-item-info">
+			<li class="list-group-item list-group-item-info" style="padding-top: 1px;padding-bottom: 1px;">
 			User <b>combination () operator</b> , e.g (<b>Life AND Saver</b>) <b>OR</b> (<b>Life AND Saving</b>) will search for result which either have both keyword Life and Saver or both keyword Life and Saving.
 			</li>
 		</ul>
@@ -435,8 +450,8 @@ $(function() {
 							</div>
 
 
-<div ng-show="soButton" ng-click="isHide = !isHide" class="vertical"><p style="margin-top: 15%;font-size: 12px;">Show&nbsp;or&nbsp;Hide&nbsp;Images&nbsp;Panel</p>
-   </div><!-- style="float:left;position: fixed;width:1.8%"  -->	
+<!-- <div ng-show="soButton" ng-click="isHide = !isHide" class="vertical"><p style="margin-top: 15%;font-size: 12px;">Show&nbsp;or&nbsp;Hide&nbsp;Images&nbsp;Panel</p>
+   </div>style="float:left;position: fixed;width:1.8%" 	 -->
    <table id="listcontainer" ng-show="soButton" class="table Contextual  table-striped table-bordered table-condensed table-hover"  style="margin-bottom: 1px;overflow: auto; border: 1px solid;">
 							<tr data-ng-repeat="email in emails | orderBy:predicate:reverse" style="background-color: #fff !important;height: 140px;left:-900" class="panel{{email.id}}">
 									
@@ -451,14 +466,15 @@ $(function() {
 								<td>
 								<div>
 								<!-- Subject -->
-									 <blockquote class="text-primary blockquote_adv" style="float: left;font-size: 15px !important;">{{email.subject}} <span ng-show="$first" style="cursor: pointer;" ng-click="subjectSort(false)" class="glyphicon glyphicon-sort-by-alphabet"></span> <span ng-show="$first" style="cursor: pointer;" ng-click="subjectSort(true)" class="glyphicon glyphicon-sort-by-alphabet-alt"></span></blockquote>
+									 <blockquote class="text-primary blockquote_adv" style="float: left;font-size: 15px !important;">{{email.subject}} <span tooltip-placement="top" tooltip="SortBy Subject Asc" ng-show="$first" style="cursor: pointer;" ng-click="subjectSort(false)" class="glyphicon glyphicon-arrow-down"></span> <span tooltip-placement="top" tooltip="SortBy Subject Desc" ng-show="$first" style="cursor: pointer;" ng-click="subjectSort(true)" class="glyphicon glyphicon-arrow-up"></span></blockquote>
 								
 								<!-- Date -->
-								 	<span  style="float: right;margin-right: 2%;" class="text-primary textStyle">{{email.date | date:'MMMM-dd-yyyy'}} <span ng-show="$first" style="cursor: pointer;" ng-click="dateSort(true)" class="glyphicon glyphicon-sort-by-order"></span> <span ng-show="$first" style="cursor: pointer;" ng-click="dateSort(false)" class="glyphicon glyphicon-sort-by-order-alt"></span></span><br> 
-									<span style="float: right;margin-right: 21px;margin-top: -0.6%;" class="text-primary textStyle">{{email.domain}} <span ng-show="$first" style="cursor: pointer;" ng-click="domainSort(true)" class="glyphicon glyphicon-sort-by-alphabet"></span> <span ng-show="$first" style="cursor: pointer;" ng-click="domainSort(false)" class="glyphicon glyphicon-sort-by-alphabet-alt"></span></span>
+								 	<span  style="float: right;margin-right: 2%;" class="text-primary textStyle">{{email.date | date:'MMMM-dd-yyyy'}} <span tooltip-placement="top" tooltip="SortBy Date Asc" ng-show="$first" style="cursor: pointer;" ng-click="dateSort(true)" class="glyphicon glyphicon-arrow-down"></span> <span tooltip-placement="top" tooltip="SortBy Date Desc" ng-show="$first" style="cursor: pointer;" ng-click="dateSort(false)" class="glyphicon glyphicon-arrow-up"></span></span><br> 
+									<span style="float: right;margin-right: 21px;margin-top: -0.2%;" class="text-primary textStyle">{{email.domain}} <span tooltip-placement="top" tooltip="SortBy Domain Asc" ng-show="$first" style="cursor: pointer;" ng-click="domainSort(true)" class="glyphicon glyphicon-arrow-down"></span> <span tooltip-placement="top" tooltip="SortBy Domain Desc" ng-show="$first" style="cursor: pointer;" ng-click="domainSort(false)" class="glyphicon glyphicon-arrow-up"></span></span>
 								</div>
 								<!-- Extract -->
-									<div ng-bind-html="email.extract" style="float: left;" class="textStyle col-xs-12 col-sm-10 col-md-12"></div>
+									<div ng-show="isHide" ng-bind-html="email.extract" style="float: left;font-size: 12px;" class="col-xs-12 col-sm-10 col-md-12">{{email.extract | limitTo:1400}}</div>
+									<div ng-hide="isHide" ng-bind-html="email.extract" style="float: left;font-size: 12px;" class="col-xs-12 col-sm-10 col-md-12">{{email.extract | limitTo:1800}}</div>
 									
 									<!-- <button type="button" style="float: right;margin-right: 2%;" class="btn btn-primary">Show</button> -->
 								</td>
