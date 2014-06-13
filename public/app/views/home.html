@@ -458,7 +458,7 @@ $(function() {
 									<p  style="float: right;margin: 0 0 0px;" class="textStyle">{{email.date | date:'MMMM-dd-yyyy'}}</p>
 								<!-- Image -->
 								<td ng-show="isHide" style="padding: 1%;width: 10%;">
-									<img data-ng-src="/get-cover-image-by-id/{{email.id}}" style="width:120px; cursor: pointer; height: 90px;border: 1px solid gray;" data-ng-click="showPopUpModal(email.id)" />
+									<img data-ng-src="/get-cover-image-by-id/{{email.id}}" style="width:120px; cursor: pointer; min-height: 90px;max-height: 135px;border: 1px solid gray;" data-ng-click="showPopUpModal(email.id)" />
 									<!-- Domain -->
 									<span class="text-primary textStyle" style="text-align: center;margin-left: 9%;">Appx. Size {{ email.length | number:2}}kbs</span>
 								</td>
