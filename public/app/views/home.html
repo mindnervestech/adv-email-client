@@ -473,8 +473,8 @@ $(function() {
 									<span style="float: right;margin-right: 21px;margin-top: -0.2%;" class="text-primary textStyle">{{email.domain}} <span tooltip-placement="top" tooltip="SortBy Domain Asc" ng-show="$first" style="cursor: pointer;" ng-click="domainSort(true)" class="glyphicon glyphicon-arrow-down"></span> <span tooltip-placement="top" tooltip="SortBy Domain Desc" ng-show="$first" style="cursor: pointer;" ng-click="domainSort(false)" class="glyphicon glyphicon-arrow-up"></span></span>
 								</div>
 								<!-- Extract -->
-									<div ng-show="isHide" ng-bind-html="email.extract" style="float: left;font-size: 12px;" class="col-xs-12 col-sm-10 col-md-12">{{email.extract | limitTo:1400}}</div>
-									<div ng-hide="isHide" ng-bind-html="email.extract" style="float: left;font-size: 12px;" class="col-xs-12 col-sm-10 col-md-12">{{email.extract | limitTo:1800}}</div>
+									<div ng-show="isHide" ng-bind-html="email.extract | limitTo:1400" style="float: left;font-size: 11.5px;" class="col-xs-12 col-sm-10 col-md-12"></div>
+									<div ng-hide="isHide" ng-bind-html="email.extract | limitTo:1800" style="float: left;font-size: 11.5px;" class="col-xs-12 col-sm-10 col-md-12"></div>
 									
 									<!-- <button type="button" style="float: right;margin-right: 2%;" class="btn btn-primary">Show</button> -->
 								</td>
