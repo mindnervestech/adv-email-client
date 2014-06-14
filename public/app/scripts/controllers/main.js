@@ -24,9 +24,9 @@ emailclient.service('BlacklistedDomains', function($resource){
 
 emailclient.controller('AdminController',function($scope,$location,$http,$modal,usSpinnerService,BlacklistedDomains){
 	console.log($location.path());
-	$scope.predicate = 'sentDate';
+	$scope.predicate = 'relevance';
 	$scope.reverse=true;
-	$scope.isadmin = true;
+	$scope.isadmin = false;
 	$scope.isData=false;
 	$scope.isDivShow=false;
 	$scope.totalEmails;
@@ -36,6 +36,10 @@ emailclient.controller('AdminController',function($scope,$location,$http,$modal,
 	$scope.domainBar;
 	$scope.emailBar;
 	$scope.keywordBar;
+	if($location.path()=="/statictical" || $location.path()=="/adminBL")
+	{
+		$scope.isadmin = true;
+	}
 	$scope.tabs = [
 	               { title:'Black List',active: true, content:'/assets/app/views/blacklist.html' }
 	              // ,{ title:'Upcomings', content:'/assets/app/views/upcoming.html'}
@@ -500,16 +504,19 @@ emailclient.controller('AdminController',function($scope,$location,$http,$modal,
 });
 
 emailclient.controller('SearchController',function($scope, $location,$http, $modal,$sce, usSpinnerService){
-	$scope.predicate = 'sentDate';
+	$scope.predicate = 'relevance';
 	$scope.reverse=false;
+	$scope.dateReverse=true;
+	$scope.subjectReverse=true;
+	$scope.dateReverse=true;
 	$scope.isHide = true;
+	$scope.isadmin=false;
 	/*  Below Section for modal  */
 	if($location.path()=="/admin")
 	{
 		$scope.isadmin = true;
 	}
-	else
-	{
+	if($location.path()=="/userstatictical") {
 		$scope.isadmin = false;
 	}
 	  var modalInstance;
@@ -689,20 +696,27 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 	
 	$scope.subjectSort = function(reverse){
 		$scope.predicate='subject';
+		$scope.subjectReverse=reverse;
 		$scope.reverse=reverse;
 		$scope.submitSearch();
 	};
 	$scope.dateSort = function(reverse){
 		$scope.predicate='sentDate';
+		$scope.dateReverse=reverse;
 		$scope.reverse=reverse;
 		$scope.submitSearch();
 	};
 	$scope.domainSort = function(reverse){
 		$scope.predicate='domain';
+		$scope.domainReverse=reverse;
 		$scope.reverse=reverse;
 		$scope.submitSearch();
 	};
-	
+	$scope.relevanceSort = function(){
+		$scope.predicate='relevance';
+		$scope.reverse;
+		$scope.submitSearch();
+	};
 	$scope.submitSearch = function(count,sortText) {
 		if(sortText == null){
 			$scope.sortBy = 'Sort By';

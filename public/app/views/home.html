@@ -197,6 +197,33 @@ $(function() {
 		   delayHide:0
 	   });
 	});
+   function changeDateClass() {
+	   var element=document.getElementById("datespan");
+	   var div1Class =element.className;
+		if(div1Class=="glyphicon glyphicon-chevron-up") {
+			element.className="glyphicon glyphicon-chevron-down";
+		} else {
+			element.className="glyphicon glyphicon-chevron-up";
+		} 
+   }
+   function changeDomainClass() {
+	   var element=document.getElementById("domainspan");
+	   var div1Class =element.className;
+		if(div1Class=="glyphicon glyphicon-chevron-up") {
+			element.className="glyphicon glyphicon-chevron-down";
+		} else {
+			element.className="glyphicon glyphicon-chevron-up";
+		} 
+   }
+   function changeSubjectClass() {
+	   var element=document.getElementById("subjectspan");
+	   var div1Class =element.className;
+		if(div1Class=="glyphicon glyphicon-chevron-up") {
+			element.className="glyphicon glyphicon-chevron-down";
+		} else {
+			element.className="glyphicon glyphicon-chevron-up";
+		} 
+   }
 </script>		
 <nav class="navbar bg-primary nav" id="nav" role="navigation" style="color: #bbb;border-bottom: 1px solid #444;min-height: 70px;">
     
@@ -214,7 +241,7 @@ $(function() {
 	 	<span class="textStyle" style="margin-left: 23%;color: white;">E-MAIL KNOWLEDGEBASE</span> 
 	 	</div>
 	 	<a class="cal" href="/showTables/0" target="_blank" style="color: rgba(255,255,255,0.5);margin-left: 3%;">Collection/Calender</a>
-	 	<a ng-hide="isadmin" class="cal" href="/#/statictical" ng-click="isadmin=false" style="color: rgba(255,255,255,0.5);margin-left: 1%;">By Domain</a>
+	 	<a ng-hide="isadmin" class="cal" href="/#/userstatictical" style="color: rgba(255,255,255,0.5);margin-left: 1%;">By Domain</a>
 	 	<a ng-show="isadmin" class="cal" href="/#/adminBL" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Black List</a>
 	 	<a ng-show="isadmin" class="cal" href="/#/statictical" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Statics</a>
 	 	<div style="float: right;width: 24%;">
@@ -343,29 +370,18 @@ $(function() {
 							ng-show="totalItems != 0" total-items="totalItems" page="currentPage" 
 							items-per-page="searchForm.rowCount" >
 						</pagination> -->
-						<div style="width: 50%;float: right;margin-bottom: 2%;">
-							<button type="button" ng-disabled="currentPage == 0"  class="btn btn-primary btn-sm" ng-click="currentPage=currentPage-1" style="margin-top: 0.5%;margin-left: 5%;">
+						
+						<div style="width: 50%;float: right;margin-bottom: 2%;margin-right: 1%;">
+							<button type="button" ng-disabled="currentPage == 0"  class="btn btn-primary btn-sm" ng-click="currentPage=currentPage-1" style="margin-top: 0.5%;margin-left: 1%;">
 							<span class="glyphicon glyphicon-chevron-left"></span>
 							</button> 
    								<label> {{currentPage+1}}/{{noOFPages}}</label>
     						<button type="button"  ng-disabled="currentPage+1 == noOFPages"  class="btn btn-primary btn-sm" ng-click="currentPage=currentPage+1" style="margin-top: 0.5%;">
 							<span class="glyphicon glyphicon-chevron-right"></span>
 							</button> 
-							
-							<div class="btn-group " style="float: left;margin-right: 1%;margin-top: 1%;">
-								<a type="text" class="dropdown-toggle" data-toggle="dropdown">
-							    	{{noOfRows}} <span class="caret"></span>
-							  	</a>
-							  	<ul class="dropdown-menu" style="min-width: 96px;" role="menu">
-							    	<li><a  ng-click="submitSearch(10,relevance)">10</a></li>
-							    	<li><a  ng-click="submitSearch(20,relevance)">20</a></li>
-							    	<li><a  ng-click="submitSearch(30,relevance)">30</a></li>
-							  	</ul>
-							</div>  
-							
-							<div class="btn-group" style="margin-top: 0.5%;margin-left: 5%;">
+							<div class="btn-group" style="margin-top: 0.5%;margin-left: 2%;">
 							 <button type="button"  data-ng-click="soButton = 0"  class="btn btn-primary btn-sm">
-							 <span class="glyphicon glyphicon-th"></span>
+							 <span tooltip-placement="top" tooltip="Grid View" class="glyphicon glyphicon-th"></span>
 							 </button>
 							<button type="button" data-ng-click="soButton = 1"  class="btn btn-primary btn-sm">
 							<span tooltip-placement="top" tooltip="List View" class="glyphicon glyphicon-list-alt"></span>
@@ -382,6 +398,17 @@ $(function() {
 							</button>
 							</span>
 							</div>
+							<div class="btn-group " style="float: rigth;margin-left: 2.5%;margin-top: 1%;">
+								<a type="text" class="dropdown-toggle" data-toggle="dropdown">
+							    	Sort By <span class="caret"></span>
+							  	</a>
+							  	<ul class="dropdown-menu" style="min-width: 96px;" role="menu">
+							    	<li><a  ng-click="dateSort(!dateReverse)" onclick="changeDateClass()">By Date <span id="datespan" class="glyphicon glyphicon-chevron-down"></span></a></li>
+							    	<li><a  ng-click="domainSort(!domainReverse)" onclick="changeDomainClass()">By Domain <span id="domainspan" class="glyphicon glyphicon-chevron-down"></span></a></li>
+							    	<li><a  ng-click="relevanceSort()">By Relevance</a></li>
+							    	<li><a  ng-click="subjectSort(!subjectReverse)" onclick="changeSubjectClass()">By Subject <span id="subjectspan" class="glyphicon glyphicon-chevron-down"></span></a></li>
+							  	</ul>
+							</div> 
 						</div>	
 							
 							
@@ -458,7 +485,9 @@ $(function() {
 									<p  style="float: right;margin: 0 0 0px;" class="textStyle">{{email.date | date:'MMMM-dd-yyyy'}}</p>
 								<!-- Image -->
 								<td ng-show="isHide" style="padding: 1%;width: 10%;">
-									<img data-ng-src="/get-cover-image-by-id/{{email.id}}" style="width:120px; cursor: pointer; min-height: 25px;max-height: 135px;border: 1px solid gray;" data-ng-click="showPopUpModal(email.id)" />
+									<img ng-if="email.extractLength >= 1200" data-ng-src="/get-cover-image-by-id/{{email.id}}" style="width:120px; cursor: pointer; min-height: 25px;max-height: 135px;border: 1px solid gray;" data-ng-click="showPopUpModal(email.id)" />
+									<img ng-if="email.extractLength < 1200 && email.extractLength >=600" data-ng-src="/get-cover-image-by-id/{{email.id}}" style="width:120px; cursor: pointer; min-height: 25px;max-height: 90px;border: 1px solid gray;" data-ng-click="showPopUpModal(email.id)" />
+									<img ng-if="email.extractLength < 600" data-ng-src="/get-cover-image-by-id/{{email.id}}" style="width:120px; cursor: pointer; min-height: 25px;max-height: 60px;border: 1px solid gray;" data-ng-click="showPopUpModal(email.id)" />
 									<!-- Domain -->
 									<span class="text-primary textStyle" style="text-align: center;margin-left: 9%;">Appx. Size {{ email.length | number:2}}kbs</span>
 								</td>
@@ -466,11 +495,11 @@ $(function() {
 								<td>
 								<div>
 								<!-- Subject -->
-									 <blockquote class="text-primary blockquote_adv" style="float: left;font-size: 15px !important;">{{email.subject}} <span tooltip-placement="top" tooltip="SortBy Subject Asc" ng-show="$first" style="cursor: pointer;" ng-click="subjectSort(false)" class="glyphicon glyphicon-arrow-down"></span> <span tooltip-placement="top" tooltip="SortBy Subject Desc" ng-show="$first" style="cursor: pointer;" ng-click="subjectSort(true)" class="glyphicon glyphicon-arrow-up"></span></blockquote>
+									 <blockquote class="text-primary blockquote_adv" style="float: left;font-size: 15px !important;">{{email.subject}}</blockquote>
 								
 								<!-- Date -->
-								 	<span  style="float: right;margin-right: 2%;" class="text-primary textStyle">{{email.date | date:'MMMM-dd-yyyy'}} <span tooltip-placement="top" tooltip="SortBy Date Asc" ng-show="$first" style="cursor: pointer;" ng-click="dateSort(true)" class="glyphicon glyphicon-arrow-down"></span> <span tooltip-placement="top" tooltip="SortBy Date Desc" ng-show="$first" style="cursor: pointer;" ng-click="dateSort(false)" class="glyphicon glyphicon-arrow-up"></span></span><br> 
-									<span style="float: right;margin-right: 21px;margin-top: -0.2%;" class="text-primary textStyle">{{email.domain}} <span tooltip-placement="top" tooltip="SortBy Domain Asc" ng-show="$first" style="cursor: pointer;" ng-click="domainSort(true)" class="glyphicon glyphicon-arrow-down"></span> <span tooltip-placement="top" tooltip="SortBy Domain Desc" ng-show="$first" style="cursor: pointer;" ng-click="domainSort(false)" class="glyphicon glyphicon-arrow-up"></span></span>
+								 	<span  style="float: right;margin-right: 2%;" class="text-primary textStyle">{{email.date | date:'MMMM-dd-yyyy'}}</span><br> 
+									<span style="float: right;margin-right: 21px;margin-top: -0.2%;" class="text-primary textStyle">{{email.domain}}</span>
 								</div>
 								<!-- Extract -->
 									<div ng-show="isHide" ng-bind-html="email.extract | limitTo:1400" style="float: left;font-size: 11.5px;" class="col-xs-12 col-sm-10 col-md-12"></div>

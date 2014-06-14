@@ -34,12 +34,16 @@ $(document).ready(function(){
   </div> -->
 	 <div class="navbar-header " style="width: 100%;margin-left: 2%;margin-top: 0.5%;">
 	 	<div style="float:left;width: 21%;">
-	 	<a href="/#/admin">
+	 	<a ng-show="isadmin" href="/#/admin">
+	 		<img src="/assets/app/images/logo_agora.png" style="width: 100%;" alt="Your Brand" >
+	 	</a>
+	 	<a ng-hide="isadmin"href="/#/">
 	 		<img src="/assets/app/images/logo_agora.png" style="width: 100%;" alt="Your Brand" >
 	 	</a>
 	 	<span class="textStyle" style="margin-left: 23%;color: white;">E-MAIL KNOWLEDGEBASE</span> 
 	 	</div>
 	 	<a class="cal" href="/showTables/0" target="_blank" style="color: rgba(255,255,255,0.5);margin-left: 3%;">Collection/Calender</a>
+	 	<a ng-hide="isadmin" class="cal" href="/#/" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Search</a>
 	 	<a ng-show="isadmin" class="cal" href="/#/admin" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Search</a>
 	 	<a ng-show="isadmin" class="cal" href="/#/adminBL" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Black List</a>
 	 	<div style="float: right;width: 24%;">
@@ -61,8 +65,8 @@ $(document).ready(function(){
 			<th style="width: 60%;">Details</th>
 		</tr>
 		<tr data-ng-repeat="statistic in statisticData" style="background-color: #fff !important;left:-900">
-			<td ng-show="statistic.domainStatus" style="width: 20%;color:red;">{{statistic.domain}} - <a class="textStyle" data-ng-click="removeBLDomainFromStat(statistic.blackDomainListedId)" style="cursor: pointer;">Move to White List</a></td>
-			<td ng-hide="statistic.domainStatus" style="width: 20%;color:green;">{{statistic.domain}} - <a class="textStyle" data-ng-click="addBLDomainFromStat(statistic.domain)" style="cursor: pointer;">Move to Black List</a></td>
+			<td ng-show="statistic.domainStatus" style="width: 20%;color:red;">{{statistic.domain}} <span ng-show="isadmin">-</span> <a class="textStyle" ng-show="isadmin" data-ng-click="removeBLDomainFromStat(statistic.blackDomainListedId)" style="cursor: pointer;">Move to White List</a></td>
+			<td ng-hide="statistic.domainStatus" style="width: 20%;color:green;">{{statistic.domain}} <span ng-show="isadmin">-</span> <a class="textStyle" ng-show="isadmin" data-ng-click="addBLDomainFromStat(statistic.domain)" style="cursor: pointer;">Move to Black List</a></td>
 			<td style="width: 10%;">{{statistic.percentage | number:2}}</td>
 			<td style="width: 10%;">{{statistic.count}}</td>
 			<td style="width: 60%;">Details <span id="{{statistic.domain}}" class="glyphicon glyphicon-plus" onclick="collapseDiv(this)" ng-click="isDivShow =! isDivShow"></span>
