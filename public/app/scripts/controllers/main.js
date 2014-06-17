@@ -602,6 +602,9 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 	$scope.databaseSize;
 	$scope.mailFolderSize;
 	/*  Below Section for modal  */
+	if($location.path()=="/admin") {
+		$scope.isadmin = true;
+	}
 	  var modalInstance;
 	  $scope.open = function () {
 		    modalInstance = $modal.open({
@@ -628,6 +631,7 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 	  $scope.removeEmailData=function(id,indexId)
 	  {
 		  //alert("in remove "+id+" "+indexId);
+		  if(confirm("Are you sure you want to delete this mail? Yes/No")) {
 		  $http.get('/remove-Email-Data/'+id+'/'+indexId)
 			.success(function(data, status, headers, config){
 				//alert("data "+data);
@@ -638,6 +642,7 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 					$scope.getBlackList();
 				}*/
 			});
+		  }
 	  };
 	  $scope.downloadPDF =function(popUpId) {
 		  $http.get('/downloadPdf/'+popUpId, {params:$scope.searchForm})
