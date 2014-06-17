@@ -37,6 +37,7 @@ import models.SaveSearchSet;
 import net.coobird.thumbnailator.Thumbnails;
 
 
+import org.apache.commons.io.FileUtils;
 import org.elasticsearch.common.collect.Iterables;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.AndFilterBuilder;
@@ -53,6 +54,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import play.Play;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.libs.Json;
@@ -763,5 +765,17 @@ public class Application  extends Controller {
 			e.printStackTrace();
 		}
 		return ok();
+	}
+	public static Result getDataSize() {
+		String mailFolder=Play.application().configuration()
+				.getString("mail.storage.path");
+		Double mailFolderSize=(FileUtils.sizeOfDirectory(new File(mailFolder))/(1024.00*1024));
+		String elasticFolder=Play.application().configuration()
+				.getString("mail.elastic.path");
+		Double elasticFolderSize=(FileUtils.sizeOfDirectory(new File(elasticFolder))/(1024.00*1024));
+		List<Object> list=new ArrayList<Object>();
+		list.add(MailObjectModel.getDataSize());
+		list.add(mailFolderSize+elasticFolderSize);
+		return ok(Json.toJson(list));
 	}
 }

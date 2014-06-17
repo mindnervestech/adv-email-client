@@ -23,7 +23,7 @@ angular.module('email-client', [
       })
       .when('/admin', {
         templateUrl: '/assets/app/views/home.html',
-        controller: 'SearchController'	
+        controller: 'AdminController'	
       })
       .when('/adminBL', {
         templateUrl: '/assets/app/views/admin.html',

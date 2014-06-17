@@ -36,8 +36,9 @@ emailclient.controller('AdminController',function($scope,$location,$http,$modal,
 	$scope.domainBar;
 	$scope.emailBar;
 	$scope.keywordBar;
-	if($location.path()=="/statictical" || $location.path()=="/adminBL")
-	{
+	$scope.databaseSize;
+	$scope.mailFolderSize;
+	if($location.path()=="/statictical" || $location.path()=="/adminBL"||$location.path()=="/admin") {
 		$scope.isadmin = true;
 	}
 	$scope.tabs = [
@@ -68,10 +69,27 @@ emailclient.controller('AdminController',function($scope,$location,$http,$modal,
 	      templateUrl: '/assets/app/views/myModal.html',
 	      scope : $scope
 	    });
-  };
+	};
 	$scope.cancel = function () {
 	    modalInstance.dismiss('cancel');
-	  };
+	};
+	$scope.getDataSize =function() {
+		usSpinnerService.spin('loading...');
+		$http.get('/get-data-size')
+		.success(function(data, status, headers, config) {
+			if(data[0]<1000) {
+				$scope.databaseSize=data[0].toFixed(2)+' MB\'s';
+			} else {
+				$scope.databaseSize=(data[0]/1024.00).toFixed(2)+' GB\'s';
+			}
+			if(data[1]<1000) {
+				$scope.mailFolderSize=data[1].toFixed(2)+' MB\'s';
+			} else {
+				$scope.mailFolderSize=(data[1]/1024).toFixed(2)+' GB\'s';
+			}
+			usSpinnerService.stop('loading...');
+		});
+	};
 	$scope.getDomainStats = function() {
 		var fromMonthYear=$scope.PieChart.fromMonthYear;
 		var toMonthYear=$scope.PieChart.toMonthYear;
@@ -500,7 +518,77 @@ emailclient.controller('AdminController',function($scope,$location,$http,$modal,
 				saveSearchName :"",
 				levelOnekeyWord :""
 	}
-
+	  $scope.subjectSort = function(reverse){
+			$scope.predicate='subject';
+			$scope.subjectReverse=reverse;
+			$scope.reverse=reverse;
+			$scope.submitSearch();
+		};
+		$scope.dateSort = function(reverse){
+			$scope.predicate='sentDate';
+			$scope.dateReverse=reverse;
+			$scope.reverse=reverse;
+			$scope.submitSearch();
+		};
+		$scope.domainSort = function(reverse){
+			$scope.predicate='domain';
+			$scope.domainReverse=reverse;
+			$scope.reverse=reverse;
+			$scope.submitSearch();
+		};
+		$scope.relevanceSort = function(){
+			$scope.predicate='relevance';
+			$scope.reverse;
+			$scope.submitSearch();
+		};
+	  $scope.submitSearch = function(count,sortText) {
+			if(sortText == null){
+				$scope.sortBy = 'Sort By';
+			}else{
+				$scope.sortBy = sortText;
+			}
+			
+			if(count == null){
+				$scope.noOfRows = 'Per Page';
+				$scope.searchForm.rowCount = 10;
+			}else{
+				$scope.noOfRows = count;
+				$scope.searchForm.rowCount = count;
+			}
+			$scope.searchForm.page = 0;
+			$scope.currentPage = 0;
+			$scope.toggle = true;
+			$scope.soButton = true;
+			
+			search(function(data) {
+				$scope.emails = data.emails;
+				if($scope.emails.length==0){
+					$scope.soButton = 0;
+					}
+				$scope.hasSearchResult = data.emails.length != 0;
+				$scope.domainCounts = data.domainCounts; 
+				$scope.noOFPages = data.noOFPages;
+				$scope.totalItems = data.noOFPages * $scope.searchForm.rowCount ; // Added for Pagination
+				$scope.saveSearchSets = data.saveSearchSets;        // Added for saveSearchSet
+				$scope.hasQuickSearch = data.saveSearchSets.length != 0;
+				usSpinnerService.stop('loading...');
+				$scope.allChecked = true;
+			});
+		}
+		
+		function search(callback) {
+			usSpinnerService.spin('loading...');
+			$scope.searchForm.domainChecked = "";
+			//alert($scope.predicate+'/'+$scope.reverse);
+			$http.get('/searchForEmails/'+$scope.predicate+'/'+$scope.reverse, {params:$scope.searchForm})
+			.success(function(data, status, headers, config){
+				$("#test").click()
+				if(callback) {
+					callback(data);
+				}
+				
+			});
+		}
 });
 
 emailclient.controller('SearchController',function($scope, $location,$http, $modal,$sce, usSpinnerService){
@@ -511,14 +599,9 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 	$scope.dateReverse=true;
 	$scope.isHide = true;
 	$scope.isadmin=false;
+	$scope.databaseSize;
+	$scope.mailFolderSize;
 	/*  Below Section for modal  */
-	if($location.path()=="/admin")
-	{
-		$scope.isadmin = true;
-	}
-	if($location.path()=="/userstatictical") {
-		$scope.isadmin = false;
-	}
 	  var modalInstance;
 	  $scope.open = function () {
 		    modalInstance = $modal.open({

@@ -53,8 +53,12 @@ $(document).ready(function(){
       
     </div>
 </nav>
-<div style="width:100%;background: rgb(194, 199, 212);margin-top: -1%;border-radius: 3px;">
-	<input type="text" placeholder="From:MM/YYYY" style="margin-left: 30%;" ng-model="PieChart.fromMonthYear" id="fromMonth" class="mtz-monthpicker-widgetcontainer"><input type="text" style="margin-left: 1%;" placeholder="To:MM/YYYY" ng-model="PieChart.toMonthYear" id="toMonth" class="mtz-monthpicker-widgetcontainer"><input class="btn btn-primary" style="margin-left: 1%;" type="button" value="Get Data" ng-click="getDomainStats()">
+<div style="width:100%;background: rgb(194, 199, 212);margin-top: -1%;border-radius: 3px;" ng-init="getDataSize()">
+	<span ng-show="isadmin"><span style="margin-left: 1%;">Database Size : <strong>{{databaseSize}}</strong> | </span><span>Mail Folder Size : <strong>{{mailFolderSize}}</strong></span></span>
+	<input ng-show="isadmin" type="text" placeholder="From:MM/YYYY" style="margin-left: 4%;" ng-model="PieChart.fromMonthYear" id="fromMonth" class="mtz-monthpicker-widgetcontainer">
+	<input ng-hide="isadmin" type="text" placeholder="From:MM/YYYY" style="margin-left: 30%;" ng-model="PieChart.fromMonthYear" id="fromMonth" class="mtz-monthpicker-widgetcontainer">
+	<input type="text" style="margin-left: 1%;" placeholder="To:MM/YYYY" ng-model="PieChart.toMonthYear" id="toMonth" class="mtz-monthpicker-widgetcontainer">
+	<input class="btn btn-primary" style="margin-left: 1%;" type="button" value="Get Data" ng-click="getDomainStats()">
 </div>
 <table ng-show="isData" class="table Contextual  table-striped table-bordered table-condensed table-hover"  style="margin-bottom: 1px;overflow: auto; border: 1px solid;margin-top: 1%;">
 	<tbody>
