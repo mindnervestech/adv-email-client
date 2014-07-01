@@ -198,7 +198,7 @@ public class EmailWriteFile {
 		static MailConnection connection;
 		private static String host = "pop.gmail.com";
 		private static String user = "admin@lab104.net";
-		private static String password = "dipesh104";
+		private static String password = "Jagbir104";
 
 		Store store;
 		private MailConnection() {
