@@ -35,6 +35,7 @@ GET		/get-month-chart/:fromMonth/:toMonth			controllers.Application.getMonthChar
 
 GET		/get-period-stats/:fromMonth/:toMonth			controllers.Application.statistic(fromMonth :String , toMonth :String)
 
+GET 		/get-data-size						controllers.Application.getDataSize()
 
 GET		/get-year-chart/:year				controllers.Application.getYearChart(year : String)
 

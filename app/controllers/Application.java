@@ -37,6 +37,7 @@ import models.SaveSearchSet;
 import net.coobird.thumbnailator.Thumbnails;
 
 
+import org.apache.commons.io.FileUtils;
 import org.elasticsearch.common.collect.Iterables;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.AndFilterBuilder;
@@ -53,6 +54,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import play.Play;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.libs.Json;
@@ -197,12 +199,13 @@ public class Application  extends Controller {
 		 // below two lines are for Pagination ---
 		 indexQuery.from(Integer.parseInt(searchFilter.data().get("page")) * count);
 		 indexQuery.size(count);
-		 if(reverse){
-			 indexQuery.addSort(predicate, SortOrder.ASC);
-		 } else {
-			 indexQuery.addSort(predicate, SortOrder.DESC);
+		 if(!predicate.equalsIgnoreCase("relevance")) {
+			 if(reverse){
+				 indexQuery.addSort(predicate, SortOrder.ASC);
+			 } else {
+				 indexQuery.addSort(predicate, SortOrder.DESC);
+			 }
 		 }
-		 
 		 IndexResults<Email> allAndFacetAge = Email.find.search(indexQuery);
 		 
 		 SearchResponse searchResponse = new SearchResponse(); 
@@ -232,7 +235,7 @@ public class Application  extends Controller {
 				 extract = e.description.substring(0, e.description.length() > 1800 ? 1800 : e.description.length()) +" ...";
 			 }
 			 searchResponse.emails.add(new Application.SearchResponse.Email(e.subject,
-					 e.domain, e.sentDate, e.sendersEmail, extract, e.mail_objectId,e.getId(),length));
+					 e.domain, e.sentDate, e.sendersEmail, extract, e.mail_objectId,e.getId(),length,extract.length()));
 		 }
 		 searchResponse.saveSearchSets.addAll(SaveSearchSet.find.all());
 		 searchResponse.noOFPages = (int) Math.ceil((double)allAndFacetAge.getTotalCount()/10);
@@ -341,7 +344,7 @@ public class Application  extends Controller {
 		public static class Email {
 			public Email(){}
 			public Email(String subject, String domain, Date date,
-					String sendersEmail, String extract, Long id,String indexId,Double length) 
+					String sendersEmail, String extract, Long id,String indexId,Double length,int extractLength) 
 			{
 				super();
 				this.subject = subject;
@@ -352,6 +355,7 @@ public class Application  extends Controller {
 				this.id = id;
 				this.indexId=indexId;
 				this.length=length;
+				this.extractLength=extractLength;
 			}
 			public String subject;
 			public String domain;
@@ -361,6 +365,7 @@ public class Application  extends Controller {
 			public Long id;
 			public String indexId;
 			public Double length;
+			public int extractLength;
 		}
 		
 		public static class Domain {
@@ -760,5 +765,17 @@ public class Application  extends Controller {
 			e.printStackTrace();
 		}
 		return ok();
+	}
+	public static Result getDataSize() {
+		String mailFolder=Play.application().configuration()
+				.getString("mail.storage.path");
+		Double mailFolderSize=(FileUtils.sizeOfDirectory(new File(mailFolder))/(1024.00*1024));
+		String elasticFolder=Play.application().configuration()
+				.getString("mail.elastic.path");
+		Double elasticFolderSize=(FileUtils.sizeOfDirectory(new File(elasticFolder))/(1024.00*1024));
+		List<Object> list=new ArrayList<Object>();
+		list.add(MailObjectModel.getDataSize());
+		list.add(mailFolderSize+elasticFolderSize);
+		return ok(Json.toJson(list));
 	}
 }

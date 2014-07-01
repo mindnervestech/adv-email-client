@@ -139,7 +139,13 @@ public class MailObjectModel extends Model{
 		resultList = Ebean.createSqlQuery(query.toString()).findList();
 		return resultList;
 	}
-
+	public static Double getDataSize() {
+		StringBuilder query = new StringBuilder();
+		List<SqlRow> resultList = null;
+		query.append("SELECT table_schema 'Data Base Name', SUM( data_length + index_length) / 1024 / 1024 'Data Base Size in MB' FROM information_schema.TABLES WHERE table_schema = 'mail' GROUP BY table_schema;");
+		resultList = Ebean.createSqlQuery(query.toString()).findList();
+		return resultList.get(0).getDouble("Data Base Size in MB");
+	}
 	
 	
 }
