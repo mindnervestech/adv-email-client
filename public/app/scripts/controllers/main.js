@@ -24,6 +24,7 @@ emailclient.service('BlacklistedDomains', function($resource){
 
 emailclient.controller('AdminController',function($scope,$location,$http,$modal,usSpinnerService,BlacklistedDomains){
 	console.log($location.path());
+	$scope.selectedIndex = -1;
 	$scope.predicate = 'relevance';
 	$scope.reverse=true;
 	$scope.isadmin = false;
@@ -38,6 +39,187 @@ emailclient.controller('AdminController',function($scope,$location,$http,$modal,
 	$scope.keywordBar;
 	$scope.databaseSize;
 	$scope.mailFolderSize;
+	$scope.subscription;
+	$scope.dragElementId;
+	$scope.isSubscription=false;
+	$scope.subscriptionSelected=null;
+	$scope.dragFrom;
+	$scope.parentClicked;
+	$scope.unAssigned;
+	$scope.parent;
+	$scope.child;
+	$scope.upload = {
+		file:''
+	};
+	
+	// List Start
+	
+	$scope.roleList ;
+	$scope.list1 = [];
+	$scope.parentDomain = {
+			domain:''
+		};
+	
+	$scope.list2 = [];
+	$scope.list3 = [];
+	  
+	$scope.draglist1 = function () {
+		  $scope.dragFrom = "1";
+		   
+	};
+	 
+	$scope.draglist2 = function () {
+		  $scope.dragFrom = "2";
+	};
+	  
+	$scope.draglist3 = function () {
+		  $scope.dragFrom = "3";
+	};
+	  
+	$scope.draglist11 = function (value) {
+		  //console.log("to "+value);
+		  $scope.dragElementId = value;
+	};
+	 
+	$scope.draglist22 = function (value) {
+		  //console.log("to "+value);
+		  $scope.dragElementId = value;
+	};
+	  
+	$scope.draglist33 = function (value) {
+		  //console.log("to "+value);
+		  $scope.dragElementId = value;
+	};
+	  
+	$scope.setSelectedIndex = function (index) {
+		  $scope.selectedIndex = index;
+	}
+	  
+	$scope.unsetSelectedIndex = function () {
+		  $scope.selectedIndex = null;
+		  $scope.subscriptionSelected = null;
+	}
+	  
+	$scope.addparentpopup = function () {
+		modalInstance = $modal.open({
+			templateUrl: '/assets/app/views/addparentsub.html',
+			scope : $scope
+		});
+	};
+	  
+	$scope.addparentmanually = function() {
+		$http.get('/addparentdomain/'+$scope.parentDomain.domain)
+		.success(function(data, status, headers, config) {
+			$scope.subscriptionSelected = null;
+			$scope.selectedIndex = -1;
+			$scope.loadLists();
+			$scope.dragFrom=0;
+			modalInstance.close();
+		});
+	};
+	  
+	$scope.dragTo = 0;
+	$scope.optionsList1 = {
+		accept: function(dragEl) {
+			if($scope.dragFrom == "2" || $scope.dragFrom == "3") {
+			    return true;
+			} else {
+				return false;
+			}
+		}
+	};
+	  
+	$scope.optionsList2 = {
+		accept: function(dragEl) {
+			if($scope.dragFrom == "1") {
+				return true;
+			} else {
+				return false;
+			}
+		} 	
+	};
+	
+	$scope.list1Drop = function() {
+		if($scope.dragFrom == "2") {
+			//console.log("in list 1 drop dragfrom=2");
+			$http.get('/removeparentsubscription/'+$scope.dragElementId)
+			.success(function(data, status, headers, config) {
+				if($scope.subscriptionSelected == $scope.dragElementId) {
+					$scope.subscriptionSelected = null;
+					$scope.selectedIndex = -1;
+				}
+				$scope.loadLists();
+				$scope.dragFrom=0;
+			});
+	     } else if($scope.dragFrom == "3") {
+	    	 console.log("in list 1 drop dragfrom=3");
+	    	 $http.get('/removechildsubscription/'+$scope.dragElementId)
+	    	 .success(function(data, status, headers, config) {
+	    		 $scope.dragFrom=0;
+	    		 $scope.loadLists();
+	    	 });
+	     }
+	};
+	
+	$scope.list2Drop = function() {
+		$http.get('/addparentsubscription/'+$scope.dragElementId)
+		.success(function(data, status, headers, config) {
+			$scope.dragFrom=0;
+			$scope.loadLists();
+		});
+	};
+	
+	$scope.list3Drop = function() {
+		  
+		  //console.log("in drop function list 3");
+		$http.get('/addchildsubscription/'+$scope.dragElementId+'/'+$scope.subscriptionSelected)
+		.success(function(data, status, headers, config) {
+			$scope.dragFrom=0;
+			$scope.loadLists();
+		});
+	};
+	 
+	$scope.optionsList3 = {
+		accept: function(dragEl) {
+			if($scope.dragFrom == "1" && $scope.subscriptionSelected != null) {
+				return true;
+			} else if($scope.dragFrom == "1" && $scope.subscriptionSelected == null){
+				//console.log("in list 3 accept dragfrom=0");
+				//alert("Please Select Parent Before Adding Child!");
+				return false;
+			} else {
+				return false;
+			}
+		}	    
+	};
+	  
+	$scope.loadLists = function () {
+		usSpinnerService.spin('loading...');
+		$http.get('/loadlists')
+		.success(function(data, status, headers, config) {
+			$scope.list1 = data.unAssignedList;
+			$scope.list2 = data.assignedList;
+			$scope.list3 = data.assignedChildList;
+			$scope.unAssigned = data.totalUnAssignedNumber;
+			$scope.parent = data.totalParentNumber;
+			$scope.child = data.totalChildNumber;
+			$scope.dragFrom=0;
+			usSpinnerService.stop('loading...');
+		});
+	};
+	  
+	$scope.getChildSubscription = function(id) {
+		 // $scope.dragElementId = id;
+		$scope.subscriptionSelected = id;
+		usSpinnerService.spin('loading...');
+		$http.get('/loadchildlist/'+id)
+		.success(function(data, status, headers, config) {
+			$scope.list3 = data.assignedChildList;
+			usSpinnerService.stop('loading...');
+		});
+	};
+	
+	// List End
 	if($location.path()=="/statictical" || $location.path()=="/adminBL"||$location.path()=="/admin") {
 		$scope.isadmin = true;
 	}

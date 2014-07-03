@@ -1,0 +1,220 @@
+<script type="text/javascript"> 
+$(document).ready(function(){
+    $('#but').bind('click', function (event) {
+    $('#popup').css('left',event.pageX);      // <<< use pageX and pageY
+    $('#popup').css('top',event.pageY);
+    $('#popup').css('display','inline');     
+    $("#popup").css("position", "absolute");  // <<< also make it absolute!
+    });
+    $(".thumbnail").niceScroll();
+});
+</script>
+<style>
+ul {
+	margin-top: 1px;
+	margin-bottom: 1px;
+}
+
+th {
+	background: rgb(194, 199, 212);
+}
+
+.span3 {
+	
+}
+.circleradius {
+	border-radius: 5px;
+}
+
+.thumbnail { 
+	background-color: white; 
+	height: 550px;
+}
+
+.btn-droppable { 
+	width: 100%; 
+	padding-left: 4px; 
+
+}
+
+.btn-draggable { 
+	/* width: 100%;  */
+	height: 22px;
+	padding-top: 0px;
+}
+
+.thumbnails {
+	background-color: white;
+	float: left;
+}
+
+.popup {
+	position:absolute;
+ 	width:400px;
+ 	height:400px;
+ 	z-index: 100;
+}
+
+.navbar {
+	margin-bottom: 0px;
+}
+
+</style>
+<div ng-controller="AdminController">
+<nav class="navbar bg-primary nav" role="navigation" style="color: #bbb;border-bottom: 1px solid #444;min-height: 70px;">
+    
+   <!-- <div class="col-xs-3">
+    <input type="text" class="form-control" placeholder="Search">
+  </div> -->
+	 <div class="navbar-header " style="width: 100%;margin-left: 2%;margin-top: 0.5%;">
+	 <div style="float:left;width: 21%;">
+	 	<a href="/#/admin">
+	 		<img src="/assets/app/images/logo_agora.png" style="width: 100%;" alt="Your Brand" >
+	 	</a>
+	 	<span class="textStyle" style="margin-left: 23%;color: white;">E-MAIL KNOWLEDGEBASE</span> 
+	 	</div>
+	 	<a class="cal" href="/showTables/0" target="_blank" style="color: rgba(255,255,255,0.5);margin-left: 3%;">Collection/Calender</a>
+	 	<a ng-show="isadmin" class="cal" href="/#/admin" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Search</a>
+	 	<a ng-show="isadmin" class="cal" href="/#/statictical" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Statics</a>
+	 	<a ng-show="isadmin" class="cal" href="/#/upload" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Upload</a>
+	 	<div style="float: right;width: 24%;">
+	 	<!-- <input type="text" class="col-xs-3 form-control" style="width: 80%; margin-right: 4%;" placeholder="Search"> -->
+	  </div>
+	
+      
+    </div>
+</nav>
+	<ul  class="circleradius" style="background-color: white;">
+		<li>To make Domain as a parent : Drag and drop particular domain from un-assigned list to parent list.</li>
+    	<li>To make a Domain as a child : Select a parent from parent list first, Drag and drop particular domain from un-assigned list to Child List.</li>
+	</ul>
+	<div class='contentWrapper ng-cloak' ng-init="loadLists()">
+        <div class='content'>
+          <div class="row-fluid">
+          <!-- <div style="width:99%;background: rgb(194, 199, 212);margin-top: -1%;border-radius: 3px;height: 20px;">
+          	<span id="but" style="color:white;font-weight: bold;width: 33%;text-align: center;float: left;">Un-Assigned Domains ({{unAssigned}})</span>
+          	<span style="color:white;font-weight: bold;width: 33%;text-align: center;float: left;">Parent Domains ({{parent}})</span>
+          	<span style="color:white;font-weight: bold;width: 33%;text-align: center;float: left;">Child Domains ({{child}})</span>
+          </div> -->
+          <table style="width: 100%;">
+          	<tr>
+          		<th style="width: 33%;">
+          			<p style="float: left;padding-left: 2%;padding-top: 1%;">Un-Assigned Domains ({{unAssigned}})</p>
+          			<div class="form-group has-success has-feedback">
+          				<input type="text" class="input-sm form-control textStyle"  ng-model="query1" placeholder="Search Un-Assigned" style="width: 49%;float:right ;margin-left: 2%;">
+    					<span class="glyphicon glyphicon-search form-control-feedback" style="cursor: pointer;margin-top: -6%;"></span>
+    				</div>
+    			</th>
+          		<th style="width: 33%;">
+          			<p style="float: left;padding-left: 2%;padding-top: 1%;">Parent Domains ({{parent}})</p>
+          			<span style="float:left;margin-left: 1%;padding-top: 1.5%;" class="glyphicon glyphicon-plus" ng-click="addparentpopup()"></span>
+          			<div class="form-group has-success has-feedback">
+          				<input type="text" class="input-sm form-control textStyle"  ng-model="query2" placeholder="Search Parent" style="width: 50%;float: right ;">
+    					<span class="glyphicon glyphicon-search form-control-feedback" style="cursor: pointer;margin-top: -6%;">
+    					</span>
+    				</div>
+    			</th>
+          		<th style="width: 33%;">
+          			<p style="float: left;padding-left: 2%;padding-top: 1%;">Child Domains ({{child}})</p>
+          			<div class="form-group has-success has-feedback"> 
+          				<input type="text" class="input-sm form-control textStyle"  ng-model="query3" placeholder="Search Child" style="width: 50%;float: right ;">
+    					<span class="glyphicon glyphicon-search form-control-feedback" style="cursor: pointer;margin-top: -6%;"></span>
+    				</div> 
+    			</th>
+          	</tr>
+          	<tr>
+          		<td>
+          			<div class="thumbnail" data-drop="true" ng-model='list1' data-jqyoui-options="optionsList1 " onDropng-mouseover="dragTo = 1" jqyoui-droppable="{multiple:true,onDrop:'list1Drop()'}">
+                  		<div class="caption" style='margin-left:0.5%;float: left;'>
+                    		<div class="btn btn-info btn-draggable" style="margin-bottom: 2px;" 
+                    		ng-repeat="item in list1 | filter: query1" 
+                    		ng-show="item.title" data-drag="{{item.drag}}" 
+                    		id="list1id{{item.id}}" 
+                    		ng-mouseover="draglist11(item.id)" ng-click="unsetSelectedIndex();" 
+                    		data-jqyoui-options="{revert: 'invalid',scroll: false, helper: 'clone',appendTo: 'body' }" ng-model="list1" 
+                    		jqyoui-draggable="{index: {{$index}},animate:true,onStart:'draglist1()'}">{{item.title}}</div>
+                  		</div>
+                  	</div>
+                </td>
+          		<td>
+          			<div class="thumbnail" data-drop="true" ng-model='list2' 
+          			data-jqyoui-options="optionsList2" ng-mouseover="dragTo = 2" 
+          			jqyoui-droppable="{multiple:true,onDrop:'list2Drop()'}">
+                  		<div class="caption" style='float: left;'>
+                    		<div 
+                    		ng-repeat="item in list2 | filter: query2" 
+                    		ng-show="item.title" 
+                    		data-drag="{{item.drag}}" 
+                    		style="margin-bottom: 2px;background-color: {{item.color}};"
+                    		data-ng-class="selectedIndex == $index   ? 'btn btn-warning btn-draggable' : 'btn btn-info btn-draggable'" 
+                    		ng-click="getChildSubscription(item.id); setSelectedIndex($index)" 
+                    		ng-mouseover="draglist22(item.id)" 
+                    		data-jqyoui-options="{revert: 'invalid',scroll: false, helper: 'clone',appendTo: 'body'}" 
+                    		ng-model="list2" 
+                    		jqyoui-draggable="{index: {{$index}},animate:true,onStart:'draglist2()'}">{{item.title}} ({{item.childNumber}})<span ng-show="selectedIndex == $index" class="glyphicon glyphicon-ok"></span></div>
+                    		
+                  </div>
+                </div>
+          			<!-- <div class="thumbnail" data-drop="true" data-ng-model='list2' 
+          			data-jqyoui-options="optionsList2" data-ng-mouseover="dragTo = 2" 
+          			data-jqyoui-droppable="{multiple:true,onDrop:'list2Drop()'}">
+                  		<div class="caption" style='float: left;'>
+                    		<div  style="margin-bottom: 2px;" 
+                    		data-ng-repeat="item in list2 | filter: query2" 
+                    		data-ng-show="item.title" 
+                    		data-data-drag="{{item.drag}}" 
+                    		data-ng-class="selectedIndex == $index   ? 'btn btn-warning btn-draggable' : 'btn btn-info btn-draggable'" 
+                    		data-ng-click="getChildSubscription(item.id); setSelectedIndex($index)" 
+                    		data-ng-mouseover="draglist22(item.id)" 
+                    		data-jqyoui-options="{revert: 'invalid',scroll: false, helper: 'clone',appendTo: 'body' }" 
+                    		data-ng-model="list2" 
+                    		data-jqyoui-draggable="{index: {{$index}},animate:true,onStart:'draglist2()'}">{{item.title}} ({{item.childNumber}})</div>
+                  		</div>
+                	</div> -->
+          		</td>
+          		<td>
+          			<div class="thumbnail" data-drop="true" data-ng-model='list3' 
+          			data-jqyoui-options="optionsList3 " data-ng-mouseover="dragTo = 3" 
+          			data-jqyoui-droppable="{multiple:true,onDrop:'list3Drop()'}">
+                  		<div class="caption" style='margin-rigth:0.5%;float: left;'>
+                    		<div class="btn btn-info btn-draggable"  
+                    		data-ng-repeat="item in list3 | filter: query3" 
+                    		data-ng-show="item.title" data-drag="{{item.drag}}" 
+                    		data-ng-mouseover="draglist33(item.id)" 
+                    		style="margin-bottom: 2px;background-color: {{item.color}};"
+                    		data-jqyoui-options="{revert: 'invalid',scroll: false, helper: 'clone',appendTo: 'body' }" 
+                    		data-ng-model="list3" 
+                    		data-ng-click="unsetSelectedIndex()" 
+                    		data-jqyoui-draggable="{index: {{$index}},animate:true,onStart:'draglist3()'}">{{item.title}}</div>
+                  		</div>
+                	</div>
+          		</td>
+          	</tr>
+          </table>
+           <!-- <ul class="thumbnails">
+              <li class="span3" style="float: left; width: 34%;margin-left: -2.6%;">
+                <div class="thumbnail" data-drop="true" ng-model='list1' data-jqyoui-options="optionsList1 " onDropng-mouseover="dragTo = 1" jqyoui-droppable="{multiple:true,onDrop:'list1Drop()'}">
+                  <div class="caption" style='margin-left:0.5%;float: left;'>
+                    <div class="btn btn-info btn-draggable" style="margin-bottom: 2px;/* position: static !important; */" ng-repeat="item in list1" ng-show="item.title" data-drag="{{item.drag}}" id="list1id{{item.id}}" ng-mouseover="draglist11(item.id)" ng-click="unsetSelectedIndex();popupbelow(item.id)" data-jqyoui-options="{revert: 'invalid'}" ng-model="list1" jqyoui-draggable="{index: {{$index}},animate:true,onStart:'draglist1()'}">{{item.title}}</div>
+                  </div>
+                </div>
+                 </li>
+			 <li class="span3" style="float: left; width: 34%">
+                <div class="thumbnail" data-drop="true" ng-model='list2' data-jqyoui-options="optionsList2" ng-mouseover="dragTo = 2" jqyoui-droppable="{multiple:true,onDrop:'list2Drop()'}">
+                  <div class="caption" style='float: left;'>
+                    <div style="margin-bottom: 2px;/* position: static !important; */" ng-repeat="item in list2" ng-show="item.title" data-drag="{{item.drag}}" data-ng-class="selectedIndex == $index   ? 'btn btn-info btn-draggable clicked' : 'btn btn-primary btn-draggable'" ng-click="getChildSubscription(item.id); setSelectedIndex($index)" ng-mouseover="draglist22(item.id)" data-jqyoui-options="{revert: 'invalid'}" ng-model="list2" jqyoui-draggable="{index: {{$index}},animate:true,onStart:'draglist2()'}">{{item.title}} ({{item.childNumber}})</div>
+                  </div>
+                </div>
+                 </li>
+               <li class="span3" style="float: left; width: 34%">
+                <div class="thumbnail" data-drop="true" ng-model='list3' data-jqyoui-options="optionsList3 " ng-mouseover="dragTo = 3" jqyoui-droppable="{multiple:true,onDrop:'list3Drop()'}">
+                  <div class="caption" style='margin-rigth:0.5%;float: left;'>
+                    <div class="btn btn-info btn-draggable" style="margin-bottom: 2px;/* position: static !important; */" ng-repeat="item in list3" ng-show="item.title" data-drag="{{item.drag}}" ng-mouseover="draglist33(item.id)" data-jqyoui-options="{revert: 'invalid'}" ng-model="list3" ng-click="unsetSelectedIndex()" jqyoui-draggable="{index: {{$index}},animate:true,onStart:'draglist3()'}">{{item.title}}</div>
+                  </div>
+                </div>
+            </li>
+            </ul> -->
+          </div>
+        </div>
+    </div>
+</div>

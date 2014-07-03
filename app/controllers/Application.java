@@ -29,6 +29,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import models.DomainBL;
+import models.DomainObject;
 import models.EmailBL;
 import models.KeywordBL;
 import models.Links;
@@ -778,4 +779,92 @@ public class Application  extends Controller {
 		list.add(mailFolderSize+elasticFolderSize);
 		return ok(Json.toJson(list));
 	}
+	// List start
+	public static Result loadLists() {
+		SubscriptionListVM result = new SubscriptionListVM();
+		List<DomainObject> unAssignedList = DomainObject.findUnAssignedNames();
+		List<DomainObject> assignedList = DomainObject.findAssignedNames();
+		List<DomainObject> assignedChildList = DomainObject.findAssignedChildNames();
+		result.totalUnAssignedNumber = unAssignedList.size();
+		result.totalParentNumber = assignedList.size();
+		result.totalChildNumber = assignedChildList.size();
+		result.unAssignedList = new ArrayList<SubscriptionVM>();
+		for(DomainObject ds : unAssignedList) {
+			result.unAssignedList.add(new SubscriptionVM(ds.id,ds.name,ds.color));
+		}
+		result.assignedList = new ArrayList<SubscriptionVM>();
+		for(DomainObject ds : assignedList) {
+			result.assignedList.add(new SubscriptionVM(ds.id,ds.name,DomainObject.findAssignedChildNames(ds.id).size(),ds.color));
+		}
+		result.assignedChildList = new ArrayList<SubscriptionVM>();
+		for(DomainObject ds : assignedChildList) {
+			result.assignedChildList.add(new SubscriptionVM(ds.id,ds.name,ds.color));
+		}
+		return ok(Json.toJson(result));
+	}
+	
+	public static Result loadChildList(Long id) {
+		SubscriptionListVM result = new SubscriptionListVM();
+		List<DomainObject> assignedChildList = DomainObject.findAssignedChildNames(id);
+		result.assignedChildList = new ArrayList<SubscriptionVM>();
+		for(DomainObject ds : assignedChildList) {
+			result.assignedChildList.add(new SubscriptionVM(ds.id,ds.name,ds.color));
+		}
+		return ok(Json.toJson(result));
+	}
+	
+	public static class SubscriptionVM {
+		public Long id;
+		public String title;
+		public Boolean drag=true;
+		public Integer childNumber;
+		public String color;
+		public SubscriptionVM (Long id,String title,String color) {
+			this.title=title;
+			this.id=id;
+			this.color = color;
+		}
+		public SubscriptionVM (Long id,String title,Integer childNumber,String color) {
+			this.title = title;
+			this.id = id;
+			this.childNumber  = childNumber;
+			this.color = color;
+		}
+	}
+	
+	public static class SubscriptionListVM {
+		public Integer totalUnAssignedNumber;
+		public Integer totalParentNumber;
+		public Integer totalChildNumber;
+		public List<SubscriptionVM> unAssignedList;
+		public List<SubscriptionVM> assignedList;
+		public List<SubscriptionVM> assignedChildList;
+	}
+	
+	public static Result addParentSubscription(Long id) {
+		DomainObject.addParentSubscription(id);
+		return ok();
+	}
+	
+	public static Result removeParentSubscription(Long id) {
+		DomainObject.removeParentSubscription(id);
+		return ok();
+	}
+	
+	public static Result addChildSubscription(Long cid,Long pid) {
+		DomainObject.addChildSubscription(cid,pid);
+		return ok();
+	}
+	
+	public static Result removeChildSubscription(Long id) {
+		DomainObject.removeChildSubscription(id);
+		return ok();
+	}
+	
+	public static Result addParentDomain(String parent) {
+		DomainObject.addParentDomain(parent);
+		return ok();
+	}
+	
+	//List end
 }

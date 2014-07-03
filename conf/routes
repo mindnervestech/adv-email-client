@@ -47,6 +47,23 @@ GET		/get-all-chartprev/:prev						controllers.Application.getAllChartprev(prev 
 
 GET		/downloadPdf/:id					controllers.Application.downloadPdf(id :Long)
 
+# List start
+
+GET 	/loadlists								controllers.Application.loadLists()
+
+GET 	/loadchildlist/:id						controllers.Application.loadChildList(id : Long)
+
+GET		/addparentsubscription/:id				controllers.Application.addParentSubscription(id : Long)
+
+GET		/removeparentsubscription/:id			controllers.Application.removeParentSubscription(id : Long)
+
+GET		/addchildsubscription/:cid/:pid			controllers.Application.addChildSubscription(cid : Long , pid : Long)
+
+GET		/removechildsubscription/:id			controllers.Application.removeChildSubscription(id : Long)
+
+GET		/addparentdomain/:parent				controllers.Application.addParentDomain(parent : String)
+
+#list end
 # Table Data
 GET     /showTables/:id                     controllers.ShowTab.showTables(id :Long)
 GET		/saveEmailSearchSet				 	controllers.Application.saveEmailSearchSet()
