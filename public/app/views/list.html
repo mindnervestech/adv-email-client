@@ -129,9 +129,9 @@ th {
                     		<div class="btn btn-info btn-draggable" style="margin-bottom: 2px;" 
                     		ng-repeat="item in list1 | filter: query1" 
                     		ng-show="item.title" data-drag="{{item.drag}}" 
-                    		id="list1id{{item.id}}" 
-                    		ng-mouseover="draglist11(item.id)" ng-click="unsetSelectedIndex();" 
-                    		data-jqyoui-options="{revert: 'invalid',scroll: false, helper: 'clone',appendTo: 'body' }" ng-model="list1" 
+                    		id="{{item.id}}"              			
+                    		ng-click="unsetSelectedIndex();" 
+                    		data-jqyoui-options="{revert: 'invalid',scroll: false, helper: 'clone',appendTo: 'body', }" ng-model="list1" 
                     		jqyoui-draggable="{index: {{$index}},animate:true,onStart:'draglist1()'}">{{item.title}}</div>
                   		</div>
                   	</div>
@@ -148,7 +148,7 @@ th {
                     		style="margin-bottom: 2px;background-color: {{item.color}};"
                     		data-ng-class="selectedIndex == $index   ? 'btn btn-warning btn-draggable' : 'btn btn-info btn-draggable'" 
                     		ng-click="getChildSubscription(item.id); setSelectedIndex($index)" 
-                    		ng-mouseover="draglist22(item.id)" 
+                    		id="{{item.id}}" 
                     		data-jqyoui-options="{revert: 'invalid',scroll: false, helper: 'clone',appendTo: 'body'}" 
                     		ng-model="list2" 
                     		jqyoui-draggable="{index: {{$index}},animate:true,onStart:'draglist2()'}">{{item.title}} ({{item.childNumber}})<span ng-show="selectedIndex == $index" class="glyphicon glyphicon-ok"></span></div>
@@ -180,7 +180,7 @@ th {
                     		<div class="btn btn-info btn-draggable"  
                     		data-ng-repeat="item in list3 | filter: query3" 
                     		data-ng-show="item.title" data-drag="{{item.drag}}" 
-                    		data-ng-mouseover="draglist33(item.id)" 
+                    		id="{{item.id}}"
                     		style="margin-bottom: 2px;background-color: {{item.color}};"
                     		data-jqyoui-options="{revert: 'invalid',scroll: false, helper: 'clone',appendTo: 'body' }" 
                     		data-ng-model="list3" 

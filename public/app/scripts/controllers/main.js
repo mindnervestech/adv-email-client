@@ -63,33 +63,24 @@ emailclient.controller('AdminController',function($scope,$location,$http,$modal,
 	$scope.list2 = [];
 	$scope.list3 = [];
 	  
-	$scope.draglist1 = function () {
+	$scope.draglist1 = function (e) {
+		console.log(e.currentTarget.id);
 		  $scope.dragFrom = "1";
-		   
+		  $scope.dragElementId = e.currentTarget.id; 
 	};
 	 
-	$scope.draglist2 = function () {
+	$scope.draglist2 = function (e) {
+		//console.log(id);
+		$scope.dragElementId = e.currentTarget.id;
 		  $scope.dragFrom = "2";
 	};
 	  
-	$scope.draglist3 = function () {
+	$scope.draglist3 = function (e) {
+		//console.log(id);
+		$scope.dragElementId = e.currentTarget.id;
 		  $scope.dragFrom = "3";
 	};
-	  
-	$scope.draglist11 = function (value) {
-		  //console.log("to "+value);
-		  $scope.dragElementId = value;
-	};
-	 
-	$scope.draglist22 = function (value) {
-		  //console.log("to "+value);
-		  $scope.dragElementId = value;
-	};
-	  
-	$scope.draglist33 = function (value) {
-		  //console.log("to "+value);
-		  $scope.dragElementId = value;
-	};
+
 	  
 	$scope.setSelectedIndex = function (index) {
 		  $scope.selectedIndex = index;
