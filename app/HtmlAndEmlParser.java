@@ -237,7 +237,7 @@ public class HtmlAndEmlParser {
 						urlLink =response.headers().get("location");
 					}
 				} else if (a != 2) {
-					return;
+					urlLink = "";
 				}
 			} while(a==3) ;
 			
@@ -272,8 +272,7 @@ public class HtmlAndEmlParser {
 	}
     
     public static void processLinks() {
-    	List<Links> linkList = Links.find.where().eq("processedUrl", null).findList();
-    	System.out.println(linkList.size());
+    	List<Links> linkList = Links.find.where().eq("processedUrl", null).setMaxRows(1500).findList();
     	for(Links link : linkList) {
     		String urlLink =link.getUrl();
     		urlLink = process(urlLink);
@@ -297,11 +296,12 @@ public class HtmlAndEmlParser {
 						urlLink =response.headers().get("location");
 					}
 				} else if (a != 2) {
-					return null;
+					return "";
 				}
 			}while(a==3);
 		} catch (Exception e) {
 			e.printStackTrace();
+			return "";
 		}
 		return urlLink;
     }

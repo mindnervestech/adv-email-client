@@ -439,7 +439,7 @@ public class Application  extends Controller {
 	
 	@Transactional
 	public static Result getlinkImageByID(long id) {
-		List<Links>links = Links.find.where().eq("mail_id.id",id).ne("processedUrl", null).findList();
+		List<Links>links = Links.find.where().eq("mail_id.id",id).ne("processedUrl", null).ne("processedUrl", "").findList();
 		List<UrlMapVM> urlMap = new ArrayList<UrlMapVM>();
 		
 		for(Links link : links) {
