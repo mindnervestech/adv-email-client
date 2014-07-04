@@ -272,7 +272,7 @@ public class HtmlAndEmlParser {
 	}
     
     public static void processLinks() {
-    	List<Links> linkList = Links.find.where().eq("processedUrl", null).setMaxRows(1500).findList();
+    	List<Links> linkList = Links.find.where().eq("processedUrl", null).setMaxRows(8000).findList();
     	for(Links link : linkList) {
     		String urlLink =link.getUrl();
     		urlLink = process(urlLink);
@@ -300,7 +300,7 @@ public class HtmlAndEmlParser {
 				}
 			}while(a==3);
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			return "";
 		}
 		return urlLink;
