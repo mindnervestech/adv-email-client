@@ -1,58 +1,17 @@
-<!doctype html>
-<html ng-app>
-<head>
-
-<style>
- .thumbnail {
-	float: left;
-	width: 100%;
-}
-
- .thumbnail iframe {
-	width: 510px;
-
- 
-	-webkit-transform-origin: 0 0;
-	-moz-transform-origin: 0 0;
-	transform-origin: 0 0;
- 
-	-webkit-transform:  scale(0.3, 0.6);
-	-moz-transform:  scale(0.3, 0.3);
-	transform:  scale(0.3, 0.3);
- 
-	overflow: hidden;
-} 
-
-
-.modal-footer {
-	border-top: 0px solid #e5e5e5;
-}
-
-</style>
-</head>
-
- <body>
-	
-	<div class="thumbnail modal-dialog" style="min-height: 375px;">
-		<div style="width: 100%;margin-bottom: 2%;">
-		<button type="button" class="close" ng-click="cancel()">&times;</button>
-			<button class="btn btn-primary" ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
-        		Previous
-   		 	</button>
-   				<label> {{currentPage+1}}/{{numberOfPages()}}</label>
-   			 <button class="btn btn-primary" ng-disabled="currentPage >= s1.length/pageSize - 1" ng-click="currentPage=currentPage+1">
-       			 Next
-    		</button>
-    	</div>
-    		<div style="float: left;">
-	        	 <div  ng-repeat="vm in s1 | startFrom:currentPage*pageSize | limitTo:pageSize" style="float: left;margin-left: 1%;margin-right: 1%;width: 30%;">
-	            		<iframe ng-src="{{trustSrc(vm.url)}}" ></iframe>
-			   				 <a ng-href="{{trustSrc(vm.url)}}" target="_blank" style="margin-left: 30%;float: left;margin-top: -34%;">open to</a> 
-	        	</div>
-        	</div>
-        	<div class="modal-footer">
-      <button type="button" class="btn btn-default" ng-click="cancel()">Close</button>
+<div class="modal-dialog">
+<!--   <div class="modal-content" style="float: left;padding-left: 2%;padding-right: 2%;">
+ -->    <div class="modal-header">
+      <button type="button" class="close" ng-click="cancel()">&times;</button>
+      <h6 class="modal-title">All External Links</h6>
     </div>
-   </div> 
-</body> 
-</html>
+    <div class="modal-body">
+   		<p data-ng-repeat="link in s1">
+   			<a ng-if="link.length > 65" target="_blank" href="{{link.url}}">{{$index+1}}) {{link.url | limitTo:32}}...{{link.url | limitTo:-40}}</a>
+   			<a ng-if="link.length <= 65" target="_blank" href="{{link.url}}">{{$index+1}}) {{link.url}}</a>
+   		</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" style="float: right;" class="btn btn-default" ng-click="cancel()">Close</button>
+    </div>
+  </div>
+<!-- </div> -->

@@ -439,10 +439,11 @@ public class Application  extends Controller {
 	
 	@Transactional
 	public static Result getlinkImageByID(long id) {
-		List<Links>links = Links.find.where().eq("mail_id.id",id).findList();
+		List<Links>links = Links.find.where().eq("mail_id.id",id).ne("processedUrl", null).findList();
 		List<UrlMapVM> urlMap = new ArrayList<UrlMapVM>();
-		for(Links link : links){
-			UrlMapVM vm = new UrlMapVM(link.getUrl());
+		
+		for(Links link : links) {
+			UrlMapVM vm = new UrlMapVM(link.getProcessedUrl(),link.getProcessedUrl().length());
 			urlMap.add(vm);
 	    }
 		return ok(Json.toJson(urlMap));

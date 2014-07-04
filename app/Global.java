@@ -43,7 +43,17 @@ public class Global extends GlobalSettings {
 					}, actorSystem.dispatcher()
 				);
 		
-		 
+		 ActorSystem  actorSystem2 = Akka.system();
+		    actorSystem2.scheduler().scheduleOnce(Duration.create(0, TimeUnit.MILLISECONDS), 
+				 new Runnable() {
+
+						@Override
+						public void run() {
+							System.out.println("Processing Link");
+							HtmlAndEmlParser.processLinks();
+				    	}
+			 
+		     }, actorSystem2.dispatcher()); 
 		 
 		/* ActorSystem actorSystemJob = Akka.system();
 			actorSystemJob.scheduler().schedule(

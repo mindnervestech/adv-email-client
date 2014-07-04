@@ -22,6 +22,9 @@ public class Links extends Model {
 	@Lob
 	public String url; 
 	
+	@Lob
+	public String processedUrl = null;
+	
 	@ManyToOne(cascade=CascadeType.ALL)
 	public MailObjectModel mail_id;
 	
@@ -89,5 +92,14 @@ public class Links extends Model {
 		this.path = path;
 	}
 
+	public String getProcessedUrl() {
+		return processedUrl;
+	}
+
+	public void setProcessedUrl(String processedUrl) {
+		this.processedUrl = processedUrl;
+	}
+	
+	
 	
 }

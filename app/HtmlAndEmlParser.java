@@ -20,6 +20,7 @@ import models.Links;
 import models.MailObjectModel;
 
 import org.jsoup.Jsoup;
+import org.jsoup.Connection.Response;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Entities.EscapeMode;
@@ -219,43 +220,91 @@ public class HtmlAndEmlParser {
    
     public static void saveLinksInDb(MailObjectModel mm, Element link, List<indexing.Links> nestedHtml)  {
 		String urlLink = link.attr("href").replaceAll(" ", "");
-			Links linkDB = new Links();
-			linkDB.setMail_id(mm);
-			linkDB.setUrl(urlLink);
-			linkDB.setStatus(1);
-			Document doc;
-			try {
-				doc = Jsoup.connect(urlLink).get();
-				String text = doc.body().text();
-				if(Strings.isNullOrEmpty(text))
-				{
-					//linkDB.setStatus(2);
-					WebDriver driver = new HtmlUnitDriver();
-			        try {
-			        	driver.get(urlLink);
-			        	doc = Jsoup.parse(driver.getPageSource());
-			        	text = doc.body().text();
-			        } finally {
-			        	try {
-			        		driver.close();
-			        	} catch(Exception e){
-			        		
-			        	}
-			        }
+		Links linkDB = new Links();
+		linkDB.setMail_id(mm);
+		linkDB.setUrl(urlLink);
+		linkDB.setStatus(1);
+		Document doc;
+		int a=3;
+		try {
+			do {
+				Response response = Jsoup.connect(urlLink.replaceAll(" ", "%20")).followRedirects(false).execute();
+				a = response.statusCode() / 100;
+				if(a == 3) {
+					if(response.headers().get("Location") != null) {
+						urlLink =response.headers().get("Location");
+					} else {
+						urlLink =response.headers().get("location");
+					}
+				} else if (a != 2) {
+					return;
 				}
-				if(Strings.isNullOrEmpty(text))
-				{
+			} while(a==3) ;
+			
+			linkDB.processedUrl = urlLink;
+			doc = Jsoup.connect(urlLink).get();
+			String text = doc.body().text();
+			if(Strings.isNullOrEmpty(text)) {
+				//linkDB.setStatus(2);
+				WebDriver driver = new HtmlUnitDriver();
+			    try {
+			        driver.get(urlLink);
+			        doc = Jsoup.parse(driver.getPageSource());
+			        text = doc.body().text();
+			    } finally {
+			        try {
+			        	driver.close();
+			        } catch(Exception e){
+			        		
+			        }
+			    }
+			}
+			if(Strings.isNullOrEmpty(text)) {
 					linkDB.setHtmlcontent("UNPROCESSED");
 					linkDB.setStatus(2);
-				}
-				linkDB.save();
-				nestedHtml.add(new indexing.Links(linkDB.id, text));
-			} catch (Exception e) {
-				System.out.println(e.getMessage());
 			}
+			linkDB.save();
+			nestedHtml.add(new indexing.Links(linkDB.id, text));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
 			
 	}
     
+    public static void processLinks() {
+    	List<Links> linkList = Links.find.where().eq("processedUrl", null).findList();
+    	System.out.println(linkList.size());
+    	for(Links link : linkList) {
+    		String urlLink =link.getUrl();
+    		urlLink = process(urlLink);
+    		if(urlLink != null) {
+    			link.setProcessedUrl(urlLink);
+    			link.update();
+    		}
+    	}
+    }
+    
+    public static String process(String urlLink) {
+    	int a=3;
+		try {
+			do {
+				Response response = Jsoup.connect(urlLink.replaceAll(" ", "%20")).followRedirects(false).execute();
+				a = response.statusCode() / 100;
+				if(a == 3) {
+					if(response.headers().get("Location") != null) {
+						urlLink =response.headers().get("Location");
+					} else {
+						urlLink =response.headers().get("location");
+					}
+				} else if (a != 2) {
+					return null;
+				}
+			}while(a==3);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return urlLink;
+    }
     /*public static void main(String[] args) {
     	Document doc;
 		try {
