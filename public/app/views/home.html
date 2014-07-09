@@ -496,7 +496,9 @@ $(function() {
 								<div>
 								<!-- Subject -->
 									 <blockquote class="text-primary blockquote_adv" style="float: left;font-size: 15px !important;">{{email.subject}}</blockquote>
-								
+									<button type="button" class="btn btn-primary btn-xs" ng-click="getWordCloudById(email.id)">
+										<span class="glyphicon glyphicon-cloud" tooltip-placement="top" tooltip="Generate Word Cloud"></span>
+									</button>
 								<!-- Date -->
 								 	<span  style="float: right;margin-right: 2%;" class="text-primary textStyle">{{email.date | date:'MMMM-dd-yyyy'}}</span><br> 
 									<span style="float: right;margin-right: 21px;margin-top: -0.2%;" class="text-primary textStyle">{{email.domain}}</span>

@@ -47,6 +47,7 @@ GET		/get-all-chartprev/:prev						controllers.Application.getAllChartprev(prev 
 
 GET		/downloadPdf/:id					controllers.Application.downloadPdf(id :Long)
 
+GET		/get-word-cloud-by-id/:id				controllers.Application.getWordCloudById(id : Long)
 # List start
 
 GET 	/loadlists								controllers.Application.loadLists()

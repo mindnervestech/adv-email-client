@@ -52,6 +52,25 @@ emailclient.controller('AdminController',function($scope,$location,$http,$modal,
 		file:''
 	};
 	
+	$scope.getWordCloudById = function (id) {
+		 $scope.wordCloudId = id;
+		   //$scope.searchForm.popUpId = popUpId;
+		  usSpinnerService.spin('loading...');
+		  $http.get('/get-word-cloud-by-id/'+id)
+			.success(function(data, status, headers, config) {
+				
+				//$('#wordcloudimage').attr('src','data:image/svg+xml,'+data);
+				$scope.wc = 'data:image/svg+xml,'+data;
+				usSpinnerService.stop('loading...');
+				modalInstance = $modal.open({
+				      templateUrl: '/assets/app/views/wordcloud.html',
+				      scope : $scope
+				    });
+			});
+		  
+	  };
+	
+	
 	// List Start
 	
 	$scope.roleList ;
@@ -801,6 +820,23 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
     /*  Above Section for modal  */  
 	 
 	  /*  below Section for email popup modal  */
+	  $scope.getWordCloudById = function (id) {
+		 $scope.wordCloudId = id;
+		   //$scope.searchForm.popUpId = popUpId;
+		  usSpinnerService.spin('loading...');
+		  $http.get('/get-word-cloud-by-id/'+id)
+			.success(function(data, status, headers, config) {
+				
+				//$('#wordcloudimage').attr('src','data:image/svg+xml,'+data);
+				$scope.wc = 'data:image/svg+xml,'+data;
+				usSpinnerService.stop('loading...');
+				modalInstance = $modal.open({
+				      templateUrl: '/assets/app/views/wordcloud.html',
+				      scope : $scope
+				    });
+			});
+		  
+	  };
 	  $scope.removeEmailData=function(id,indexId)
 	  {
 		  //alert("in remove "+id+" "+indexId);
