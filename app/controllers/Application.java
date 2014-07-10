@@ -876,11 +876,11 @@ public class Application  extends Controller {
 	public static Result getWordCloudById(Long id) {
 		MailObjectModel mailObject = MailObjectModel.findMailObjectModelById(id);
 		String filePath= mailObject.mailPath.replace(".eml", "_cloud.svg");
-		File f = new File(filePath);
+		File f ;//= new File(filePath);
 		//PApplet pApplet = new PApplet();
 		//pApplet.setSize(800, 600);
-		if(!f.exists())
-		{
+		/*if(!f.exists())
+		{*/
 			try {
 				new WordCram()
 				.toSvg(filePath,800, 600)
@@ -895,7 +895,7 @@ public class Application  extends Controller {
 				System.out.println(e.getMessage());
 				//e.printStackTrace();
 			} 
-		}
+		/*}*/
 		//System.out.println("done");
 		return ok(f);
 	}
