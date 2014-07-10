@@ -40,7 +40,7 @@ public class HtmlAndEmlParser {
     	Document doc= null;
     	System.out.println("Reading from FS" );
 		
-    	List <MailObjectModel> moList =MailObjectModel.find.where().eq("status", 0).setMaxRows(10).findList();
+    	List <MailObjectModel> moList =MailObjectModel.find.where().eq("status", 0).setMaxRows(20).findList();
     	System.out.println("No of mails to be processed  from FS" + moList.size());
 		for (MailObjectModel mm:moList)
 		{
@@ -91,7 +91,7 @@ public class HtmlAndEmlParser {
 
 						@Override
 						public void run() {
-							System.out.println("Saving Mail Image now");
+							//System.out.println("Saving Mail Image now");
 							HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
 							imageGenerator.loadHtml(html);
 				    		imageGenerator.saveAsImage(urll.replace(".eml",".png"));
@@ -110,7 +110,7 @@ public class HtmlAndEmlParser {
      			links = new Elements();
      			links =	doc.select("img[src]");
      			int i = 0;
-     			System.out.println("Saving Images now");	
+     		//	System.out.println("Saving Images now");	
      			for (Element link : links) {
      				String pathForImage = rootpathForImage + File.separator  + "_" + i++ + ".jpg";
      				BufferedImage image = null;
@@ -124,7 +124,7 @@ public class HtmlAndEmlParser {
  						  ImageIO.write(image, "jpg",new File(pathForImage));
  	    				}
  					} catch (Exception e) {
- 		 		 		System.out.println(e.getMessage());
+ 		 		 	//	System.out.println(e.getMessage());
  		 	    	}
  				}		
  	    	} catch (Exception e) {
@@ -147,11 +147,11 @@ public class HtmlAndEmlParser {
 			email.sendersEmail = mm.sendersEmail;
 			
 			Elements linksHref = doc.select("a[href]");
-			System.out.println("Saving Links now");
+		//	System.out.println("Saving Links now");
 			for (Element link : linksHref) {
 				saveLinksInDb(mm, link , email.nestedHtml);
 			}
-			System.out.println("Saving Links Done");
+		//	System.out.println("Saving Links Done");
 			
 			email.index();
 			mm.setStatus(1);

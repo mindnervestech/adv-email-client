@@ -31,7 +31,7 @@ public class Global extends GlobalSettings {
 		ActorSystem  actorSystem = Akka.system();
 		 actorSystem.scheduler().schedule(
 				Duration.create(0, TimeUnit.MILLISECONDS),
-				Duration.create(3, TimeUnit.HOURS),
+				Duration.create(1, TimeUnit.HOURS),
 				new Runnable() {
 					public void run() {
 						 try {
@@ -42,7 +42,7 @@ public class Global extends GlobalSettings {
 					}
 					}, actorSystem.dispatcher()
 				);
-		
+		/*
 		 ActorSystem  actorSystem2 = Akka.system();
 		    actorSystem2.scheduler().schedule(Duration.create(0, TimeUnit.MILLISECONDS),Duration.create(30, TimeUnit.MINUTES), 
 				 new Runnable() {
@@ -53,7 +53,7 @@ public class Global extends GlobalSettings {
 							HtmlAndEmlParser.processLinks();
 				    	}
 			 
-		     }, actorSystem2.dispatcher()); 
+		     }, actorSystem2.dispatcher()); */
 		 
 		/* ActorSystem actorSystemJob = Akka.system();
 			actorSystemJob.scheduler().schedule(
