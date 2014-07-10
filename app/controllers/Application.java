@@ -876,7 +876,7 @@ public class Application  extends Controller {
 	public static Result getWordCloudById(Long id) {
 		MailObjectModel mailObject = MailObjectModel.findMailObjectModelById(id);
 		String filePath= mailObject.mailPath.replace(".eml", "_cloud.svg");
-		File f ;//= new File(filePath);
+		File f = null ;//= new File(filePath);
 		//PApplet pApplet = new PApplet();
 		//pApplet.setSize(800, 600);
 		/*if(!f.exists())
