@@ -877,18 +877,17 @@ public class Application  extends Controller {
 		MailObjectModel mailObject = MailObjectModel.findMailObjectModelById(id);
 		String filePath= mailObject.mailPath.replace(".eml", "_cloud.svg");
 		File f = new File(filePath);
-		PApplet pApplet = new PApplet();
-		pApplet.setSize(800, 600);
+		//PApplet pApplet = new PApplet();
+		//pApplet.setSize(800, 600);
 		if(!f.exists())
 		{
 			try {
-				new WordCram(pApplet)
+				new WordCram()
 				.toSvg(filePath,800, 600)
 				.sizedByWeight(12, 120)
 				.withPlacer(Placers.horizLine())
 				.withFont("Futura-CondensedExtraBold")
 				.withColorer(Colorers.pickFrom(0x20Fd30,0x40a4f4,0x904060,0xf08030,0x180790,0x1290fa,0x614090,0xf160fc,0xf180dc,0x20f0aa,0x2920aa,0xf460d0))
-				.withStopWords("third state")
 				.fromHtmlFile(mailObject.mailPath)
 				.drawAll();
 				f = new File(filePath);
