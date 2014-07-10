@@ -3,6 +3,7 @@ package wordcram;
 import processing.core.*;
 import wordcram.text.*;
 import java.util.ArrayList;
+import java.awt.Font;
 
 /**
  * The main API for WordCram.
@@ -443,7 +444,7 @@ public class WordCram {
      */
     public WordCram withFont(String fontName) {
         PFont font = new PFont(); //parent.createFont(fontName, 1);
-        font.setFont(PFont.findFont(fontName));
+        font.setFont(new Font(fontName, Font.PLAIN, 1));
         return withFont(font);
     }
 
