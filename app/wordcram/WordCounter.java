@@ -1,10 +1,13 @@
 package wordcram;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import cue.lang.Counter;
-import cue.lang.WordIterator;
 import cue.lang.stop.StopWords;
 
 class WordCounter {
@@ -58,7 +61,7 @@ class WordCounter {
     private Word[] countWords(String text) {
         Counter<String> counter = new Counter<String>();
 
-        for (String word : new WordIterator(text)) {
+        for (String word : new MNTWordIterator(text)) {
             if (shouldCountWord(word)) {
                 counter.note(word);
             }
