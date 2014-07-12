@@ -62,7 +62,7 @@ class WordCounter {
         Counter<String> counter = new Counter<String>();
 
         for (String word : new MNTWordIterator(text)) {
-            if (shouldCountWord(word)) {
+            if (shouldCountWord(word) && word.length() > 3) {
                 counter.note(word);
             }
         }
