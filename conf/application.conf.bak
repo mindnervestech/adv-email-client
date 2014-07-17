@@ -73,6 +73,6 @@ mail.elastic.path="/home/demo1-1.0-SNAPSHOT/data"
 ## ElasticSearch Configuration
 ##############################
 elasticsearch.index.clazzs="indexing.*"
-elasticsearch.index.show_request=false
+#elasticsearch.index.show_request=false
 elasticsearch.local=true
 elasticsearch.index.name="emailsearch"

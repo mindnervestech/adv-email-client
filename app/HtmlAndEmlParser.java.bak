@@ -245,7 +245,6 @@ public class HtmlAndEmlParser {
 			if(urlLink == null) {
 				return;
 			}
-			
 			linkDB.processedUrl = urlLink;
 			doc = Jsoup.connect(urlLink).get();
 			String text = doc.body().text();
