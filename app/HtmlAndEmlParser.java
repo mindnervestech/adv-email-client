@@ -128,7 +128,7 @@ public class HtmlAndEmlParser {
  		 	    	}
  				}		
  	    	} catch (Exception e) {
- 		 		e.printStackTrace();
+ 		 		//e.printStackTrace();
  	    	}
 			
 //			models.Content content= new models.Content();
@@ -147,11 +147,11 @@ public class HtmlAndEmlParser {
 			email.sendersEmail = mm.sendersEmail;
 			
 			Elements linksHref = doc.select("a[href]");
-		//	System.out.println("Saving Links now");
+			System.out.println("Saving Links now");
 			for (Element link : linksHref) {
 				saveLinksInDb(mm, link , email.nestedHtml);
 			}
-		//	System.out.println("Saving Links Done");
+			System.out.println("Saving Links Done");
 			
 			email.index();
 			mm.setStatus(1);
@@ -213,7 +213,7 @@ public class HtmlAndEmlParser {
 		 }
 		return original;
 		} catch(Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			return original;
 		}
 	}
@@ -271,7 +271,7 @@ public class HtmlAndEmlParser {
 			linkDB.save();
 			nestedHtml.add(new indexing.Links(linkDB.id, text));
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			//System.out.println(e.getMessage());
 		}
 			
 	}
