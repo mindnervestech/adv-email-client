@@ -40,7 +40,7 @@ public class HtmlAndEmlParser {
     	Document doc= null;
     	System.out.println("Reading from FS" );
 		
-    	List <MailObjectModel> moList =MailObjectModel.find.where().eq("status", 0).setMaxRows(25).findList();
+    	List <MailObjectModel> moList =MailObjectModel.find.where().eq("status", 0).setMaxRows(1225).findList();
     	System.out.println("No of mails to be processed  from FS" + moList.size());
 		for (MailObjectModel mm:moList)
 		{
@@ -148,15 +148,17 @@ public class HtmlAndEmlParser {
 			
 			Elements linksHref = doc.select("a[href]");
 			System.out.println("Saving Links now");
-			for (Element link : linksHref) {
-				saveLinksInDb(mm, link , email.nestedHtml);
-			}
-			System.out.println("Saving Links Done");
+			//for (Element link : linksHref) {
+			//	saveLinksInDb(mm, link , email.nestedHtml);
+			//}
+			
 			
 			email.index();
 			mm.setStatus(1);
 			//mm.setContent(content);
 			mm.update();
+			System.out.println("Saving Links Done");
+			
 			//for (Element link : links) {
 				//saveImageInDb(mm, hp, link);
 			//}
