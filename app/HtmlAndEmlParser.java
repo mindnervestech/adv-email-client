@@ -98,7 +98,7 @@ public class HtmlAndEmlParser {
 				    	}
    			 
    		     }, actorSystem.dispatcher());
-   		    
+   		    System.gc();
     		String rootpathForImage = urll.replace(".eml", "_images");
         	File file6 = new File(rootpathForImage);
 				if (!file6.exists()) {
