@@ -48,6 +48,8 @@ GET		/get-all-chartprev/:prev						controllers.Application.getAllChartprev(prev 
 GET		/downloadPdf/:id					controllers.Application.downloadPdf(id :Long)
 
 GET		/get-word-cloud-by-id/:id				controllers.Application.getWordCloudById(id : Long)
+GET		/getEmailInfo/:data				controllers.Application.getMailInfoFromBasicInfo(data : String)
+GET     /saveEmailInfo/:col_name/:record/:channel_name			controllers.Application.saveMailInfoInBasicInfo(col_name : String, record : String, channel_name : String)	
 # List start
 
 GET 	/loadlists								controllers.Application.loadLists()

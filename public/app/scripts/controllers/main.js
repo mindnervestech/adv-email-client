@@ -790,9 +790,64 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 	$scope.subjectReverse=true;
 	$scope.dateReverse=true;
 	$scope.isHide = true;
+	$scope.DivShow=false;
+	console.log($scope.DivShow);
 	$scope.isadmin=false;
 	$scope.databaseSize;
 	$scope.mailFolderSize;
+	$scope.seeMailInfo = [];
+	
+	$scope.init = function(index) {
+			$(".div"+index).hide();
+			$(".numDiv"+index).show();
+	};
+	
+	$scope.divShow = function (i,divShow, data) {
+		$scope.DivShow = divShow;
+		console.log("dkjfkljflka : "+ data);
+		if($(".div"+i).is(':visible')) {
+			$(".div"+i).hide();
+			$(".numDiv"+i).show();
+		} else {
+			
+			$(".div"+i).show();
+			$(".numDiv"+i).hide();
+			
+		}
+	};
+	
+	$scope.mailInfo = function (data) {
+		console.log(data);
+		$http.get('/getEmailInfo/'+data)
+		.success(function(data, status, headers, config) {
+			console.log(data);
+			$scope.seeMailInfo = {
+					channel_name:data.channel_name,
+					history:data.history,
+					last_renewed:data.last_renewed,
+					media_kit_url:data.media_kit_url,
+					username:data.username,
+					password:data.password,
+					subscriber:data.subscriber,
+					publisher_url:data.publisher_url,
+					notes:data.notes,
+					publisher:data.publisher
+					
+				}
+			modalInstance = $modal.open({
+			      templateUrl: 'manage-edit-user.html',
+			      scope : $scope
+			    });
+		});
+		
+	
+	};
+	$scope.saveMailInfo = function (col_name, record, channel_name) {
+		$http.get('/saveEmailInfo/'+col_name+'/'+record+'/'+channel_name)
+		.success(function(data, status, headers, config) {
+			
+		});
+	};
 	/*  Below Section for modal  */
 	if($location.path()=="/admin") {
 		$scope.isadmin = true;

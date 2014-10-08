@@ -28,6 +28,7 @@ import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import models.BasicInfo;
 import models.DomainBL;
 import models.DomainObject;
 import models.EmailBL;
@@ -873,6 +874,45 @@ public class Application  extends Controller {
 		return ok();
 	}
 	
+	public static class BasicInfoVM {
+		public String channel_name;
+		public String publisher;
+		public String publisher_url;
+		public String media_kit_url;
+		public String username;
+		public String password;
+		public String last_renewed;
+		public String history;
+		public String notes;
+		public String subscriber;
+	}
+	
+	public static Result saveMailInfoInBasicInfo(String col_name, String record,String channel_name) {
+		System.out.println("#@@@@@@@==="+col_name);
+		String info = BasicInfo.saveRecord(col_name, record, channel_name);
+		return ok(Json.toJson(info));
+	}
+	public static Result getMailInfoFromBasicInfo(String data) {
+		SqlRow info = BasicInfo.findRecordByName(data);
+		
+		BasicInfoVM bInfo = new BasicInfoVM();
+		if(info != null) {
+			bInfo.channel_name = info.getString("channel_name");
+			bInfo.publisher = info.getString("publisher");
+			bInfo.publisher_url = info.getString("publisher_url");
+			bInfo.media_kit_url = info.getString("media_kit_url");
+			bInfo.username = info.getString("username");
+			bInfo.password = info.getString("password");
+			bInfo.last_renewed = info.getString("last_renewed");
+			bInfo.history = info.getString("history");
+			bInfo.notes = info.getString("notes");
+			bInfo.subscriber = info.getString("Subscriber");
+			return ok(Json.toJson(bInfo));
+		}else {
+			return null;
+		}
+		
+	}
 	public static Result getWordCloudById(Long id) {
 		MailObjectModel mailObject = MailObjectModel.findMailObjectModelById(id);
 		String filePath= mailObject.mailPath.replace(".eml", "_cloud.svg");
