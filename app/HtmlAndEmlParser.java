@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
@@ -37,10 +39,11 @@ import com.google.common.base.Strings;
 public class HtmlAndEmlParser {
 	static final int CHAR_LEN=200;
     public static void emlParse() throws Exception  {
+    	ExecutorService executor = Executors.newFixedThreadPool(3);
     	Document doc= null;
     	System.out.println("Reading from FS" );
 		
-    	List <MailObjectModel> moList =MailObjectModel.find.where().eq("status", 0).setMaxRows(25).findList();
+    	List <MailObjectModel> moList =MailObjectModel.find.where().eq("status", 0).setMaxRows(100).findList();
     	System.out.println("No of mails to be processed  from FS" + moList.size());
 		for (MailObjectModel mm:moList)
 		{
@@ -85,20 +88,37 @@ public class HtmlAndEmlParser {
 			htmlText = doc.toString();
         	
 			final String  html=/*adjustHtml(*/htmlText.toString()/*)*/;
-    		ActorSystem  actorSystem = Akka.system();
+			executor.execute(new Runnable() {
+
+						@Override
+						public void run() {
+							try {
+							HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
+							imageGenerator.loadHtml(html);
+				    		imageGenerator.saveAsImage(urll.replace(".eml",".png"));
+				    		System.gc();
+							}catch(Exception e) {
+								
+							}
+				    	}
+   			 
+   		     });
+			/*ActorSystem  actorSystem = Akka.system();
    		    actorSystem.scheduler().scheduleOnce(Duration.create(0, TimeUnit.MILLISECONDS), 
+   				 
    				 new Runnable() {
 
 						@Override
 						public void run() {
-							//System.out.println("Saving Mail Image now");
+							System.out.println("Saving Mail Image now");
 							HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
 							imageGenerator.loadHtml(html);
 				    		imageGenerator.saveAsImage(urll.replace(".eml",".png"));
+				    		System.gc();
 				    	}
    			 
-   		     }, actorSystem.dispatcher());
-   		    
+   		     }, actorSystem.dispatcher());*/
+   		 System.gc();
     		String rootpathForImage = urll.replace(".eml", "_images");
         	File file6 = new File(rootpathForImage);
 				if (!file6.exists()) {
@@ -128,7 +148,7 @@ public class HtmlAndEmlParser {
  		 	    	}
  				}		
  	    	} catch (Exception e) {
- 		 		e.printStackTrace();
+ 		 		//e.printStackTrace();
  	    	}
 			
 //			models.Content content= new models.Content();
@@ -147,20 +167,24 @@ public class HtmlAndEmlParser {
 			email.sendersEmail = mm.sendersEmail;
 			
 			Elements linksHref = doc.select("a[href]");
-		//	System.out.println("Saving Links now");
-			for (Element link : linksHref) {
-				saveLinksInDb(mm, link , email.nestedHtml);
-			}
-		//	System.out.println("Saving Links Done");
+			System.out.println("Saving Links now");
+			//for (Element link : linksHref) {
+			//	saveLinksInDb(mm, link , email.nestedHtml);
+			//}
+			
 			
 			email.index();
 			mm.setStatus(1);
 			//mm.setContent(content);
 			mm.update();
+			System.out.println("Saving Links Done");
+			
 			//for (Element link : links) {
 				//saveImageInDb(mm, hp, link);
 			//}
 		}
+		executor.shutdown();
+		executor.awaitTermination(1, TimeUnit.MINUTES);
     }
     public static String adjustHtml(String original) {
 		try {
@@ -213,7 +237,7 @@ public class HtmlAndEmlParser {
 		 }
 		return original;
 		} catch(Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			return original;
 		}
 	}
@@ -271,7 +295,7 @@ public class HtmlAndEmlParser {
 			linkDB.save();
 			nestedHtml.add(new indexing.Links(linkDB.id, text));
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			//System.out.println(e.getMessage());
 		}
 			
 	}
