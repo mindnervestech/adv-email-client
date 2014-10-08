@@ -40,7 +40,7 @@ public class HtmlAndEmlParser {
     	Document doc= null;
     	System.out.println("Reading from FS" );
 		
-    	List <MailObjectModel> moList =MailObjectModel.find.where().eq("status", 0).setMaxRows(1225).findList();
+    	List <MailObjectModel> moList =MailObjectModel.find.where().eq("status", 0).setMaxRows(1000).findList();
     	System.out.println("No of mails to be processed  from FS" + moList.size());
 		for (MailObjectModel mm:moList)
 		{
@@ -92,10 +92,14 @@ public class HtmlAndEmlParser {
 						@Override
 						public void run() {*/
 							//System.out.println("Saving Mail Image now");
-							HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
-							imageGenerator.loadHtml(html);
-				    		imageGenerator.saveAsImage(urll.replace(".eml",".png"));
-				    		System.gc();
+							try {
+							 HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
+							 imageGenerator.loadHtml(html);
+				    		 imageGenerator.saveAsImage(urll.replace(".eml",".png"));
+				    		 System.gc();
+							} catch (Exception e) {
+ 		 						//e.printStackTrace();
+ 	    					}
 			/*	    	}
    			 
    		     }, actorSystem.dispatcher());*/
