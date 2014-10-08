@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
@@ -37,6 +39,7 @@ import com.google.common.base.Strings;
 public class HtmlAndEmlParser {
 	static final int CHAR_LEN=200;
     public static void emlParse() throws Exception  {
+    	ExecutorService executor = Executors.newFixedThreadPool(3);
     	Document doc= null;
     	System.out.println("Reading from FS" );
 		
@@ -85,22 +88,34 @@ public class HtmlAndEmlParser {
 			htmlText = doc.toString();
         	
 			final String  html=/*adjustHtml(*/htmlText.toString()/*)*/;
-    		/*ActorSystem  actorSystem = Akka.system();
+			executor.execute(new Runnable() {
+
+						@Override
+						public void run() {
+							try {
+							HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
+							imageGenerator.loadHtml(html);
+				    		imageGenerator.saveAsImage(urll.replace(".eml",".png"));
+				    		System.gc();
+							}catch(Exception e) {
+								
+							}
+				    	}
+   			 
+   		     });
+			/*ActorSystem  actorSystem = Akka.system();
    		    actorSystem.scheduler().scheduleOnce(Duration.create(0, TimeUnit.MILLISECONDS), 
+   				 
    				 new Runnable() {
 
 						@Override
-						public void run() {*/
-							//System.out.println("Saving Mail Image now");
-							try {
-							 HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
-							 imageGenerator.loadHtml(html);
-				    		 imageGenerator.saveAsImage(urll.replace(".eml",".png"));
-				    		 System.gc();
-							} catch (Exception e) {
- 		 						//e.printStackTrace();
- 	    					}
-			/*	    	}
+						public void run() {
+							System.out.println("Saving Mail Image now");
+							HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
+							imageGenerator.loadHtml(html);
+				    		imageGenerator.saveAsImage(urll.replace(".eml",".png"));
+				    		System.gc();
+				    	}
    			 
    		     }, actorSystem.dispatcher());*/
    		 System.gc();
