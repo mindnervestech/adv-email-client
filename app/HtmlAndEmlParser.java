@@ -85,20 +85,21 @@ public class HtmlAndEmlParser {
 			htmlText = doc.toString();
         	
 			final String  html=/*adjustHtml(*/htmlText.toString()/*)*/;
-    		ActorSystem  actorSystem = Akka.system();
+    		/*ActorSystem  actorSystem = Akka.system();
    		    actorSystem.scheduler().scheduleOnce(Duration.create(0, TimeUnit.MILLISECONDS), 
    				 new Runnable() {
 
 						@Override
-						public void run() {
+						public void run() {*/
 							//System.out.println("Saving Mail Image now");
 							HtmlImageGenerator imageGenerator = new HtmlImageGenerator();
 							imageGenerator.loadHtml(html);
 				    		imageGenerator.saveAsImage(urll.replace(".eml",".png"));
-				    	}
+				    		System.gc();
+			/*	    	}
    			 
-   		     }, actorSystem.dispatcher());
-   		    System.gc();
+   		     }, actorSystem.dispatcher());*/
+   		 System.gc();
     		String rootpathForImage = urll.replace(".eml", "_images");
         	File file6 = new File(rootpathForImage);
 				if (!file6.exists()) {
