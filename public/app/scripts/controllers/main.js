@@ -848,6 +848,14 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 			
 		});
 	};
+	$scope.saveRenewedDate = function (col_name, record, channel_name) {
+		if(record != null){
+			$http.get('/saveRenewedDate/'+col_name+'/'+record+'/'+channel_name)
+				.success(function(data, status, headers, config) {
+			
+			});
+		}
+	};
 	/*  Below Section for modal  */
 	if($location.path()=="/admin") {
 		$scope.isadmin = true;

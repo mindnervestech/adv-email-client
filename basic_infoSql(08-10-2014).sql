@@ -19,18 +19,19 @@ CREATE TABLE IF NOT EXISTS `basic_info` (
   `media_kit_url` varchar(100) DEFAULT NULL,
   `username` varchar(100) DEFAULT NULL,
   `password` varchar(100) DEFAULT NULL,
-  `last_renewed` varchar(100) DEFAULT NULL,
+  `last_renewed` datetime DEFAULT NULL,
   `history` varchar(100) DEFAULT NULL,
-  `notes` varchar(100) DEFAULT NULL,
+  `notes` longtext,
   `subscriber` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
--- Dumping data for table mail.basic_info: ~0 rows (approximately)
+-- Dumping data for table mail.basic_info: ~3 rows (approximately)
 /*!40000 ALTER TABLE `basic_info` DISABLE KEYS */;
 INSERT INTO `basic_info` (`id`, `channel_name`, `publisher`, `publisher_url`, `media_kit_url`, `username`, `password`, `last_renewed`, `history`, `notes`, `subscriber`) VALUES
-	(1, 'email.globalspec.com', 'dalave', 'oonjna', 'o', 'ob', 'b', 'b', 'b', 'b', 'b'),
-	(2, 'quora.com', 'llk', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+	(1, 'email.globalspec.com', 'dalave', 'oonjnan-', 'ojkij', 'ob', 'bnn', '2014-10-14 00:00:00', 'b', 'bjklk', 'b'),
+	(2, 'quora.com', 'llk', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+	(3, 'advanstarchromatograph.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 /*!40000 ALTER TABLE `basic_info` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

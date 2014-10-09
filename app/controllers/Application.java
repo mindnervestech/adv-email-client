@@ -887,6 +887,14 @@ public class Application  extends Controller {
 		public String subscriber;
 	}
 	
+	
+	
+	public static Result savesaveRenewedDate(String col_name, String record,String channel_name) {
+		System.out.println("#@@@@@@@==="+record);
+		
+			String info = BasicInfo.saveLastRenewedRecord(col_name, record, channel_name);
+		return ok(Json.toJson(""));
+	}
 	public static Result saveMailInfoInBasicInfo(String col_name, String record,String channel_name) {
 		System.out.println("#@@@@@@@==="+col_name);
 		String info = BasicInfo.saveRecord(col_name, record, channel_name);

@@ -37,6 +37,8 @@
 	<script src="@routes.Assets.at("app/bower_components/angular-sanitize/angular-sanitize.min.js")"></script>    
       <script src="@routes.Assets.at("app/scripts/app.js")"></script>
     <script src="@routes.Assets.at("app/scripts/controllers/main.js")"></script>
+    <script src="@routes.Assets.at("app/bower_components/datepicker/bootstrap-datepicker.js")"></script>
+    <link href="@routes.Assets.at("app/bower_components/datepicker/datepicker.css")" rel="stylesheet" type="text/css" />
   <body style="background: #222 url('/assets/app/images/page_wrapper.png') no-repeat 50% top;" ng-app="email-client" ng-controller="SearchController">
  
  <div class="container-fluid">
@@ -208,50 +210,47 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <script type="text/ng-template" id="manage-edit-user.html">
- 			<div   class="modal-content">
+ 			<div class="modal-content " style= "float:left; width: 650px;" >
 				<button type="button" class="close" ng-click="cancel()">×</button>
-				<table class="table table-striped table-hover" border=1 style="background-color: #eee;width: 100%; margin-top: 20px;">
-					<tr >
-						<td style = "width: 20%;" >channel_name</td>
-						<td><input  disabled ng-blur="saveMailInfo('channel_name', seeMailInfo.channel_name)" ng-blur="saveMailInfo(seeMailInfo.channel_name)" ng-model="seeMailInfo.channel_name"></input></td>
-					</tr>
-					<tr>
-						<td >publisher</td>
-						<td><input  ng-blur="saveMailInfo('publisher', seeMailInfo.publisher, seeMailInfo.channel_name)"  ng-model="seeMailInfo.publisher"></input></td>
-					</tr>
-					<tr>
-						<td >publisher_url</td>
-						<td><input  ng-blur="saveMailInfo('publisher_url', seeMailInfo.publisher_url, seeMailInfo.channel_name)"  ng-model="seeMailInfo.publisher_url"></input></td>
-					</tr>
-					<tr>
-						<td >media_kit_url</td>
-						<td><input  ng-blur="saveMailInfo('media_kit_url', seeMailInfo.media_kit_url, seeMailInfo.channel_name)"  ng-model="seeMailInfo.media_kit_url"></input></td>
-					</tr>
-					<tr>
-						<td>username</td>
-						<td><input  ng-blur="saveMailInfo('username', seeMailInfo.username, seeMailInfo.channel_name)"  ng-model="seeMailInfo.username"></input></td>
-					</tr>
-					<tr>
-						<td>password</td>
-						<td><input  ng-blur="saveMailInfo('password', seeMailInfo.password, seeMailInfo.channel_name)"  ng-model="seeMailInfo.password"></input></td>
-					</tr>
-					<tr>
-						<td>last_renewed</td>
-						<td><input  ng-blur="saveMailInfo('last_renewed', seeMailInfo.last_renewed, seeMailInfo.channel_name)"  ng-model="seeMailInfo.last_renewed"></input></td>
-					</tr>
-					<tr>
-						<td>history</td>
-						<td><input  ng-blur="saveMailInfo('history', seeMailInfo.history, seeMailInfo.channel_name)"  ng-model="seeMailInfo.history"></input></td>
-					</tr>
-					<tr>	
-						<td>notes</td>
-						<td><input  ng-blur="saveMailInfo('notes', seeMailInfo.notes, seeMailInfo.channel_name)"  ng-model="seeMailInfo.notes"></input></td>
-					</tr>
-					<tr>
-						<td>subscriber</td>
-						<td><input  ng-blur="saveMailInfo('subscriber', seeMailInfo.subscriber, seeMailInfo.channel_name)"  ng-model="seeMailInfo.subscriber"></input></td>
-					</tr>
-				</table>				
+					<div  style="float:left; width: 100%;">
+						<div style="float: left; margin-left: 5%;">
+							<div style="padding: 2%;">
+ 								<label style = "float: left; margin-top: 2.5%;">Channel Name:</label><input class="input-filter form-control" style = "width:50% !important; border:none;"  type="input"  disabled ng-blur="saveMailInfo('channel_name', seeMailInfo.channel_name)" ng-blur="saveMailInfo(seeMailInfo.channel_name)" ng-model="seeMailInfo.channel_name"></input>
+ 							</div>
+							<div style="padding: 2%;">
+ 								<label style = "float: left; margin-top: 2.5%;">Publisher URL:</label><input class="input-filter form-control" style = "width:50% !important; border:none;"  type="input"   ng-blur="saveMailInfo('publisher_url', seeMailInfo.publisher_url, seeMailInfo.channel_name)"  ng-model="seeMailInfo.publisher_url"></input>
+ 							</div>
+							<div style="padding: 2%;">
+	 							<label style = "float: left; margin-top: 2.5%;">Username:</label><input class="input-filter form-control" style = "width:50% !important; border:none;"  type="input"     ng-blur="saveMailInfo('username', seeMailInfo.username, seeMailInfo.channel_name)"  ng-model="seeMailInfo.username"></input>
+ 							</div>
+							<div style="padding: 2%;">
+	 							<label style = "float: left; margin-top: 2.5%;">History:</label> 
+	 							<input class="input-filter form-control" style = "width:50% !important; border:none;"  type="input" ng-blur="saveMailInfo('history', seeMailInfo.history, seeMailInfo.channel_name)"  ng-model="seeMailInfo.history"></input>
+ 							</div>
+							<div style="padding: 2%;">
+	 							<label style = "float: left; margin-top: 2.5%;">Subscriber:</label> <input class="input-filter form-control" style = "width:50% !important; border:none;"  type="input"  ng-blur="saveMailInfo('subscriber', seeMailInfo.subscriber, seeMailInfo.channel_name)"  ng-model="seeMailInfo.subscriber"></input>
+	 						</div>
+						</div>
+						<div style="float: right;">							
+							<div style="padding: 2%;">
+ 								<label style = "float: left; margin-top: 2.5%;">Publisher:</label><input class="input-filter form-control" style = "width:50% !important; border:none;"  type="input" ng-blur="saveMailInfo('publisher', seeMailInfo.publisher, seeMailInfo.channel_name)"  ng-model="seeMailInfo.publisher"></input>
+ 							</div>
+							<div style="padding: 2%;">
+ 								<label style = "float: left; margin-top: 2.5%;">media Kit URL:</label><input class="input-filter form-control" style = "width:50% !important; border:none;"  type="input"  ng-blur="saveMailInfo('media_kit_url', seeMailInfo.media_kit_url, seeMailInfo.channel_name)"  ng-model="seeMailInfo.media_kit_url"></input>
+ 							</div>
+ 							<div style="padding: 2%;">
+	 							<label style = "float: left; margin-top: 2.5%;">Password:</label><input class="input-filter form-control" style = "width:50% !important; border:none;"  type="input" ng-blur="saveMailInfo('password', seeMailInfo.password, seeMailInfo.channel_name)"  ng-model="seeMailInfo.password"></input>
+ 							</div>
+ 							<div style="padding: 2%;">
+		    					<label style = "float: left; margin-top: 2.5%;">Last Renewed:</label>
+		    					<input id = "date" class="input-filter form-control" style = "width:50% !important; border:none;"  ng-blur="saveRenewedDate('last_renewed', seeMailInfo.last_renewed, seeMailInfo.channel_name)"  ng-model="seeMailInfo.last_renewed" data-provide="datepicker" data-date-format="yyyy-mm-dd">
+	 						</div>
+							<div style="padding: 2%;">
+	 							<label style = "float: left; margin-top: 2.5%;">Notes:</label> <textarea class="input-filter form-control" style = "width:50% !important; border:none;"  ng-blur="saveMailInfo('notes', seeMailInfo.notes, seeMailInfo.channel_name)"  ng-model="seeMailInfo.notes"></textarea>
+ 							</div>
+	 						
+						</div>
+					</div>
 			</div>			
 	 						
  </script>

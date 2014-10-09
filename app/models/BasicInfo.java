@@ -1,12 +1,15 @@
 package models;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Lob;
+
+import play.db.ebean.Model;
 
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.SqlRow;
-
-import play.db.ebean.Model;
 
 @Entity
 public class BasicInfo extends Model {
@@ -26,10 +29,11 @@ public class BasicInfo extends Model {
 
 	public String password;
 
-	public String last_renewed;
+	public Date last_renewed;
 
 	public String history;
-
+	
+	@Lob
 	public String notes;
 
 	public String subscriber;
@@ -90,11 +94,11 @@ public class BasicInfo extends Model {
 		this.password = password;
 	}
 
-	public String getLast_renewed() {
+	public Date getLast_renewed() {
 		return last_renewed;
 	}
 
-	public void setLast_renewed(String last_renewed) {
+	public void setLast_renewed(Date last_renewed) {
 		this.last_renewed = last_renewed;
 	}
 
@@ -146,6 +150,12 @@ public class BasicInfo extends Model {
 		return "sucess";
 	}
 
+	public static String saveLastRenewedRecord(String col_name, String record,
+			String channel_name) {
+		Ebean.createSqlUpdate("update basic_info set "+col_name+" = '"+record+"' where  channel_name ='"+channel_name+"'" ).execute();
+		return "sucess";
+	}
+
 	/*
 	 * public static void deleteLinksByMailObjectId(long id) { SqlUpdate
 	 * list=Ebean.createSqlUpdate("DELETE FROM links WHERE mail_id_id="+id);
@@ -153,3 +163,4 @@ public class BasicInfo extends Model {
 	 */
 
 }
+ 
