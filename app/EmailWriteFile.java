@@ -45,7 +45,9 @@ public class EmailWriteFile {
         // save message.
       	for (int i = 0; i < message.length; i++) {
       		MailObjectModel mm = new MailObjectModel();
-			mm.mailName=message[i].getSubject();
+      		if (message[i].getSubject() != null) {
+      			mm.mailName=message[i].getSubject();
+      		}
 			mm.sendersEmail=message[i].getFrom()[0].toString();
             createRootDir();
             String domain = createDomainDir(message, i);
