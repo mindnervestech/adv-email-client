@@ -43,7 +43,7 @@ public class HtmlAndEmlParser {
     	Document doc= null;
     	System.out.println("Reading from FS" );
 		
-    	List <MailObjectModel> moList =MailObjectModel.find.where().eq("status", 0).setMaxRows(100).findList();
+    	List <MailObjectModel> moList =MailObjectModel.find.where().eq("status", 0).setMaxRows(10).findList();
     	System.out.println("No of mails to be processed  from FS" + moList.size());
 		for (MailObjectModel mm:moList)
 		{
@@ -56,6 +56,8 @@ public class HtmlAndEmlParser {
 			InputStream inMsg = new FileInputStream(file);
 			
 			Message msg = new MimeMessage(session, inMsg);
+			inMsg.close();
+			
 			String contentType=msg.getContentType().substring(0,msg.getContentType().indexOf('/'));
 			
 			MimeMultipart obj=null;
