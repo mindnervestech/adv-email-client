@@ -10,12 +10,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
 import java.text.DateFormat;
-import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -38,8 +38,15 @@ import models.MailObjectModel;
 import models.SaveSearchSet;
 import net.coobird.thumbnailator.Thumbnails;
 
-
 import org.apache.commons.io.FileUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.elasticsearch.common.collect.Iterables;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.AndFilterBuilder;
@@ -48,7 +55,6 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeFilterBuilder;
-
 import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.facet.terms.strings.InternalStringTermsFacet;
 import org.elasticsearch.search.facet.terms.strings.InternalStringTermsFacet.TermEntry;
@@ -62,28 +68,42 @@ import play.data.Form;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
-import processing.core.PApplet;
 import vm.MailsIDToDisplay;
 import vm.UrlMapVM;
 import wordcram.Colorers;
 import wordcram.Placers;
 import wordcram.WordCram;
 
-
-
 import com.avaje.ebean.SqlRow;
 import com.avaje.ebean.annotation.Transactional;
 import com.github.cleverage.elasticsearch.IndexResults;
 import com.google.common.base.Splitter;
 
-
 import controllers.Application.SearchResponse.Domain;
 import elastic.MntHighlightBuilder;
 import elastic.MntIndexQuery;
-
-public class Application  extends Controller {
+public class Application extends Controller{
 	static int IMGWIDTH=270;
 	public static Result index() {
+		DynamicForm requestData = Form.form().bindFromRequest();
+		System.out.println(requestData.get("key"));
+		try{
+				URL url = new URL("http://localhost:8080/AgoraDD/public/isValidSession.m");
+				URI uri = url.toURI();
+				HttpClient httpclient = new DefaultHttpClient();
+				HttpPost httpPost = new HttpPost(uri);
+				List<NameValuePair> formparams = new ArrayList<NameValuePair>();
+				formparams.add(new BasicNameValuePair("key",requestData.get("key")));
+				UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams);
+				httpPost.setEntity(entity);	
+				HttpResponse response = httpclient.execute(httpPost);
+				
+				String jsonString = EntityUtils.toString(response.getEntity()).toString();
+
+				System.out.println(jsonString);
+		}catch(Exception e){
+			
+		}
 		return ok(views.html.home.render());
 	}
 	
