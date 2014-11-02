@@ -178,12 +178,13 @@ public class HtmlAndEmlParser {
 			email.index();
 			mm.setStatus(1);
 			//mm.setContent(content);
-			mm.update();
-			System.out.println("Saving Links Done");
 			
-			//for (Element link : links) {
-				//saveImageInDb(mm, hp, link);
-			//}
+			//System.out.println("Saving Links Done");
+			
+			for (Element link : links) {
+				saveImageInDb(mm, hp, link);
+			}
+			mm.update();
 		}
 		executor.shutdown();
 		executor.awaitTermination(1, TimeUnit.MINUTES);
