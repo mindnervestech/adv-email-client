@@ -169,10 +169,10 @@ public class HtmlAndEmlParser {
 			email.sendersEmail = mm.sendersEmail;
 			
 			Elements linksHref = doc.select("a[href]");
-			System.out.println("Saving Links now");
-			//for (Element link : linksHref) {
-			//	saveLinksInDb(mm, link , email.nestedHtml);
-			//}
+			//System.out.println("Saving Links now");
+			for (Element link : linksHref) {
+				saveLinksInDb(mm, link , email.nestedHtml);
+			}
 			
 			
 			email.index();
@@ -181,9 +181,9 @@ public class HtmlAndEmlParser {
 			
 			//System.out.println("Saving Links Done");
 			
-			for (Element link : links) {
-				saveImageInDb(mm, hp, link);
-			}
+			//for (Element link : links) {
+			//	saveImageInDb(mm, hp, link);
+			//}
 			mm.update();
 		}
 		executor.shutdown();
