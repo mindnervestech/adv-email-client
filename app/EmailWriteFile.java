@@ -45,7 +45,7 @@ public class EmailWriteFile {
         // save message.
       	for (int i = 0; i < message.length; i++) {
       		MailObjectModel mm = new MailObjectModel();
-      		if (message[i].getSubject() == null) {
+      		if (message[i].getSubject() == null || message[i].getSubject().startsWith("Re:")) {
       			continue;
       		}
 			mm.mailName=message[i].getSubject();

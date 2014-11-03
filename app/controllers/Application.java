@@ -967,6 +967,15 @@ public class Application extends Controller{
 		//System.out.println("done");
 		return ok(f);
 	}
-	
+	public static Result deleteMailById(Long id){
+		MailObjectModel model = MailObjectModel.getMailObjetcById(id);
+			Email e=Email.getEmailByMailObjectId(model.id);
+			if(e!=null) {
+				e.delete();
+			}
+			Links.deleteLinksByMailObjectId(model.id);
+			model.delete();
+			return ok();
+	}
 	//List end
 }

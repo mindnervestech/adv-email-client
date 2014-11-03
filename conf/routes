@@ -67,6 +67,7 @@ GET		/removechildsubscription/:id			controllers.Application.removeChildSubscript
 
 GET		/addparentdomain/:parent				controllers.Application.addParentDomain(parent : String)
 
+GET    /deletemailbyid/:id				controllers.Application.deleteMailById(id : Long)
 #list end
 # Table Data
 GET     /showTables/:id                     controllers.ShowTab.showTables(id :Long)

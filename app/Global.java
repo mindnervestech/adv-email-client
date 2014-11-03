@@ -57,7 +57,21 @@ public class Global extends GlobalSettings {
 					}
 					}, actorSystem.dispatcher()
 				);
-		 /*
+		 ActorSystem  actorSystem3 = Akka.system();
+		 actorSystem3.scheduler().schedule(
+				Duration.create(0, TimeUnit.MILLISECONDS),
+				Duration.create(2, TimeUnit.HOURS),
+				new Runnable() {
+					public void run() {
+						 try {
+							HtmlAndEmlParserTest.deletePersonalMails();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+					}, actorSystem3.dispatcher()
+				);
+		/*
 		 ActorSystem  actorSystem2 = Akka.system();
 		    actorSystem2.scheduler().schedule(Duration.create(0, TimeUnit.MILLISECONDS),Duration.create(30, TimeUnit.MINUTES), 
 				 new Runnable() {

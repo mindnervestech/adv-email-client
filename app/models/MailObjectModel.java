@@ -61,6 +61,7 @@ public class MailObjectModel extends Model{
 		resultList = Ebean.createSqlQuery(query.toString()).findList();
 		return resultList;
 	}
+	
 	public static void deleteMailObjectById(long id)
 	{
 		SqlUpdate list=Ebean.createSqlUpdate("UPDATE mail_object_model SET status=3 WHERE id="+id);
@@ -163,5 +164,11 @@ public class MailObjectModel extends Model{
 		return resultList.get(0).getDouble("Data Base Size in MB");
 	}
 	
-	
+	public static List<MailObjectModel> getAllPersonalMailObjectModels() {
+		return find.where().like("mailName", "Re:%").findList();
+	}
+	public static MailObjectModel getMailObjetcById(Long id2) {
+		// TODO Auto-generated method stub
+		return find.where().eq("id", id2).findUnique();
+	}
 }

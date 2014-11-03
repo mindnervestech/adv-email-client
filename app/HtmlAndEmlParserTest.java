@@ -353,6 +353,17 @@ public class HtmlAndEmlParserTest {
 		}
 	}*/
    
-
+	public static void deletePersonalMails(){
+		System.out.println("in delete personal mail");
+		List<MailObjectModel> models = MailObjectModel.getAllPersonalMailObjectModels();
+		for(MailObjectModel model : models) {
+			Email e=Email.getEmailByMailObjectId(model.id);
+			if(e!=null) {
+				e.delete();
+			}
+			Links.deleteLinksByMailObjectId(model.id);
+			model.delete();
+		}
+	}
 }
 
