@@ -13,8 +13,8 @@ public class Global extends GlobalSettings {
 	@Override
 	public void onStart(Application app) {
 		
-		ActorSystem  actorSystem1 = Akka.system();
-		 actorSystem1.scheduler().schedule(
+		ActorSystem  actorSystem2 = Akka.system();
+		 actorSystem2.scheduler().schedule(
 				Duration.create(0, TimeUnit.MILLISECONDS),
 				Duration.create(30, TimeUnit.MINUTES),
 				new Runnable() {
@@ -25,7 +25,7 @@ public class Global extends GlobalSettings {
 								e.printStackTrace();
 							}
 					}
-					}, actorSystem1.dispatcher()
+					}, actorSystem2.dispatcher()
 				);
 		ActorSystem  actorSystem1 = Akka.system();
 		 actorSystem1.scheduler().schedule(
