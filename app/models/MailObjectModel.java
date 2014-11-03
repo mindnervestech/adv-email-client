@@ -107,6 +107,22 @@ public class MailObjectModel extends Model{
 		resultList = Ebean.createSqlQuery(query.toString()).findList();
 		return resultList.get(0).getInteger("count");
 	}
+	
+	public static List<MailObjectModel> getUnprocessedMailObjectIds() {
+		StringBuilder query = new StringBuilder();
+		List<SqlRow> resultList = null;
+		query.append("SELECT id,mail_path FROM mail_object_model WHERE id NOT IN (select mail_id_id FROM links GROUP BY mail_id_id)");
+		resultList = Ebean.createSqlQuery(query.toString()).findList();
+		List<MailObjectModel> result = new ArrayList<MailObjectModel>();
+		for(SqlRow row:resultList) {
+			MailObjectModel model = new MailObjectModel();
+			model.id = row.getLong("id");
+			model.mailPath = row.getString("mail_path");
+			result.add(model);
+		}
+		return result;
+	}
+	
 	public static List<SqlRow> getMonthChartData(String fromMonth,String toMonth)
 	{
 		String fromArr[]=fromMonth.split("-");

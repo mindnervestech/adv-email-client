@@ -25,7 +25,7 @@ public class Links extends Model {
 	@Lob
 	public String processedUrl = null;
 	
-	@ManyToOne(cascade=CascadeType.ALL)
+	@ManyToOne
 	public MailObjectModel mail_id;
 	
 	public int status=0;

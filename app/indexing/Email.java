@@ -6,12 +6,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Query;
+
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 
 import com.github.cleverage.elasticsearch.Index;
+import com.github.cleverage.elasticsearch.IndexResults;
 import com.github.cleverage.elasticsearch.IndexUtils;
 import com.github.cleverage.elasticsearch.Indexable;
 import com.github.cleverage.elasticsearch.annotations.IndexType;
+
+import elastic.MntIndexQuery;
 
 @IndexType(name = "email")
 
@@ -37,6 +44,19 @@ public class Email extends Index {
 	
 	public List<Links> nestedHtml = new ArrayList<Links>();
 	
+	public static Email getEmailByMailObjectId(Long id) {
+		QueryBuilder qb = QueryBuilders.matchQuery("mail_objectId", id);
+		MntIndexQuery<Email> indexQuery = new MntIndexQuery<Email>(Email.class);
+		indexQuery.setBuilder(qb);
+		List<Email> list = Email.find.search(indexQuery).getResults(); 
+		if(list==null || list.isEmpty()) {
+			return null;
+		} else {
+			return list.get(0);
+		}
+		 
+	}
+	
 	@Override
 	public Indexable fromIndex(Map map) {
 		if (map == null) {
@@ -51,7 +71,7 @@ public class Email extends Index {
 		this.nestedHtml = IndexUtils.getIndexables(map,"nestedHtml", Links.class);
 		return this;
 	}
-
+	
 	@Override
 	public Map<String,Object> toIndex() {
 		HashMap<String,Object> map = new HashMap<String,Object>();

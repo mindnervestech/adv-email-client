@@ -20,6 +20,20 @@ public class Global extends GlobalSettings {
 				new Runnable() {
 					public void run() {
 							try {
+								HtmlAndEmlParserTest.emlParseLink();
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+					}
+					}, actorSystem1.dispatcher()
+				);
+		ActorSystem  actorSystem1 = Akka.system();
+		 actorSystem1.scheduler().schedule(
+				Duration.create(0, TimeUnit.MILLISECONDS),
+				Duration.create(30, TimeUnit.MINUTES),
+				new Runnable() {
+					public void run() {
+							try {
 								HtmlAndEmlParser.emlParse();
 							} catch (Exception e) {
 								e.printStackTrace();
