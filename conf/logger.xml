@@ -1,0 +1,31 @@
+ <configuration>
+
+  	<conversionRule conversionWord="coloredLevel" converterClass="play.api.Logger$ColoredLevel" />
+ 	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>../logs/my_play_app.log</file> 
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- keep 1 days' worth of history -->
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} %X{id1} %X{id2} %X{id3} %X{id4}- %msg%n</pattern>
+        </encoder>
+ 	</appender>
+
+
+
+    <root level="INFO" additivity="false">
+        <appender-ref ref="FILE"/>
+
+    </root>
+
+    <logger name="application" level="INFO" additivity="false">
+        <appender-ref ref="FILE"/>
+       </logger>
+
+    <logger name="play" level="INFO" additivity="false">
+        <appender-ref ref="FILE"/>
+    </logger>
+ </configuration>
