@@ -64,7 +64,7 @@ public class Global extends GlobalSettings {
 				new Runnable() {
 					public void run() {
 						 try {
-							HtmlAndEmlParserTest.deletePersonalMails();
+							//HtmlAndEmlParserTest.deletePersonalMails();
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
