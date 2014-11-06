@@ -4,7 +4,10 @@
 var emailclient = angular.module('email-client');
 
 emailclient.controller('ApplicationController',function($scope){
-
+	$scope.isadmin = false;
+	$scope.initData = function(isAdmin) {
+		$scope.isadmin = isAdmin;
+	}
 });
 
 
@@ -27,7 +30,7 @@ emailclient.controller('AdminController',function($scope,$location,$http,$modal,
 	$scope.selectedIndex = -1;
 	$scope.predicate = 'relevance';
 	$scope.reverse=true;
-	$scope.isadmin = false;
+	//$scope.isadmin = false;
 	$scope.isData=false;
 	$scope.isDivShow=false;
 	$scope.totalEmails;
@@ -230,9 +233,9 @@ emailclient.controller('AdminController',function($scope,$location,$http,$modal,
 	};
 	
 	// List End
-	if($location.path()=="/statictical" || $location.path()=="/adminBL"||$location.path()=="/admin") {
+	/*if($location.path()=="/statictical" || $location.path()=="/adminBL"||$location.path()=="/admin") {
 		$scope.isadmin = true;
-	}
+	}*/
 	$scope.tabs = [
 	               { title:'Black List',active: true, content:'/assets/app/views/blacklist.html' }
 	              // ,{ title:'Upcomings', content:'/assets/app/views/upcoming.html'}
@@ -792,7 +795,7 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 	$scope.isHide = true;
 	$scope.DivShow=false;
 	console.log($scope.DivShow);
-	$scope.isadmin=false;
+
 	$scope.databaseSize;
 	$scope.mailFolderSize;
 	$scope.seeMailInfo = [];
@@ -900,14 +903,15 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 			});
 		  
 	  };
-	  $scope.removeEmailData=function(id,indexId)
+	  $scope.removeEmailData=function(id,index)
 	  {
 		  //alert("in remove "+id+" "+indexId);
 		  if(confirm("Are you sure you want to delete this mail? Yes/No")) {
-		  $http.get('/remove-Email-Data/'+id+'/'+indexId)
+		  $http.get('/deletemailbyid/'+id)
 			.success(function(data, status, headers, config){
+				$scope.emails.splice(index,1);
 				//alert("data "+data);
-				$scope.submitSearch();
+				//$scope.submitSearch();
 				/*if(data)
 				{
 					//alert("in if");

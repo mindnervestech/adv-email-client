@@ -53,6 +53,8 @@ GET     /saveEmailInfo/:col_name/:record/:channel_name			controllers.Application
 GET     /saveRenewedDate/:col_name/:record/:channel_name			controllers.Application.savesaveRenewedDate(col_name : String, record : String, channel_name : String)	
 # List start
 
+GET		/login									controllers.Application.login()
+
 GET 	/loadlists								controllers.Application.loadLists()
 
 GET 	/loadchildlist/:id						controllers.Application.loadChildList(id : Long)
