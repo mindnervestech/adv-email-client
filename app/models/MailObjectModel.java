@@ -112,7 +112,7 @@ public class MailObjectModel extends Model{
 	public static List<MailObjectModel> getUnprocessedMailObjectIds() {
 		StringBuilder query = new StringBuilder();
 		List<SqlRow> resultList = null;
-		query.append("SELECT id,mail_path FROM mail_object_model WHERE id NOT IN (select distinct(mail_id_id) FROM links where mail_id_id > 7477 and mail_id_id < 16712 and )");
+		query.append("SELECT id,mail_path FROM mail_object_model WHERE id NOT IN (select distinct(mail_id_id) FROM links where mail_id_id > 10000 and mail_id_id < 16712)");
 		resultList = Ebean.createSqlQuery(query.toString()).findList();
 		List<MailObjectModel> result = new ArrayList<MailObjectModel>();
 		for(SqlRow row:resultList) {
