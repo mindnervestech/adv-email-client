@@ -18,6 +18,7 @@ object ApplicationBuild extends Build {
     "commons-validator" % "commons-validator" % "1.3.1",
     "org.seleniumhq.selenium" % "selenium-htmlunit-driver" % "2.25.0",
     "net.coobird" % "thumbnailator" % "0.4.7",
+    "be.objectify" %% "deadbolt-java" % "2.1.2",
     javaCore,
     javaJdbc,
     javaEbean
@@ -26,7 +27,8 @@ object ApplicationBuild extends Build {
   val main = play.Project(appName, appVersion, appDependencies).settings(
   	resolvers += Resolver.url("play-plugin-releases", new URL("http://repo.scala-sbt.org/scalasbt/sbt-plugin-releases/"))(Resolver.ivyStylePatterns),
     resolvers += Resolver.url("play-plugin-snapshots", new URL("http://repo.scala-sbt.org/scalasbt/sbt-plugin-snapshots/"))(Resolver.ivyStylePatterns),
-  	resolvers += "AOL yoava" at "http://repo.jfrog.org/artifactory/libs-releases"
+  	resolvers += "AOL yoava" at "http://repo.jfrog.org/artifactory/libs-releases",
+  	resolvers += Resolver.url("Objectify Play Repository", url("http://deadbolt.ws/releases/"))(Resolver.ivyStylePatterns)
   )
 
 }

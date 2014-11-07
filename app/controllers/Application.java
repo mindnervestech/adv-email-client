@@ -12,6 +12,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,6 +41,8 @@ import models.KeywordBL;
 import models.Links;
 import models.MailObjectModel;
 import models.SaveSearchSet;
+import models.User;
+import models.UserPermission;
 import net.coobird.thumbnailator.Thumbnails;
 
 import org.apache.commons.io.FileUtils;
@@ -67,12 +74,18 @@ import play.data.DynamicForm;
 import play.data.Form;
 import play.libs.Json;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
+import security.MyDeadboltHandler;
 import vm.MailsIDToDisplay;
 import vm.UrlMapVM;
 import wordcram.Colorers;
 import wordcram.Placers;
 import wordcram.WordCram;
+
+import be.objectify.deadbolt.core.models.Permission;
+import be.objectify.deadbolt.core.models.Subject;
+import be.objectify.deadbolt.java.actions.SubjectPresent;
 
 import com.avaje.ebean.SqlRow;
 import com.avaje.ebean.annotation.Transactional;
@@ -84,27 +97,29 @@ import elastic.MntHighlightBuilder;
 import elastic.MntIndexQuery;
 public class Application extends Controller{
 	static int IMGWIDTH=270;
-	public static Result index() {
+	static final String adminPermission = Play.application().configuration()
+			.getString("admin.permission");
+	
+	public static Result login() {
+ 		Http.Context context = Http.Context.current();
 		DynamicForm requestData = Form.form().bindFromRequest();
-		System.out.println(requestData.get("key"));
-		try{
-				URL url = new URL("http://localhost:8080/AgoraDD/public/isValidSession.m");
-				URI uri = url.toURI();
-				HttpClient httpclient = new DefaultHttpClient();
-				HttpPost httpPost = new HttpPost(uri);
-				List<NameValuePair> formparams = new ArrayList<NameValuePair>();
-				formparams.add(new BasicNameValuePair("key",requestData.get("key")));
-				UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formparams);
-				httpPost.setEntity(entity);	
-				HttpResponse response = httpclient.execute(httpPost);
-				
-				String jsonString = EntityUtils.toString(response.getEntity()).toString();
-
-				System.out.println(jsonString);
-		}catch(Exception e){
-			
+		context.session().put("key", requestData.get("key"));
+		return redirect("/");
+	}
+	
+	@SubjectPresent
+	public static Result index() {
+		Http.Context context = Http.Context.current();
+		User user = (User)context.args.get("currentUser");
+		System.out.println("user : "+user);
+		Boolean isAdmin = false; 
+		for(Permission p : user.getPermissions()) {
+			if(((UserPermission)p).getUrl().equalsIgnoreCase("adminPermission")) {
+				isAdmin = true;
+				break;
+			}
 		}
-		return ok(views.html.home.render());
+		return ok(views.html.home.render(isAdmin));
 	}
 	
 	public static Result download(Long id) {

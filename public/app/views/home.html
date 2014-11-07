@@ -232,12 +232,12 @@ $(function() {
   </div> -->
 	 <div class="navbar-header " style="width: 100%;margin-left: 2%;margin-top: 0.5%;margin-bottom: -0.7%;">
 	 	<div style="float:left;width: 21%;">
-	 	<a ng-show="isadmin" href="/#/admin">
+	 	<a href="/#/">
 	 		<img src="/assets/app/images/logo_agora.png" style="width: 100%;" alt="Your Brand" >
 	 	</a>
-	 	<a ng-hide="isadmin" href="/">
+	 	<!-- <a ng-hide="isadmin" href="/">
 	 		<img src="/assets/app/images/logo_agora.png" style="width: 100%;" alt="Your Brand" >
-	 	</a>
+	 	</a> -->
 	 	<a href = "http://localhost:8080/AgoraDD/welcome.m" class="textStyle" style="text-decoration: none; cursor: pointer; margin-left: 2%;color: white;">Back TO AGORA-D</a> 
 	 	<span class="textStyle" style="margin-left: 23%;color: white;">E-MAIL KNOWLEDGEBASE</span> 
 	 	</div>
@@ -463,8 +463,8 @@ $(function() {
      				<div  id="wrapper">
 						<div  id="columns">
 							<div data-ng-repeat="email in emails" ng-hide="soButton" class="pin" style="width:100%;">
-									<span ng-show="isadmin" ng-click="removeEmailData(email.id,email.indexId)" style="cursor: pointer;">remove this</span>
-								 			<p style="margin-left: 65%;">{{email.date | date:'MM-dd-yyyy'}}</p>
+									<span ng-show="isadmin" ng-click="removeEmailData(email.id,$index)" style="cursor: pointer;" tooltip="Remove This Mail" class="glyphicon glyphicon-trash"></span>
+								 			<p style="float: right;">{{email.date | date:'MM-dd-yyyy'}}</p>
 												 <img data-ng-src="/get-cover-image-by-id/{{email.id}}" style="cursor: pointer;" tooltip="Click Image to view" data-ng-click="showPopUpModal(email.id)"/>
 												<p class="text-primary textStyle" style="text-align: center;border-bottom: 1px solid #ccc;padding-bottom: 3%;">{{email.domain}}</p>
 												<p>{{ email.subject | limitTo:20 }}</p>
@@ -498,8 +498,11 @@ $(function() {
 								<!-- Subject -->
 									 <blockquote class="text-primary blockquote_adv" style="float: left;font-size: 15px !important;">{{email.subject}}</blockquote>
 									<button type="button" class="btn btn-primary btn-xs" ng-click="getWordCloudById(email.id)">
-										<span class="glyphicon glyphicon-cloud" tooltip-placement="top" tooltip="Generate Word Cloud"></span>
+										<span class="glyphicon glyphicon-cloud" tooltip-placement="top" tooltip="Generate Word Cloud" style="top: 3px;"></span>
 									</button>
+									<span ng-show="isadmin" style="height: 22px;cursor: pointer;background-color: rgb(243, 31, 12);opacity: 1.0;color: white;border-radius: 3px;padding: 1px 5px;line-height: 1;position: absolute;">
+										<span ng-click="removeEmailData(email.id,$index)" tooltip="Remove This Mail" class="glyphicon glyphicon-trash" style="cursor: pointer;top:3px;"></span>
+									</span>
 								<!-- Date -->
 								 	<span  style="float: right;margin-right: 2%;" class="text-primary textStyle">{{email.date | date:'MMMM-dd-yyyy'}}</span><br> 
 									<span style="float: right;margin-right: 21px;margin-top: -0.2%;" class="text-primary textStyle">{{email.domain}}</span>
