@@ -13,6 +13,7 @@ public class User implements Subject{
 	public Long id;
 	public String username;
 	public String password;
+	public Long companyId;
 	public List<UserRole> userRoles;
 	public List<UserPermission> userPermissions;
 	
@@ -72,6 +73,14 @@ public class User implements Subject{
 
 	public void setUserPermissions(List<UserPermission> userPermissions) {
 		this.userPermissions = userPermissions;
+	}
+
+	public Long getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(Long companyId) {
+		this.companyId = companyId;
 	}
 	
 }

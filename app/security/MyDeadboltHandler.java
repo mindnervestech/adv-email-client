@@ -70,10 +70,11 @@ public class MyDeadboltHandler extends AbstractDeadboltHandler {
 			Set<String> roleSet = new HashSet<String>();
 			if(userRS.next()) {
 				String user = userRS.getString("username");
-				String subsc = userRS.getString("comp_id");
+				Long subsc = userRS.getLong("comp_id");
 				Long id = userRS.getLong("user_id");
 				User u = new User(user, "");
 				u.setId(id);
+				u.setCompanyId(subsc);
 				ResultSet roleRS = smt.executeQuery("select r.role_id as rid,r.name as rname,ac.action_id as aid,ac.action_name as aname,ac.action_url as aurl "
 				+"from roles r,subscriber_role sr,authorities au,role_action ra,actionable ac where "
 				+"(au.user_id="+id+" and au.role_id = r.role_id and r.role_id=ra.role_id and ra.action_id=ac.action_id) "+
