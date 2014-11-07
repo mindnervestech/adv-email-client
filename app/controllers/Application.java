@@ -113,7 +113,7 @@ public class Application extends Controller{
 		User user = (User)context.args.get("currentUser");
 		System.out.println("user : "+user);
 		Boolean isAdmin = false;
-		if(user.getCompanyId() != 4892) {
+		if(user.getCompanyId() != 4887) {
 			for(Permission p : user.getPermissions()) {
 				if(((UserPermission)p).getUrl().equalsIgnoreCase("adminPermission")) {
 					isAdmin = true;
