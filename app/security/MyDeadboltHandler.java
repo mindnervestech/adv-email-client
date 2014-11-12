@@ -94,8 +94,6 @@ public class MyDeadboltHandler extends AbstractDeadboltHandler {
 				}
 				u.setUserPermissions(userPermission);
 				u.setUserRoles(userRole);
-				System.out.println("userRoles : "+userRole.size());
-				System.out.println("userPermission : "+userPermission.size());
 				context.args.put("currentUser", u);
 				return u;
 			} else {

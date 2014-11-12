@@ -77,6 +77,7 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import security.MyDeadboltHandler;
+import views.html.accessFailed;
 import vm.MailsIDToDisplay;
 import vm.UrlMapVM;
 import wordcram.Colorers;
@@ -111,19 +112,19 @@ public class Application extends Controller{
 	public static Result index() {
 		Http.Context context = Http.Context.current();
 		User user = (User)context.args.get("currentUser");
-		System.out.println("user : "+user);
 		Boolean isAdmin = false;
-		if(user.getCompanyId() != 4887) {
+		if(user.getCompanyId() == 4887) {
+			isAdmin = true;
+			return ok(views.html.home.render(isAdmin));
+		} else {
+			isAdmin = false;
 			for(Permission p : user.getPermissions()) {
-				if(((UserPermission)p).getUrl().equalsIgnoreCase("adminPermission")) {
-					isAdmin = true;
-					break;
+				if(((UserPermission)p).getUrl().equalsIgnoreCase(adminPermission)) {
+					return ok(views.html.home.render(isAdmin));
 				}
 			}
-		} else {
-			isAdmin = true;
 		}
-		return ok(views.html.home.render(isAdmin));
+		return ok(accessFailed.render());
 	}
 	
 	public static Result download(Long id) {
