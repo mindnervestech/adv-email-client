@@ -5,6 +5,7 @@
 # Home page
 
 GET     /                                controllers.Application.index()
+GET     /auth                                controllers.Application.authindex()
 GET     /filterSearch              controllers.Application.searchForEmails(predicate :String,reverse :Boolean)
 
 GET		/searchForEmails/:predicate/:reverse				 controllers.Application.searchForEmails(predicate :String,reverse :Boolean)

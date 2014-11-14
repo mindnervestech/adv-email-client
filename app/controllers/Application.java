@@ -105,11 +105,18 @@ public class Application extends Controller{
  		Http.Context context = Http.Context.current();
 		DynamicForm requestData = Form.form().bindFromRequest();
 		context.session().put("key", requestData.get("key"));
-		return redirect("/");
+		return redirect("/auth");
+	}
+	
+	public static Result index() {
+ 		Http.Context context = Http.Context.current();
+		DynamicForm requestData = Form.form().bindFromRequest();
+		context.session().put("key", requestData.get("key"));
+		return redirect("/auth");
 	}
 	
 	@SubjectPresent
-	public static Result index() {
+	public static Result authindex() {
 		Http.Context context = Http.Context.current();
 		User user = (User)context.args.get("currentUser");
 		Boolean isAdmin = false;
