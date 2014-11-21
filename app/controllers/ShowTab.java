@@ -17,6 +17,8 @@ import play.mvc.Result;
 import vm.MailsIDToDisplay;
 import vm.MailsToDisplay;
 
+import be.objectify.deadbolt.java.actions.SubjectPresent;
+
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.SqlRow;
 import com.avaje.ebean.annotation.Transactional;
@@ -36,6 +38,7 @@ public class ShowTab extends Controller {
 	static List<MailsIDToDisplay> nov;
 	static List<MailsIDToDisplay> dec;
 	
+	@SubjectPresent
 	public static Result showTables(Long yearTab) throws ParseException {
 		Http.Context context = Http.Context.current();
 		String key = context.session().get("isAdmin");
