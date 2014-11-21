@@ -38,6 +38,10 @@ GET		/get-period-stats/:fromMonth/:toMonth			controllers.Application.statistic(f
 
 GET 		/get-data-size						controllers.Application.getDataSize()
 
+GET		/hideEmail/:id						controllers.Application.hideMailByIndexId(id : Long)
+
+GET		/showEmail/:id						controllers.Application.showMailByIndexId(id : Long)
+
 GET		/get-year-chart/:year				controllers.Application.getYearChart(year : String)
 
 GET		/get-all-chart						controllers.Application.getAllChart()

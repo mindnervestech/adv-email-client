@@ -39,6 +39,7 @@ public class Email extends Index {
 	public String sender;
 	public String sendersEmail;
 	
+	public Integer status;
 	@JsonProperty("id")
 	public Long mail_objectId;
 	
@@ -69,6 +70,7 @@ public class Email extends Index {
 		this.mail_objectId = (Long) IndexUtils.convertValue(map.get("mail_objectId"), Long.class);
 		this.sentDate = (Date) IndexUtils.convertValue(map.get("sentDate"), Date.class);
 		this.nestedHtml = IndexUtils.getIndexables(map,"nestedHtml", Links.class);
+		this.status = (Integer)IndexUtils.convertValue(map.get("status"), Integer.class);
 		return this;
 	}
 	
@@ -82,6 +84,7 @@ public class Email extends Index {
 		map.put("sentDate", sentDate);
 		map.put("mail_objectId", mail_objectId);
 		map.put("nestedHtml", IndexUtils.toIndex(nestedHtml));
+		map.put("status", status);
 		return map;
 	}
 	

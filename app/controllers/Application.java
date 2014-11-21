@@ -10,13 +10,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -46,19 +39,12 @@ import models.UserPermission;
 import net.coobird.thumbnailator.Thumbnails;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.elasticsearch.common.collect.Iterables;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.AndFilterBuilder;
 import org.elasticsearch.index.query.BaseQueryBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeFilterBuilder;
@@ -76,7 +62,6 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import security.MyDeadboltHandler;
 import views.html.accessFailed;
 import vm.MailsIDToDisplay;
 import vm.UrlMapVM;
@@ -85,7 +70,6 @@ import wordcram.Placers;
 import wordcram.WordCram;
 
 import be.objectify.deadbolt.core.models.Permission;
-import be.objectify.deadbolt.core.models.Subject;
 import be.objectify.deadbolt.java.actions.SubjectPresent;
 
 import com.avaje.ebean.SqlRow;
@@ -122,9 +106,11 @@ public class Application extends Controller{
 		Boolean isAdmin = false;
 		if(user.getCompanyId() == 4887) {
 			isAdmin = true;
+			context.session().put("isAdmin", "Y");
 			return ok(views.html.home.render(isAdmin));
 		} else {
 			isAdmin = false;
+			context.session().put("isAdmin", "N");
 			for(Permission p : user.getPermissions()) {
 				if(((UserPermission)p).getUrl().equalsIgnoreCase(adminPermission)) {
 					return ok(views.html.home.render(isAdmin));
@@ -235,7 +221,11 @@ public class Application extends Controller{
 			if(andFilterBuilder == null) andFilterBuilder = FilterBuilders.andFilter();
 			andFilterBuilder.add(rangeFilterBuilder);
 		}
-		
+		Http.Context context = Http.Context.current();
+		 String key = context.session().get("isAdmin");
+		 if(key.equals("A")) {
+			andFilterBuilder.add(FilterBuilders.notFilter(FilterBuilders.termFilter("status", 1))); 
+		 }
 		MntIndexQuery<Email> indexQuery = new MntIndexQuery<Email>(Email.class);
 		 
 		 if(andFilterBuilder == null) {
@@ -244,7 +234,7 @@ public class Application extends Controller{
 			 indexQuery.setBuilder(QueryBuilders.filteredQuery(queryBuilder, 
 					 andFilterBuilder));
 		 }
-		 ;
+		 
 		 indexQuery.addHighlights(MntHighlightBuilder.instance().setField("description"));
 		 if(isnestedHtml) {
 			 indexQuery.addHighlights(MntHighlightBuilder.instance().setField("nestedHtml.description"));
@@ -289,8 +279,12 @@ public class Application extends Controller{
 			 if(extract.isEmpty()) {
 				 extract = e.description.substring(0, e.description.length() > 1800 ? 1800 : e.description.length()) +" ...";
 			 }
+			 boolean flag = false;
+			 if(e.status!=null && e.status==1) {
+				 flag = true;
+			 }
 			 searchResponse.emails.add(new Application.SearchResponse.Email(e.subject,
-					 e.domain, e.sentDate, e.sendersEmail, extract, e.mail_objectId,e.getId(),length,extract.length()));
+					 e.domain, e.sentDate, e.sendersEmail, extract, e.mail_objectId,e.getId(),length,extract.length(),flag));
 		 }
 		 searchResponse.saveSearchSets.addAll(SaveSearchSet.find.all());
 		 searchResponse.noOFPages = (int) Math.ceil((double)allAndFacetAge.getTotalCount()/10);
@@ -399,7 +393,7 @@ public class Application extends Controller{
 		public static class Email {
 			public Email(){}
 			public Email(String subject, String domain, Date date,
-					String sendersEmail, String extract, Long id,String indexId,Double length,int extractLength) 
+					String sendersEmail, String extract, Long id,String indexId,Double length,int extractLength,boolean isHidden) 
 			{
 				super();
 				this.subject = subject;
@@ -411,6 +405,7 @@ public class Application extends Controller{
 				this.indexId=indexId;
 				this.length=length;
 				this.extractLength=extractLength;
+				this.isHidden = isHidden;
 			}
 			public String subject;
 			public String domain;
@@ -421,6 +416,7 @@ public class Application extends Controller{
 			public String indexId;
 			public Double length;
 			public int extractLength;
+			public boolean isHidden;
 		}
 		
 		public static class Domain {
@@ -1005,4 +1001,25 @@ public class Application extends Controller{
 			return ok();
 	}
 	//List end
+	public static Result hideMailByIndexId(Long id) {
+		System.out.println("id:"+id);
+		MailObjectModel model = MailObjectModel.getMailObjetcById(id);
+		Email e=Email.getEmailByMailObjectId(model.id);
+		model.setStatus(2);
+		model.update();
+		e.status = 1;
+		e.index();
+		return ok();
+	}
+	
+	public static Result showMailByIndexId(Long id) {
+		System.out.println("id:"+id);
+		MailObjectModel model = MailObjectModel.getMailObjetcById(id);
+		Email e=Email.getEmailByMailObjectId(model.id);
+		model.setStatus(1);
+		model.update();
+		e.status = 0;
+		e.index();
+		return ok();
+	}
 }

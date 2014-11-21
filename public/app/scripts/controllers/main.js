@@ -683,15 +683,24 @@ emailclient.controller('AdminController',function($scope,$location,$http,$modal,
 			}
 		});
 	}
+	$scope.isStatics = false;
+	$scope.currentIndex = -1;
+	
+	$scope.showPopUpModalStatics = function(popUpId) {
+		$scope.isStatics = true;
+		$scope.showPopUpModal(popUpId);
+	};
+	
 	$scope.showPopUpModal=function (popUpId) {
 		  $scope.searchForm.popUpId = popUpId;
+		  console.log($scope.searchForm.popUpId);
 		  usSpinnerService.spin('loading...');
 		  $http.get('/showPopUpModal', {params:$scope.searchForm})
 			.success(function(data, status, headers, config){
 				$('.modal-bodyPopUp').append(data.htmlToShowMailPopUp);
 				usSpinnerService.stop('loading...');
 			});
-		  modalInstance = $modal.open({
+		  	modalInstance = $modal.open({
 		      templateUrl: '/assets/app/views/myEmailModal.html',
 		      scope : $scope
 		    });
@@ -798,6 +807,7 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 
 	$scope.databaseSize;
 	$scope.mailFolderSize;
+	$scope.isStatics = false;
 	$scope.seeMailInfo = [];
 	
 	$scope.init = function(index) {
@@ -807,7 +817,6 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 	
 	$scope.divShow = function (i,divShow, data) {
 		$scope.DivShow = divShow;
-		console.log("dkjfkljflka : "+ data);
 		if($(".div"+i).is(':visible')) {
 			$(".div"+i).hide();
 			$(".numDiv"+i).show();
@@ -927,8 +936,17 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 				usSpinnerService.stop('loading...');
 			});
 	  };
-	  $scope.showPopUpModal=function (popUpId) {
+	  $scope.currentIndex = -1;
+	  $scope.showPopUpModal=function (popUpId,index) {
+		  $scope.currentIndex = index;
+		  console.log("$scope.currentIndex :"+$scope.currentIndex);
 		  $scope.searchForm.popUpId = popUpId;
+		  $scope.openPopup();
+		  
+	  };
+	  $scope.isFromShowTab = false;
+	  $scope.isHiddenMail = false;
+	  $scope.openPopup = function() {
 		  usSpinnerService.spin('loading...');
 		  $http.get('/showPopUpModal', {params:$scope.searchForm})
 			.success(function(data, status, headers, config){
@@ -940,6 +958,19 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 		      scope : $scope
 		    });
 	  };
+	  
+	  $scope.showPopUpModalShowTab = function(popUpId,status) {
+		  $scope.isFromShowTab = true;
+		  if($("#emailId"+popUpId).attr('class')=='tip-bottom') {
+			  $scope.isHiddenMail = false;
+		  } else {
+			  $scope.isHiddenMail = true;
+		  }
+		  
+		  $scope.searchForm.popUpId = popUpId;
+		  $scope.openPopup();
+	  };
+	  
 	  $scope.trustSrc = function (url) {
 		  return $sce.trustAsResourceUrl(url);
 	  }
@@ -1200,5 +1231,29 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 			$scope.totalItems = data.noOFPages * $scope.searchForm.rowCount ; // Added for Pagination
 			$scope.allChecked = true;
 		});
-	}
+	};
+	var protocol = $location.protocol();
+	var host = $location.host();
+	var port = $location.port();
+	$scope.hideEmail = function(id,index) {
+		$http({method:'GET',url:protocol+'://'+host+':'+port+'/hideEmail/'+id}).success(function(data) {
+			if($scope.isFromShowTab) {
+				$scope.isHiddenMail = true;
+				$("#emailId"+id).attr('class', 'tip-bottom mailHidden');
+			} else {
+				$scope.emails[index].isHidden = true;
+			}
+		});
+	};
+	
+	$scope.showEmail = function(id,index) {
+		$http({method:'GET',url:protocol+'://'+host+':'+port+'/showEmail/'+id}).success(function(data) {
+			if($scope.isFromShowTab) {
+				$("#emailId"+id).attr('class', 'tip-bottom');
+				$scope.isHiddenMail = false;
+			} else {
+				$scope.emails[index].isHidden = false;
+			}
+		});
+	};
 });

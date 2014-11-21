@@ -55,7 +55,7 @@ public class MailObjectModel extends Model{
 	public static List<SqlRow> findMailObjectByDomainName(String domainName, String yearTab) {
 		StringBuilder query = new StringBuilder();
 		List<SqlRow> resultList = null;
-		query.append("SELECT mail_name,id,DATE_FORMAT(sent_date, '%m') AS month,sent_date "+ 
+		query.append("SELECT mail_name,id,DATE_FORMAT(sent_date, '%m') AS month,sent_date,status "+ 
 						" FROM mail_object_model where "+yearTab+" = date_format(sent_date,'%Y') AND domain = '"+domainName+
 						"' GROUP BY DATE_FORMAT(sent_date, '%d-%m-%Y') ");
 		resultList = Ebean.createSqlQuery(query.toString()).findList();

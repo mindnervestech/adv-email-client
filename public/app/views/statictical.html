@@ -35,18 +35,18 @@ $(document).ready(function(){
   </div> -->
 	 <div class="navbar-header " style="width: 100%;margin-left: 2%;margin-top: 0.5%;">
 	 	<div style="float:left;width: 21%;">
-	 	<a ng-show="isadmin" href="/#/admin">
+	 	<a ng-show="isadmin" href="auth#/admin">
 	 		<img src="/assets/app/images/logo_agora.png" style="width: 100%;" alt="Your Brand" >
 	 	</a>
-	 	<a ng-hide="isadmin"href="/#/">
+	 	<a ng-hide="isadmin"href="auth#/">
 	 		<img src="/assets/app/images/logo_agora.png" style="width: 100%;" alt="Your Brand" >
 	 	</a>
 	 	<span class="textStyle" style="margin-left: 23%;color: white;">E-MAIL KNOWLEDGEBASE</span> 
 	 	</div>
 	 	<a class="cal" href="/showTables/0" target="_blank" style="color: rgba(255,255,255,0.5);margin-left: 3%;">Collection/Calender</a>
-	 	<a ng-hide="isadmin" class="cal" href="/#/" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Search</a>
-	 	<a ng-show="isadmin" class="cal" href="/#/admin" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Search</a>
-	 	<a ng-show="isadmin" class="cal" href="/#/adminBL" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Black List</a>
+	 	<a ng-hide="isadmin" class="cal" href="auth#/" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Search</a>
+	 	<a ng-show="isadmin" class="cal" href="auth#/admin" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Search</a>
+	 	<a ng-show="isadmin" class="cal" href="auth#/adminBL" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Black List</a>
 	 	<div style="float: right;width: 24%;">
 	 	<!-- <input type="text" class="col-xs-3 form-control" style="width: 80%; margin-right: 4%;" placeholder="Search"> -->
 	  </div>
@@ -76,7 +76,7 @@ $(document).ready(function(){
 			<td style="width: 10%;">{{statistic.count}}</td>
 			<td style="width: 60%;">Details <span id="{{statistic.domain}}" class="glyphicon glyphicon-plus" onclick="collapseDiv(this)" ng-click="isDivShow =! isDivShow"></span>
 				<div ng-show="isDivShow" data-ng-repeat="mail in statistic.mails">
-				<span style="color: lightseagreen;">{{mail.date}}</span> - {{mail.emailSubject | limitTo:60}} <a data-ng-click="showPopUpModal(mail.emailId)" style="cursor: pointer;">View</a><br>
+				<span style="color: lightseagreen;">{{mail.date}}</span> - {{mail.emailSubject | limitTo:60}} <a data-ng-click="showPopUpModalStatics(mail.emailId)" style="cursor: pointer;">View</a><br>
 				</div>
 			</td>
 		</tr>

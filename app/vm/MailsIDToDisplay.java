@@ -20,4 +20,5 @@ public class MailsIDToDisplay {
 	public String date;
 	public String emailId;
 	public String emailSubject;
+	public Boolean isHidden;
 }

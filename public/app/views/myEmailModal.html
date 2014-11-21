@@ -14,10 +14,27 @@ return (false);
     <div class="modal-headerPopUp">
       <div class="modal-header">
        <button type="button" class="close" ng-click="cancel()">&times;</button>
-      <span>Show Email</span>
-      <button type="button" ng-show="soButton" ng-show="soButton" style="float: right;margin-right: 2%;height: 16px;" id="hrefPrint" class="btn btn-primary btn-sm">
-							<span class="glyphicon glyphicon-print" style="float: right;height: 53%;margin-top: -61%;"></span>
-							</button>
+      <span>Show Email</span> 
+      <span style="position: relative;margin-left: 2px;">
+      	<span ng-if="!isStatics" ng-show="isadmin" style="height: 22px; cursor: pointer; background-color: rgb(243, 31, 12); opacity: 1.0; color: white; border-radius: 3px; padding: 1px 5px; line-height: 1; position: absolute;">
+			<span ng-click="removeEmailData(searchForm.popUpId,currentIndex)" tooltip="Remove This Mail" class="glyphicon glyphicon-trash" style="cursor: pointer; top: 3px;"></span>
+		</span>
+		<span ng-if="!isStatics && !isFromShowTab" ng-show="isadmin && !emails[currentIndex].isHidden" style="margin-left: 28px; height: 22px; cursor: pointer; background-color: yellow; opacity: 1.0; color: black; border-radius: 3px; padding: 1px 5px; line-height: 1; position: absolute;">
+			<span ng-click="hideEmail(searchForm.popUpId,currentIndex)" tooltip="Hide This Mail" class="glyphicon glyphicon-eye-close" style="cursor: pointer; top: 3px;"></span>
+		</span> 
+		<span ng-if="!isStatics && !isFromShowTab" ng-show="isadmin && emails[currentIndex].isHidden" style="margin-left: 28px; height: 22px; cursor: pointer; background-color: green; opacity: 1.0; color: white; border-radius: 3px; padding: 1px 5px; line-height: 1; position: absolute;">
+			<span ng-click="showEmail(searchForm.popUpId,currentIndex)" tooltip="Show This Mail" class="glyphicon glyphicon-eye-open" style="cursor: pointer; top: 3px;"></span>
+		</span>
+		<span ng-if="!isStatics && isFromShowTab" ng-show="isadmin && !isHiddenMail" style="margin-left: 28px; height: 22px; cursor: pointer; background-color: yellow; opacity: 1.0; color: black; border-radius: 3px; padding: 1px 5px; line-height: 1; position: absolute;">
+			<span ng-click="hideEmail(searchForm.popUpId,currentIndex)" tooltip="Hide This Mail" class="glyphicon glyphicon-eye-close" style="cursor: pointer; top: 3px;"></span>
+		</span> 
+		<span ng-if="!isStatics && isFromShowTab" ng-show="isadmin && isHiddenMail" style="margin-left: 28px; height: 22px; cursor: pointer; background-color: green; opacity: 1.0; color: white; border-radius: 3px; padding: 1px 5px; line-height: 1; position: absolute;">
+			<span ng-click="showEmail(searchForm.popUpId,currentIndex)" tooltip="Show This Mail" class="glyphicon glyphicon-eye-open" style="cursor: pointer; top: 3px;"></span>
+		</span>
+	   </span>
+		<button type="button" ng-show="soButton" ng-show="soButton" style="float: right;margin-right: 2%;height: 16px;" id="hrefPrint" class="btn btn-primary btn-sm">
+			<span class="glyphicon glyphicon-print" style="float: right;height: 53%;margin-top: -61%;"></span>
+		</button>
       <!-- <a id="hrefPrint" href="#" style="margin-left: 21%;font-family: -webkit-pictograph;text-align: center; cursor: pointer;"><span class="glyphicon glyphicon-print"></span></a> -->
       </div>
     </div>

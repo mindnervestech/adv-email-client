@@ -232,7 +232,7 @@ $(function() {
   </div> -->
 	 <div class="navbar-header " style="width: 100%;margin-left: 2%;margin-top: 0.5%;margin-bottom: -0.7%;">
 	 	<div style="float:left;width: 21%;">
-	 	<a href="/#/">
+	 	<a href="auth#/">
 	 		<img src="/assets/app/images/logo_agora.png" style="width: 100%;" alt="Your Brand" >
 	 	</a>
 	 	<!-- <a ng-hide="isadmin" href="/">
@@ -242,9 +242,9 @@ $(function() {
 	 	<span class="textStyle" style="margin-left: 23%;color: white;">E-MAIL KNOWLEDGEBASE</span> 
 	 	</div>
 	 	<a class="cal" href="/showTables/0" target="_blank" style="color: rgba(255,255,255,0.5);margin-left: 3%;">Collection/Calender</a>
-	 	<a ng-hide="isadmin" class="cal" href="/#/userstatictical" style="color: rgba(255,255,255,0.5);margin-left: 1%;">By Domain</a>
-	 	<a ng-show="isadmin" class="cal" href="/#/adminBL" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Black List</a>
-	 	<a ng-show="isadmin" class="cal" href="/#/statictical" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Statics</a>
+	 	<a ng-hide="isadmin" class="cal" href="auth#/userstatictical" style="color: rgba(255,255,255,0.5);margin-left: 1%;">By Domain</a>
+	 	<a ng-show="isadmin" class="cal" href="auth#/adminBL" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Black List</a>
+	 	<a ng-show="isadmin" class="cal" href="auth#/statictical" style="color: rgba(255,255,255,0.5);margin-left: 1%;">Statics</a>
 	 	<div style="float: right;width: 24%;">
 	 	<!-- <input type="text" class="col-xs-3 form-control" style="width: 80%; margin-right: 4%;" placeholder="Search"> -->
 	 	<form data-ng-submit="submitSearch()" class="navbar-form navbar-left  form-inline" role="search">
@@ -481,14 +481,14 @@ $(function() {
 <!-- <div ng-show="soButton" ng-click="isHide = !isHide" class="vertical"><p style="margin-top: 15%;font-size: 12px;">Show&nbsp;or&nbsp;Hide&nbsp;Images&nbsp;Panel</p>
    </div>style="float:left;position: fixed;width:1.8%" 	 -->
    <table id="listcontainer" ng-show="soButton" class="table Contextual  table-striped table-bordered table-condensed table-hover"  style="margin-bottom: 1px;overflow: auto; border: 1px solid;">
-							<tr data-ng-repeat="email in emails | orderBy:predicate:reverse" style="background-color: #fff !important;min-height: 30px;max-height: 140px;left:-900" class="panel{{email.id}}">
+							<tr data-ng-repeat="email in emails | orderBy:predicate:reverse" style="background-color: #fff !important;min-height: 30px;max-height: 140px;left:-900" ng-class="email.isHidden ? 'panel{{email.id}} mailhidden' : 'panel{{email.id}}'">
 									
 									<p  style="float: right;margin: 0 0 0px;" class="textStyle">{{email.date | date:'MMMM-dd-yyyy'}}</p>
 								<!-- Image -->
 								<td ng-show="isHide" style="padding: 1%;width: 10%;">
-									<img ng-if="email.extractLength >= 1200" data-ng-src="/get-cover-image-by-id/{{email.id}}" style="width:120px; cursor: pointer; min-height: 25px;max-height: 135px;border: 1px solid gray;" data-ng-click="showPopUpModal(email.id)" />
-									<img ng-if="email.extractLength < 1200 && email.extractLength >=600" data-ng-src="/get-cover-image-by-id/{{email.id}}" style="width:120px; cursor: pointer; min-height: 25px;max-height: 90px;border: 1px solid gray;" data-ng-click="showPopUpModal(email.id)" />
-									<img ng-if="email.extractLength < 600" data-ng-src="/get-cover-image-by-id/{{email.id}}" style="width:120px; cursor: pointer; min-height: 25px;max-height: 60px;border: 1px solid gray;" data-ng-click="showPopUpModal(email.id)" />
+									<img ng-if="email.extractLength >= 1200" data-ng-src="/get-cover-image-by-id/{{email.id}}" style="width:120px; cursor: pointer; min-height: 25px;max-height: 135px;border: 1px solid gray;" data-ng-click="showPopUpModal(email.id,$index);" />
+									<img ng-if="email.extractLength < 1200 && email.extractLength >=600" data-ng-src="/get-cover-image-by-id/{{email.id}}" style="width:120px; cursor: pointer; min-height: 25px;max-height: 90px;border: 1px solid gray;" data-ng-click="showPopUpModal(email.id,$index);" />
+									<img ng-if="email.extractLength < 600" data-ng-src="/get-cover-image-by-id/{{email.id}}" style="width:120px; cursor: pointer; min-height: 25px;max-height: 60px;border: 1px solid gray;" data-ng-click="showPopUpModal(email.id);" />
 									<!-- Domain -->
 									<span class="text-primary textStyle" style="text-align: center;margin-left: 9%;">Appx. Size {{ email.length | number:2}}kbs</span>
 								</td>
@@ -502,6 +502,12 @@ $(function() {
 									</button>
 									<span ng-show="isadmin" style="height: 22px;cursor: pointer;background-color: rgb(243, 31, 12);opacity: 1.0;color: white;border-radius: 3px;padding: 1px 5px;line-height: 1;position: absolute;">
 										<span ng-click="removeEmailData(email.id,$index)" tooltip="Remove This Mail" class="glyphicon glyphicon-trash" style="cursor: pointer;top:3px;"></span>
+									</span>
+									<span ng-show="isadmin && !email.isHidden" style="margin-left: 28px;height: 22px;cursor: pointer;background-color: yellow;opacity: 1.0;color: black;border-radius: 3px;padding: 1px 5px;line-height: 1;position: absolute;">
+										<span ng-click="hideEmail(email.id,$index)" tooltip="Hide This Mail" class="glyphicon glyphicon-eye-close" style="cursor: pointer;top:3px;"></span>
+									</span>
+									<span ng-show="isadmin && email.isHidden" style="margin-left: 28px;height: 22px;cursor: pointer;background-color: green;opacity: 1.0;color: white;border-radius: 3px;padding: 1px 5px;line-height: 1;position: absolute;">
+										<span ng-click="showEmail(email.id,$index)" tooltip="Show This Mail" class="glyphicon glyphicon-eye-open" style="cursor: pointer;top:3px;"></span>
 									</span>
 								<!-- Date -->
 								 	<span  style="float: right;margin-right: 2%;" class="text-primary textStyle">{{email.date | date:'MMMM-dd-yyyy'}}</span><br> 
@@ -550,7 +556,11 @@ $(function() {
 							
 						</table> 
 						 -->
-						
+<style>
+.mailhidden {
+	opacity:0.9;
+}
+</style>
 			
 
 

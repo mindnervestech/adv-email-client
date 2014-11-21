@@ -12,6 +12,7 @@ import java.util.Map;
 
 import models.MailObjectModel;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
 import vm.MailsIDToDisplay;
 import vm.MailsToDisplay;
@@ -36,7 +37,12 @@ public class ShowTab extends Controller {
 	static List<MailsIDToDisplay> dec;
 	
 	public static Result showTables(Long yearTab) throws ParseException {
-		
+		Http.Context context = Http.Context.current();
+		String key = context.session().get("isAdmin");
+		boolean isAdmin  = false;
+		if(key.equals("Y")) {
+			isAdmin  = true;
+		}
 		if(yearTab == 0 ){
 			yearTab = 2014L;
 		}
@@ -75,11 +81,12 @@ public class ShowTab extends Controller {
 					 	String subject = list.get(i).getString("mail_name");
 					 	System.out.println("subject = "+subject);
 					 	String month = list.get(i).getString("month");
+					 	int status = list.get(i).getInteger("status");
 					 	if(month != null){
 					 		Date date2= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(date);
 					 		SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
 					 		String str =format.format(date2);		 		
-					 		populateArray(str,Integer.parseInt(month),id,subject);
+					 		populateArray(str,Integer.parseInt(month),id,subject,status);
 					 	}
 					 }
 				 
@@ -98,17 +105,22 @@ public class ShowTab extends Controller {
 				 mailsToDisplay.monthDates = map;
 				 mailsToDisplays.add(mailsToDisplay);
 			}
-		return ok(views.html.showTable.render(mailsToDisplays,yearList));
+		return ok(views.html.showTable.render(mailsToDisplays,yearList,isAdmin));
   }
 	
 	
 	
 	
-	public static void  populateArray( String model , int month, String email_id, String subject) {
+	public static void  populateArray( String model , int month, String email_id, String subject,int status) {
 		MailsIDToDisplay display = new MailsIDToDisplay();
 		display.date = model;
 		display.emailId = email_id;
 		display.emailSubject = subject;
+		if(status==2) {
+			display.isHidden = true;
+		} else {
+			display.isHidden = false;
+		}
 		switch (month) {
 		
 	            case 1: jan.add(display);
