@@ -1,9 +1,4 @@
-<style>
-.textStyle{
-font-size: 11px;
-}
-</style>
-<div ng-controller="AdminController" >
+<div>
 <nav class="navbar bg-primary nav" role="navigation" style="color: #bbb;border-bottom: 1px solid #444;min-height: 70px;">
     
    <!-- <div class="col-xs-3">
@@ -26,12 +21,13 @@ font-size: 11px;
       
     </div>
 </nav>
-<div data-ng-init="getBlackList()">
-<tabset>
-   <tab ng-repeat="tab1 in tabs.blacklist" heading="{{tab1.title}}" active="tab1.active" ng-click="getDomains()">
-     <div data-ng-include style="width: 100%;" 
-                     data-src="tab1.content" ></div>
-   </tab>
-</tabset>
+<div style="width: 50%;margin-left:auto;margin-right:auto;">
+	<h3 style="margin-left: auto;margin-right: auto;width: 16%;color:white;">Feedback</h3>
+	<form ng-submit="sendFeedback()">
+		<input style="width: 100%;margin-top: 10px;" type="text" required="required" placeholder="Subject" ng-model="item.subject"/>
+		<textarea style="width: 100%;margin-top: 5px;height: 200px;" required placeholder="Message" ng-model="item.message"></textarea>
+		<input style="width: 20%;margin-left: 40%;margin-top: 10px;" type="submit" value="Submit"/>
+		<div style="margin-top: 10px;color: green;margin-left: 33%;" ng-show="feedbackSuccess">Thank you for your Feedback.</div>
+	</form>
 </div>
 </div>

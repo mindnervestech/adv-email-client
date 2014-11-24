@@ -17,12 +17,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.imageio.ImageIO;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
@@ -39,6 +43,7 @@ import models.UserPermission;
 import net.coobird.thumbnailator.Thumbnails;
 
 import org.apache.commons.io.FileUtils;
+import org.codehaus.jackson.JsonNode;
 import org.elasticsearch.common.collect.Iterables;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.AndFilterBuilder;
@@ -223,7 +228,7 @@ public class Application extends Controller{
 		}
 		Http.Context context = Http.Context.current();
 		 String key = context.session().get("isAdmin");
-		 if(key.equals("A")) {
+		 if(key.equals("N")) {
 			andFilterBuilder.add(FilterBuilders.notFilter(FilterBuilders.termFilter("status", 1))); 
 		 }
 		MntIndexQuery<Email> indexQuery = new MntIndexQuery<Email>(Email.class);
@@ -1020,6 +1025,45 @@ public class Application extends Controller{
 		model.update();
 		e.status = 0;
 		e.index();
+		return ok();
+	}
+	
+	public static Result feedback() {
+		String host = "pop.gmail.com";
+		final String user = "admin@lab104.net";
+		final String password = "Jagbir104";
+		String to = "mark@kadekraus.com";
+
+	      // Sender's email ID needs to be mentioned
+	    String from = "web@gmail.com";
+	    JsonNode jn = request().body().asJson();
+		String subject = jn.get("subject").asText();
+		String messagess = jn.get("message").asText();
+	    Properties props = new Properties();  
+	    props.put("mail.smtp.host",host);  
+	    props.put("mail.smtp.auth", "true");  
+	    props.put("mail.smtp.socketFactory.port", "465");
+	    props.put("mail.smtp.socketFactory.class","javax.net.ssl.SSLSocketFactory");
+	    Session session = Session.getInstance(props,  
+	    	new javax.mail.Authenticator() {  
+	    		protected PasswordAuthentication getPasswordAuthentication() {  
+	    		    return new PasswordAuthentication(user,password);  
+	    		}  
+	    });  
+	    		  
+	    		   //Compose the message  
+	    try {  
+	    	MimeMessage message = new MimeMessage(session);  
+	    	message.setFrom(new InternetAddress(user));  
+	    	message.addRecipient(Message.RecipientType.TO,new InternetAddress(to));  
+	    	message.setSubject(subject);  
+	    	message.setText(messagess);  
+	    		       
+	    		    //send the message  
+	    	Transport.send(message);
+	    } catch(Exception e) {
+	    	System.out.println("Mail sending failed!");
+	    }
 		return ok();
 	}
 }

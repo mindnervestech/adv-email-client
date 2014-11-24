@@ -60,9 +60,9 @@
               <table class="table table-bordered" style="background-color: white;">
         <thead>
                 <th class="textStyle">Channel</th>
-                <th class="textStyle">Jan</th>
+                <!-- <th class="textStyle">Jan</th>
                 <th class="textStyle">Feb</th>
-                <th class="textStyle">Mar</th>
+                <th class="textStyle">Mar</th> -->
                 <th class="textStyle">Apr</th>
                 <th class="textStyle">May</th>
                 <th class="textStyle">Jun</th>
@@ -80,7 +80,7 @@
                <span  class="glyphicon glyphicon-plus" onclick="collapseDiv(this)" ng-click='divShow(@index, !DivShow, @c.domainName)'></span>
                <span style  = "margin-left: 5px;" class="glyphicon glyphicon-eye-open" data-ng-click='mailInfo("@c.domainName")'></span></td>
                
-               <td style="font-size: small; width: 10px; text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">
+               <!-- <td style="font-size: small; width: 10px; text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">
                <div class = 'div@index' style = "text-align: center;display:none;"> 
                  @if(c.monthDates.get("Jan").size()!=0){
                   @for( d <- c.monthDates.get("Jan")){
@@ -106,78 +106,78 @@
                    <a data-ng-click="showPopUpModalShowTab(@d.emailId,@d.isHidden)" id="emailId@d.emailId" data-toggle="tooltip" data-tooltip-placement="bottom" ng-class="@d.isHidden==true ?'tip-bottom mailHidden':'tip-bottom'" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
                   }
                    }
-               </div><div class = "numDiv@index">(<a>@c.monthDates.get("Mar").size()</a>)</div></td> 
-               <td style="font-size: small; width: 10px;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">
+               </div><div class = "numDiv@index">(<a>@c.monthDates.get("Mar").size()</a>)</div></td> --> 
+               <td style="font-size: small; width: 8.88%;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">
                <div class = 'div@index' style = "text-align: center;display:none;"> 
                @if(c.monthDates.get("Apr").size()!=0){
                     @for( d <- c.monthDates.get("Apr")){
                    <a data-ng-click="showPopUpModalShowTab(@d.emailId,@d.isHidden)" id="emailId@d.emailId" data-toggle="tooltip" data-tooltip-placement="bottom" ng-class="@d.isHidden==true ?'tip-bottom mailHidden':'tip-bottom'" title="@d.emailSubject" style="cursor: pointer;">@d.date</a></br>
                   }
-                   }</div><div class = "numDiv@index">(<a>@c.monthDates.get("Apr").size()</a>)</div></td> 
-               <td style="font-size: small; width: 10px;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);"> 
+                   }</div><div class = "numDiv@index" style="text-align: center;">(<a>@c.monthDates.get("Apr").size()</a>)</div></td> 
+               <td style="font-size: small; width: 8.88%;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);"> 
                <div class = 'div@index' style = "text-align: center;display:none;"> 
                   @if(c.monthDates.get("May").size()!=0){
                   @for(d<- c.monthDates.get("May")){
                     <a data-ng-click="showPopUpModalShowTab(@d.emailId,@d.isHidden)" id="emailId@d.emailId" data-toggle="tooltip" data-tooltip-placement="bottom" ng-class="@d.isHidden==true ?'tip-bottom mailHidden':'tip-bottom'" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
                   }
                    }
-                </div><div class = "numDiv@index">(<a>@c.monthDates.get("May").size()</a>)</div></td> 
-               <td style="font-size: small; width: 10px; text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">  
+                </div><div class = "numDiv@index" style="text-align: center;">(<a>@c.monthDates.get("May").size()</a>)</div></td> 
+               <td style="font-size: small; width: 8.88%; text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">  
                 <div class = 'div@index' style = "text-align: center;display:none;"> 
                 @if(c.monthDates.get("Jun").size()!=0){
                  @for(d <- c.monthDates.get("Jun") ){
                   <a data-ng-click="showPopUpModalShowTab(@d.emailId,@d.isHidden)" id="emailId@d.emailId" data-toggle="tooltip" data-tooltip-placement="bottom" ng-class="@d.isHidden==true ?'tip-bottom mailHidden':'tip-bottom'" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
                  }
                  }
-                 </div><div class = "numDiv@index">(<a>@c.monthDates.get("Jun").size()</a>)</div></td>
-               <td style="font-size: small; width: 10px;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">   
+                 </div><div class = "numDiv@index" style="text-align: center;">(<a>@c.monthDates.get("Jun").size()</a>)</div></td>
+               <td style="font-size: small; width: 8.88%;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">   
                 <div class = 'div@index' style = "text-align: center;display:none;"> 
                 @if(c.monthDates.get("Jul").size()!=0){
                  @for(d <- c.monthDates.get("Jul")){
                   <a data-ng-click="showPopUpModalShowTab(@d.emailId,@d.isHidden)" id="emailId@d.emailId" data-toggle="tooltip" data-tooltip-placement="bottom" ng-class="@d.isHidden==true ?'tip-bottom mailHidden':'tip-bottom'" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
                  }
                  }
-                </div><div class = "numDiv@index">(<a>@c.monthDates.get("Jul").size()</a>)</div></td> 
-               <td style="font-size: small; width: 10px;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);"> 
+                </div><div class = "numDiv@index" style="text-align: center;">(<a>@c.monthDates.get("Jul").size()</a>)</div></td> 
+               <td style="font-size: small; width: 8.88%;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);"> 
                <div class = 'div@index' style = "text-align: center;display:none;">    
                   @if(c.monthDates.get("Aug").size()!=0){
                      @for(d <- c.monthDates.get("Aug")){
                   <a data-ng-click="showPopUpModalShowTab(@d.emailId,@d.isHidden)" id="emailId@d.emailId" data-toggle="tooltip" data-tooltip-placement="bottom" ng-class="@d.isHidden==true ?'tip-bottom mailHidden':'tip-bottom'" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
                  }
                  }
-                </div><div class = "numDiv@index">(<a>@c.monthDates.get("Aug").size()</a>)</div></td>
-               <td style="font-size: small; width: 10px;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);"> 
+                </div><div class = "numDiv@index" style="text-align: center;">(<a>@c.monthDates.get("Aug").size()</a>)</div></td>
+               <td style="font-size: small; width: 8.88%;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);"> 
                <div class = 'div@index' style = "text-align: center;display:none;">    
                   @if(c.monthDates.get("Sep").size()!=0){
                       @for(d <- c.monthDates.get("Sep")){
                   <a data-ng-click="showPopUpModalShowTab(@d.emailId,@d.isHidden)" id="emailId@d.emailId" data-toggle="tooltip" data-tooltip-placement="bottom" ng-class="@d.isHidden==true ?'tip-bottom mailHidden':'tip-bottom'" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
                  }
                  }
-               </div><div class = "numDiv@index">(<a>@c.monthDates.get("Sep").size()</a>)</div></td>
-               <td style="font-size: small; width: 10px;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">
+               </div><div class = "numDiv@index" style="text-align: center;">(<a>@c.monthDates.get("Sep").size()</a>)</div></td>
+               <td style="font-size: small; width: 8.88%;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">
                <div class = 'div@index' style = "text-align: center;display:none;"> 
                   @if(c.monthDates.get("Oct").size()!=0){
                        @for(d <- c.monthDates.get("Oct")){
                   <a data-ng-click="showPopUpModalShowTab(@d.emailId,@d.isHidden)" id="emailId@d.emailId" data-toggle="tooltip" data-tooltip-placement="bottom" ng-class="@d.isHidden==true ?'tip-bottom mailHidden':'tip-bottom'" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
                  }
                  }
-                </div><div class = "numDiv@index">(<a>@c.monthDates.get("Oct").size()</a>)</div></td>
-               <td style="font-size: small; width: 10px;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);"> 
+                </div><div class = "numDiv@index" style="text-align: center;">(<a>@c.monthDates.get("Oct").size()</a>)</div></td>
+               <td style="font-size: small; width: 8.88%;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);"> 
                <div class = 'div@index' style = "text-align: center;display:none;">  
                 @if(c.monthDates.get("Nov").size()!=0){
               	 @for(d <- c.monthDates.get("Nov")){
                   <a data-ng-click="showPopUpModalShowTab(@d.emailId,@d.isHidden)" id="emailId@d.emailId" data-toggle="tooltip" data-tooltip-placement="bottom" ng-class="@d.isHidden==true ?'tip-bottom mailHidden':'tip-bottom'" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
                  }
                  }
-                </div><div class = "numDiv@index">(<a>@c.monthDates.get("Nov").size()</a>)</div></td>
-               <td style="font-size: small; width: 10px;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">
+                </div><div class = "numDiv@index" style="text-align: center;">(<a>@c.monthDates.get("Nov").size()</a>)</div></td>
+               <td style="font-size: small; width: 8.88%;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);">
                <div class = 'div@index' style = "text-align: center;display:none;"> 
                @if(c.monthDates.get("Dec").size()!=0){
                  @for(d <- c.monthDates.get("Dec")){
                   <a data-ng-click="showPopUpModalShowTab(@d.emailId,@d.isHidden)" id="emailId@d.emailId" data-toggle="tooltip" data-tooltip-placement="bottom" ng-class="@d.isHidden==true ?'tip-bottom mailHidden':'tip-bottom'" title="@d.emailSubject" style="cursor: pointer;">@d.date </a></br>
                  }
                  }
-                </div><div class = "numDiv@index">(<a>@c.monthDates.get("Dec").size()</a>)</div></td>
+                </div><div class = "numDiv@index" style="text-align: center;">(<a>@c.monthDates.get("Dec").size()</a>)</div></td>
            }
             </tr>
         </tbody>

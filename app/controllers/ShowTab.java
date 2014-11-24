@@ -89,7 +89,7 @@ public class ShowTab extends Controller {
 					 		Date date2= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(date);
 					 		SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
 					 		String str =format.format(date2);		 		
-					 		populateArray(str,Integer.parseInt(month),id,subject,status);
+					 		populateArray(str,Integer.parseInt(month),id,subject,status,isAdmin);
 					 	}
 					 }
 				 
@@ -114,7 +114,7 @@ public class ShowTab extends Controller {
 	
 	
 	
-	public static void  populateArray( String model , int month, String email_id, String subject,int status) {
+	public static void  populateArray( String model , int month, String email_id, String subject,int status,boolean isAdmin) {
 		MailsIDToDisplay display = new MailsIDToDisplay();
 		display.date = model;
 		display.emailId = email_id;
@@ -124,7 +124,8 @@ public class ShowTab extends Controller {
 		} else {
 			display.isHidden = false;
 		}
-		switch (month) {
+		if(isAdmin || !display.isHidden) {
+			switch (month) {
 		
 	            case 1: jan.add(display);
 	                    break;
@@ -152,6 +153,7 @@ public class ShowTab extends Controller {
 	            	 	 break;
 	            default: break;
 	        }
+		}
 	}
 	
 	

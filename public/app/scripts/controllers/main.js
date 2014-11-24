@@ -236,6 +236,8 @@ emailclient.controller('AdminController',function($scope,$location,$http,$modal,
 	/*if($location.path()=="/statictical" || $location.path()=="/adminBL"||$location.path()=="/admin") {
 		$scope.isadmin = true;
 	}*/
+	
+	$scope.feedbackSuccess = false;
 	$scope.tabs = [
 	               { title:'Black List',active: true, content:'/assets/app/views/blacklist.html' }
 	              // ,{ title:'Upcomings', content:'/assets/app/views/upcoming.html'}
@@ -803,6 +805,7 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 	$scope.dateReverse=true;
 	$scope.isHide = true;
 	$scope.DivShow=false;
+	$scope.feedbackSuccess = false;
 	console.log($scope.DivShow);
 
 	$scope.databaseSize;
@@ -869,9 +872,9 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 		}
 	};
 	/*  Below Section for modal  */
-	if($location.path()=="/admin") {
+	/*if($location.path()=="/admin") {
 		$scope.isadmin = true;
-	}
+	}*/
 	  var modalInstance;
 	  $scope.open = function () {
 		    modalInstance = $modal.open({
@@ -1254,6 +1257,14 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 			} else {
 				$scope.emails[index].isHidden = false;
 			}
+		});
+	};
+	$scope.item = {};
+	$scope.sendFeedback = function() {
+		$http({method:'POST',url:'/feedback',data:$scope.item}).success(function(data) {
+			$scope.item = {};
+			$scope.feedbackSuccess = true;
+			//$location.path("auth#/");
 		});
 	};
 });

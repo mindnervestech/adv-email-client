@@ -39,13 +39,13 @@ angular.module('email-client', [
     	  templateUrl: '/assets/app/views/statictical.html',
           controller: 'AdminController'
       })
-      .when('/userstatictical',{
-    	  templateUrl: '/assets/app/views/statictical.html',
-          controller: 'SearchController'
-      })
       .when('/list',{
     	  templateUrl: '/assets/app/views/list.html',
           controller: 'AdminController'
+      })
+      .when('/feedback',{
+    	  templateUrl: '/assets/app/views/feedback.html',
+          controller: 'SearchController'
       })
       .otherwise({
           redirectTo: '/'
