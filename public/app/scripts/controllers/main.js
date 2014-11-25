@@ -1062,6 +1062,7 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 		  }
 	});
 	
+	$scope.domainCounts = [];
 	$scope.$watch('allChecked', function(value){
 		if($scope.domainCounts) {
 			for(var i=0 ; i < $scope.domainCounts.length; i++) {
@@ -1225,14 +1226,14 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 				$scope.searchForm.domainChecked += $scope.domainCounts[i].name+",";
 			}
 		}
-		$http.get('/filterSearch',{params:$scope.searchForm})
+		$http.get('/filterSearch/'+$scope.predicate+'/'+$scope.reverse,{params:$scope.searchForm})
 		.success(function(data, status, headers, config){
 			usSpinnerService.stop('loading...');
 			$scope.emails = data.emails;
 			$scope.saveSearchSets = data.saveSearchSets; 
 			$scope.noOFPages = data.noOFPages;
 			$scope.totalItems = data.noOFPages * $scope.searchForm.rowCount ; // Added for Pagination
-			$scope.allChecked = true;
+			//$scope.allChecked = true;
 		});
 	};
 	var protocol = $location.protocol();

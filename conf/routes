@@ -6,7 +6,7 @@
 
 GET     /                                controllers.Application.index()
 GET     /auth                                controllers.Application.authindex()
-GET     /filterSearch              controllers.Application.searchForEmails(predicate :String,reverse :Boolean)
+GET     /filterSearch/:predicate/:reverse            controllers.Application.searchForEmails(predicate :String,reverse :Boolean)
 
 GET		/searchForEmails/:predicate/:reverse				 controllers.Application.searchForEmails(predicate :String,reverse :Boolean)
 GET		/get-cover-image-by-id/:id		 controllers.Application.getCoverImageByID(id :Long)

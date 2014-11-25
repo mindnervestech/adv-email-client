@@ -225,7 +225,7 @@ $(function() {
 		} 
    }
 </script>		
-<nav class="navbar bg-primary nav" id="nav" role="navigation" style="color: #bbb;border-bottom: 1px solid #444;min-height: 70px;">
+<nav class="navbar bg-primary nav" id="nav" role="navigation" style="color: #bbb;border-bottom: 1px solid #444;min-height: 80px;">
     
    <!-- <div class="col-xs-3">
     <input type="text" class="form-control" placeholder="Search">
@@ -238,8 +238,8 @@ $(function() {
 	 	<!-- <a ng-hide="isadmin" href="/">
 	 		<img src="/assets/app/images/logo_agora.png" style="width: 100%;" alt="Your Brand" >
 	 	</a> --> 
-	 	<span class="textStyle" style="margin-left: 23%;color: white;">E-MAIL KNOWLEDGEBASE</span> 
-	 	<a class="textStyle" style="color: rgba(255,255,255,0.5);margin-left: 1%;display: block;" href="#/feedback">Please Report Error or Suggetions</a>
+	 	<span class="textStyle" style="margin-left: 18%;color: white;">E-MAIL KNOWLEDGEBASE</span> 
+	 	<a class="textStyle" style="color: rgba(255,255,255,0.5);margin-left: 1%;display: block;margin-left: 18%;" href="#/feedback">Please Report Error or Suggetions</a>
 	 	</div>
 	 	<a class="cal" href="/showTables/0" target="_blank" style="color: rgba(255,255,255,0.5);margin-left: 3%;">Collection/Calender</a>
 	 	<a ng-hide="isadmin" class="cal" href="auth#/statictical" style="color: rgba(255,255,255,0.5);margin-left: 1%;">By Domain</a>
@@ -260,7 +260,7 @@ $(function() {
       
     </div>
 			 
-	<a class="" id="test" data-toggle="collapse" data-target="#demo" style="float: right;color: white;margin-right: 8%;">
+	<a class="" id="test" data-toggle="collapse" data-target="#demo" style="color: white;position: absolute;top:55px;right: 9%;">
   Advance Search
 </a>
 
@@ -279,6 +279,10 @@ $(function() {
 		  <div class="form-group">
 		    <label  class="sr-only" for="Subject_Keyword">Subject Keyword</label>
 		    <input tooltip= "Look for keywords in subject of email" type="text" class="input-sm-mini form-control textStyle" data-ng-model="searchForm.subKeyWord" id="Subject_Keyword" placeholder="Subject Keyword">
+		  </div>
+		  <div class="form-group">
+		    <label  class="sr-only" for="Content_Keyword">Email Content</label>
+		    <input tooltip= "Look for keywords in content of email" type="text" class="input-sm-mini form-control textStyle" data-ng-model="searchForm.cntKeyWord" id="Content_Keyword" placeholder="Content Keyword">
 		  </div>
 		  <div class="form-group">
 		    <label  class="sr-only" for="Subject_Keyword">One level Deep lookup</label>
@@ -314,10 +318,10 @@ $(function() {
 			<div ng-show="hasSearchResult" class="row" style="width: 22%;float: left;margin-bottom: 0px !important;">
         
         
-        <ul class="nav navbar-nav">
+        <ul class="nav navbar-nav" ng-init="isDropDown=false">
        
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="padding-bottom: 7px;padding-top: 7px;"> Domains Lists <b class="caret"></b></a>
+        <li ng-class="isDropDown ?'dropdown open':'dropdown'">
+          <a href="" style="padding-bottom: 7px;padding-top: 7px;" ng-click="isDropDown=!isDropDown"> Domains Lists <b class="caret"></b></a>
           <ul class="dropdown-menu" style="width: 220px;">
            <div class="">
 					<div style="text-align: center;font-weight: 700;">
@@ -341,8 +345,8 @@ $(function() {
 					</div>
 					
 					<div class="btn-group btn-group-sm" style="width: 100%;">
-					<button type="submit" style="margin-left: 5%;margin-right: 2%; margin-top: 2%;margin-bottom: 2%;" data-ng-click="filterEmailSearch()" class="btn btn-primary">Filter Search</button>
-					<button data-toggle="modal" style="margin-top: 2%;margin-bottom: 2%;" data-ng-click="open()" class="btn btn-default">Save Set</button>
+					<button type="submit" style="margin-left: 5%;margin-right: 2%; margin-top: 2%;margin-bottom: 2%;" data-ng-click="filterEmailSearch();isDropDown=!isDropDown;" class="btn btn-primary">Filter Search</button>
+					<button data-toggle="modal" style="margin-top: 2%;margin-bottom: 2%;" data-ng-click="open();isDropDown=!isDropDown;" class="btn btn-default">Save Set</button>
 				</div>
 					
 				</div>
