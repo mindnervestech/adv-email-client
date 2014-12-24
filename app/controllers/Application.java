@@ -1296,7 +1296,7 @@ public class Application extends Controller implements Job {
 		try {
 
 			GMailServer.sendMail("Report", "Daily Report Pdf",
-					"mindnervesdemo@gmail.com", "mindnervesadmin",
+					"admin@lab104.net", "Jagbir104",
 					"mindnervestech@gmail.com", pdfPath);
 			// GMailServer.sendMail();
 			// EmailUtils.send();
