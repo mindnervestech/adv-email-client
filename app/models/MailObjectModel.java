@@ -1,6 +1,9 @@
 package models;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -172,6 +175,32 @@ public class MailObjectModel extends Model{
 		// TODO Auto-generated method stub
 		return find.where().eq("id", id2).findUnique();
 	}
+	
+	public static SqlRow findMailObjectByDomainNameAndDate(
+			String domainName, String date) {
+		Date myDate = null;
+		try {
+			myDate = new SimpleDateFormat("yyyy-MM-dd")
+			.parse(date);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Calendar c = Calendar.getInstance();
+	    c.setTime(myDate);
+	    c.add(Calendar.MONTH, 1);
+	    Date nextDate = c.getTime();
+	    String _date = null;
+	    _date = new SimpleDateFormat("yyyy-MM-dd")
+		.format(nextDate);
+	    System.out.println(_date);
+	    StringBuilder query = new StringBuilder();
+		SqlRow resultList = null;
+		query.append("SELECT domain, COUNT(*) as count FROM mail_object_model WHERE domain = '"+domainName+"' and sent_date BETWEEN '"+date+"' and '"+_date+"'");
+		resultList = Ebean.createSqlQuery(query.toString()).findUnique();
+		return resultList;
+	}
+	
 	public static List<SqlRow> getTodaysUnprocessedMails() {
 		List<SqlRow> query = Ebean.createSqlQuery("SELECT domain, COUNT(*) AS COUNT FROM mail_object_model where  sent_date >=  (NOW() - INTERVAL 1 DAY ) and STATUS = 0 group by domain").findList();
 		return query;

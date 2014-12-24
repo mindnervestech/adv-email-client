@@ -12,6 +12,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -69,6 +70,7 @@ import play.mvc.Result;
 import utility.DailyReportPDF;
 import views.html.accessFailed;
 import vm.MailsIDToDisplay;
+import vm.MailsToDisplay;
 import vm.UrlMapVM;
 import wordcram.Colorers;
 import wordcram.Placers;
@@ -76,6 +78,7 @@ import wordcram.WordCram;
 import be.objectify.deadbolt.core.models.Permission;
 import be.objectify.deadbolt.java.actions.SubjectPresent;
 
+import com.avaje.ebean.Ebean;
 import com.avaje.ebean.SqlRow;
 import com.avaje.ebean.annotation.Transactional;
 import com.github.cleverage.elasticsearch.IndexResults;
@@ -1146,6 +1149,80 @@ public class Application extends Controller implements Job {
 		return ok();
 	}
 
+	
+	public static Result mailVariations(int percent) {
+		Date d = new Date();
+		System.out.println(d);
+		Http.Context context = Http.Context.current();
+		String key = context.session().get("isAdmin");
+		boolean isAdmin  = false;
+		if(key.equals("Y")) {
+			isAdmin  = true;
+		}
+		Calendar cal = Calendar.getInstance();  
+	    int year = cal.get(cal.YEAR);  
+	    int month = cal.get(cal.MONTH)+1; //zero-based  
+	    int preMonth = cal.get(cal.MONTH);
+	    System.out.println("year = "+year+"\nmonth = "+month);  
+	    String date = year+"-"+month+"-"+"01";
+	    String preDate = year+"-"+preMonth+"-"+"01";
+		System.out.println("date= "+preDate);
+		StringBuilder query = new StringBuilder();
+		List<SqlRow> resultList = null;
+		query.append("select distinct domain from mail_object_model");
+		resultList = Ebean.createSqlQuery(query.toString()).findList();
+		for(SqlRow sr:resultList){
+			MailsToDisplay mailsToDisplay= new MailsToDisplay();
+			mailsToDisplay.domainName= sr.getString("domain");
+			SqlRow currentMonthCount= MailObjectModel.findMailObjectByDomainNameAndDate(mailsToDisplay.domainName, date);
+			int currentCount = currentMonthCount.getInteger("count");
+			System.out.println(currentCount);
+			SqlRow preMonthCount= MailObjectModel.findMailObjectByDomainNameAndDate(mailsToDisplay.domainName, preDate);
+			int preCount = preMonthCount.getInteger("count");
+			System.out.println(preCount);
+			float lossPercent;
+			if(preCount > currentCount){
+				lossPercent = 100-(currentCount*100/preCount);
+				if(lossPercent > percent ){
+					System.out.println(lossPercent);
+						String to = "mindnervestech@gmail.com";
+
+						final String from = "mindnervesdemo@gmail.com";
+						String host = "smtp.gmail.com";
+						final String password = "mindnervesadmin";
+						String port = "587";
+						Properties properties = new Properties();
+						properties.put("mail.smtp.starttls.enable", "true");
+						properties.put("mail.smtp.host", host);
+						properties.put("mail.smtp.auth", "true"); // password
+						properties.put("mail.smtp.port", port);
+						Session session = Session.getInstance(properties,
+						new javax.mail.Authenticator() {
+						protected PasswordAuthentication getPasswordAuthentication() {
+							return new PasswordAuthentication(from,
+									password);
+							}
+						});
+						try {
+							Message message = new MimeMessage(session);
+							message.setFrom(new InternetAddress(from));
+							message.addRecipients(Message.RecipientType.TO,
+									InternetAddress.parse(to));
+							message.setSubject("MAIL VARIATION");
+							message.setText(String.valueOf(lossPercent));
+							Transport.send(message);
+							System.out.println("Sent message successfully 21....");
+						} catch (Exception mex) {
+							mex.printStackTrace();
+						}
+					}
+			}else{
+				lossPercent = 100-(preCount*100/currentCount);
+			}
+			
+		}
+		return ok();
+	}
 	public static class DailyReport {
 		public String domain;
 		public Integer count;
