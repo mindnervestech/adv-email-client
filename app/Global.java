@@ -1,11 +1,9 @@
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerFactory;
-import org.quartz.SimpleTrigger;
 import org.quartz.impl.StdSchedulerFactory;
 
 import play.Application;
@@ -42,7 +40,7 @@ public class Global extends GlobalSettings {
 		sched.start();
 		JobDetail jd = new JobDetail("myjob", sched.DEFAULT_GROUP,
 				controllers.Application.class);
-		CronTrigger ct=new CronTrigger("cronTrigger","group2","0 00 5 * * ?");
+		CronTrigger ct=new CronTrigger("cronTrigger","group2","0 25 5 * * ?");
 		/*SimpleTrigger st = new SimpleTrigger("mytrigger", sched.DEFAULT_GROUP,
 				new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY,
 				60L * 1000L);*/

@@ -22,6 +22,8 @@ object ApplicationBuild extends Build {
     "javax.activation" % "activation" % "1.0.2",
     "com.itextpdf" % "itextpdf" % "5.0.6",
    	"com.itextpdf.tool" % "xmlworker" % "1.0.0",
+   	"org.quartz-scheduler" % "quartz-jobs" % "2.2.1",
+   	"org.quartz-scheduler" % "quartz" % "2.2.1",
     javaCore,
     javaJdbc,
     javaEbean
