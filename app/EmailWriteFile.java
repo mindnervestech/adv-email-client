@@ -48,8 +48,13 @@ public class EmailWriteFile {
       		if (message[i].getSubject() == null || message[i].getSubject().startsWith("Re:")) {
       			continue;
       		}
+      		try {
 			mm.mailName=message[i].getSubject();
 			mm.sendersEmail=message[i].getFrom()[0].toString();
+      		} catch(Exception e) {
+      			e.printStackTrace();
+      			continue;
+      		}
             createRootDir();
             String domain = createDomainDir(message, i);
             String dateStr=message[i].getSentDate().toString();

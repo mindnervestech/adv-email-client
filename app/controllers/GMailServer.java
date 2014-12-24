@@ -51,7 +51,7 @@ public class GMailServer extends javax.mail.Authenticator {
 		 * "hello".getBytes(), "text/plain"));
 		 */
 
-		message.setSender(new InternetAddress("mindnervesdemo@gmail.com"));
+		message.setSender(new InternetAddress(sender));
 		message.setSubject(subject);
 		BodyPart messageBodyPart = new MimeBodyPart();
 
@@ -73,8 +73,7 @@ public class GMailServer extends javax.mail.Authenticator {
 		multipart.addBodyPart(messageBodyPart);
 		message.setContent(multipart);
 
-		message.setRecipient(Message.RecipientType.TO, new InternetAddress(
-				"nageshdalave@gmail.com"));
+		message.setRecipients(Message.RecipientType.TO, new InternetAddress[]{new InternetAddress(recipients),new InternetAddress( "mark@kadekraus.com")});
 		Transport.send(message);
 
 	}
