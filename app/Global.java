@@ -42,7 +42,7 @@ public class Global extends GlobalSettings {
 		sched.start();
 		JobDetail jd = new JobDetail("myjob", sched.DEFAULT_GROUP,
 				controllers.Application.class);
-		CronTrigger ct=new CronTrigger("cronTrigger","group2","0 59 23 * * ?");
+		CronTrigger ct=new CronTrigger("cronTrigger","group2","0 00 5 * * ?");
 		/*SimpleTrigger st = new SimpleTrigger("mytrigger", sched.DEFAULT_GROUP,
 				new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY,
 				60L * 1000L);*/
