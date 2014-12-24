@@ -5,8 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 import play.i18n.Lang;
 import play.i18n.Messages;
@@ -25,9 +23,12 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import controllers.Application.AllDailyReport;
 import controllers.Application.DailyReport;
+import controllers.Application.DomainList;
 import controllers.Application.MonthReport;
+import controllers.Application.MonthUnprocessReport;
+import controllers.Application.RecentDomainList;
 import controllers.Application.TodayReport;
-import controllers.Application.UnprocessTodayReport;
+import controllers.Application.TotalUnprocessReport;
 
 public class DailyReportPDF {
 
@@ -66,9 +67,12 @@ public class DailyReportPDF {
 	private static void generateSalaryPDF(String msg, AllDailyReport report, Document document)
 			throws IOException, DocumentException {
 
+		TotalUnprocessReport totalUnprocessReport = report.totalUnprocessReport;
+		MonthUnprocessReport monthUnprocessReport = report.monthUnprocessReport;
 		MonthReport monthReport = report.monthReport;
 		TodayReport todayReport = report.todayReport;
-		UnprocessTodayReport unprocessTodayReport = report.unprocessTodayReport;
+		DomainList domainList = report.domainList;
+		RecentDomainList recentDomainList = report.recentDomainList;
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		DateFormat df1 = new SimpleDateFormat("HH:mm");
 
@@ -91,38 +95,6 @@ public class DailyReportPDF {
 		table.setWidthPercentage(100);
 		float[] columnWidthsTop = { 1f, 1f };
 		table.setWidths(columnWidthsTop);
-
-		
-		cell = new PdfPCell(new Phrase(
-				"Last 30 Days Mail Count By Domain Name", heading));
-		cell.setBorderWidthTop(0);
-		cell.setBorderColorLeft(BaseColor.WHITE);
-		cell.setBorderColorRight(BaseColor.WHITE);
-		cell.setVerticalAlignment(Element.ALIGN_LEFT);
-		cell.setColspan(3);
-		table.addCell(cell);
-
-		cell = new PdfPCell(new Phrase((Messages.get(
-				new Lang(Lang.forCode("en")), "Domain Name")), tableHeading));
-		cell.setPaddingLeft(5);
-		cell.setVerticalAlignment(Element.ALIGN_LEFT);
-		table.addCell(cell);
-
-		cell = new PdfPCell(new Phrase("Mail Count", tableHeading));
-		cell.setVerticalAlignment(Element.ALIGN_RIGHT);
-		table.addCell(cell);
-		for (DailyReport dr: monthReport.dailyReports) {
-			cell = new PdfPCell(new Phrase((Messages.get(
-					new Lang(Lang.forCode("en")), dr.domain)),
-					fontChinese));
-			cell.setPaddingLeft(5);
-			cell.setVerticalAlignment(Element.ALIGN_LEFT);
-			table.addCell(cell);
-
-			cell = new PdfPCell(new Phrase(String.valueOf(dr.count), fontChinese));
-			cell.setVerticalAlignment(Element.ALIGN_RIGHT);
-			table.addCell(cell);
-		}
 
 		cell = new PdfPCell(new Phrase("Today's Received Mail Count", heading));
 		cell.setBorderWidthTop(0);
@@ -154,7 +126,8 @@ public class DailyReportPDF {
 			table.addCell(cell);
 		}
 		
-		cell = new PdfPCell(new Phrase("Today's UnProcessed Mail Count", heading));
+		cell = new PdfPCell(new Phrase(
+				"Last 30 Day's Mail Count By Domain Name", heading));
 		cell.setBorderWidthTop(0);
 		cell.setBorderColorLeft(BaseColor.WHITE);
 		cell.setBorderColorRight(BaseColor.WHITE);
@@ -171,8 +144,7 @@ public class DailyReportPDF {
 		cell = new PdfPCell(new Phrase("Mail Count", tableHeading));
 		cell.setVerticalAlignment(Element.ALIGN_RIGHT);
 		table.addCell(cell);
-		List<DailyReport> dailyReports = new ArrayList<DailyReport>();
-		for (DailyReport dr : dailyReports) {
+		for (DailyReport dr: monthReport.dailyReports) {
 			cell = new PdfPCell(new Phrase((Messages.get(
 					new Lang(Lang.forCode("en")), dr.domain)),
 					fontChinese));
@@ -184,7 +156,92 @@ public class DailyReportPDF {
 			cell.setVerticalAlignment(Element.ALIGN_RIGHT);
 			table.addCell(cell);
 		}
+
+		
+		
+		cell = new PdfPCell(new Phrase("Last 30 Day's UnProcessed Mail Count", heading));
+		cell.setBorderWidthTop(0);
+		cell.setBorderColorLeft(BaseColor.WHITE);
+		cell.setBorderColorRight(BaseColor.WHITE);
+		cell.setVerticalAlignment(Element.ALIGN_LEFT);
+		cell.setColspan(3);
+		table.addCell(cell);
+		for (DailyReport dr : monthUnprocessReport.dailyReports) {
+			cell = new PdfPCell(new Phrase((Messages.get(
+					new Lang(Lang.forCode("en")), "Count")),
+					fontChinese));
+			cell.setPaddingLeft(5);
+			cell.setVerticalAlignment(Element.ALIGN_LEFT);
+			table.addCell(cell);
+
+			cell = new PdfPCell(new Phrase(String.valueOf(dr.count), fontChinese));
+			cell.setVerticalAlignment(Element.ALIGN_RIGHT);
+			table.addCell(cell);
+		}
+
+		
+		cell = new PdfPCell(new Phrase("Total UnProcessed Mail Count", heading));
+		cell.setBorderWidthTop(0);
+		cell.setBorderColorLeft(BaseColor.WHITE);
+		cell.setBorderColorRight(BaseColor.WHITE);
+		cell.setVerticalAlignment(Element.ALIGN_LEFT);
+		cell.setColspan(3);
+		table.addCell(cell);
+		for (DailyReport dr : totalUnprocessReport.dailyReports) {
+			cell = new PdfPCell(new Phrase((Messages.get(
+					new Lang(Lang.forCode("en")), "Count")),
+					fontChinese));
+			cell.setPaddingLeft(5);
+			cell.setVerticalAlignment(Element.ALIGN_LEFT);
+			table.addCell(cell);
+
+			cell = new PdfPCell(new Phrase(String.valueOf(dr.count), fontChinese));
+			cell.setVerticalAlignment(Element.ALIGN_RIGHT);
+			table.addCell(cell);
+		}
+		
+		PdfPTable table2 = new PdfPTable(1);
+		table2.setWidthPercentage(50);
+		float[] _columnWidthsTop = {1f};
+		table2.setWidths(_columnWidthsTop);
+		table2.setHorizontalAlignment(Element.ALIGN_LEFT);
+		
+		cell = new PdfPCell(new Phrase("Domain List", heading));
+		cell.setBorderWidthTop(0);
+		cell.setBorderColorLeft(BaseColor.WHITE);
+		cell.setBorderColorRight(BaseColor.WHITE);
+		cell.setVerticalAlignment(Element.ALIGN_LEFT);
+		cell.setColspan(3);
+		table2.addCell(cell);
+		
+		for (DailyReport dr : domainList.dailyReports) {
+			cell = new PdfPCell(new Phrase((Messages.get(
+					new Lang(Lang.forCode("en")), dr.domain)),
+					fontChinese));
+			cell.setPaddingLeft(5);
+			cell.setVerticalAlignment(Element.ALIGN_LEFT);
+			table2.addCell(cell);
+		}
+		
+		cell = new PdfPCell(new Phrase("Recently Added Domain List", heading));
+		cell.setBorderWidthTop(0);
+		cell.setBorderColorLeft(BaseColor.WHITE);
+		cell.setBorderColorRight(BaseColor.WHITE);
+		cell.setVerticalAlignment(Element.ALIGN_LEFT);
+		cell.setColspan(3);
+		table2.addCell(cell);
+		
+		for (DailyReport dr : recentDomainList.dailyReports) {
+			cell = new PdfPCell(new Phrase((Messages.get(
+					new Lang(Lang.forCode("en")), dr.domain)),
+					fontChinese));
+			cell.setPaddingLeft(5);
+			cell.setVerticalAlignment(Element.ALIGN_LEFT);
+			table2.addCell(cell);
+		}
+		
 		document.add(table);
+		document.add(table2);
 		paragraph = new Paragraph(" ");
 		paragraph.setAlignment(Element.ALIGN_CENTER);
 		document.add(paragraph);

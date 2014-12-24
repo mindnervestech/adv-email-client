@@ -18,10 +18,8 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import play.db.ebean.Model;
 
 import com.avaje.ebean.Ebean;
-import com.avaje.ebean.SqlQuery;
 import com.avaje.ebean.SqlRow;
 import com.avaje.ebean.SqlUpdate;
-import com.avaje.ebean.annotation.Sql;
 @Entity
 public class MailObjectModel extends Model{
 	@Id
@@ -201,15 +199,25 @@ public class MailObjectModel extends Model{
 		return resultList;
 	}
 	
-	public static List<SqlRow> getTodaysUnprocessedMails() {
-		List<SqlRow> query = Ebean.createSqlQuery("SELECT domain, COUNT(*) AS COUNT FROM mail_object_model where  sent_date >=  (NOW() - INTERVAL 1 DAY ) and STATUS = 0 group by domain").findList();
-		return query;
-	}
+
 	public static List<SqlRow> getTodaysMails() {
 		List<SqlRow> query = Ebean.createSqlQuery("SELECT domain, COUNT(*) AS COUNT FROM mail_object_model where  sent_date >=  (NOW() - INTERVAL 1 DAY ) group by domain").findList();
 		return query;
 	}
 	public static List<SqlRow> getLastThirtyDaysMailRecord() {
 		return Ebean.createSqlQuery("SELECT domain, COUNT(*) AS COUNT FROM mail_object_model where  sent_date >=  (NOW() - INTERVAL 1 MONTH ) group by domain").findList();
+	}
+	public static List<SqlRow> getLastThirtyDaysUnprocessedMailRecord() {
+		return Ebean.createSqlQuery("SELECT COUNT(*) AS COUNT FROM mail_object_model where  sent_date >=  (NOW() - INTERVAL 1 MONTH ) and status = 0").findList();
+	}
+	public static List<SqlRow> getTotalUnprocessReportCount() {
+		 
+		return Ebean.createSqlQuery("select COUNT(*) AS COUNT from mail_object_model where status = 0").findList();
+	}
+	public static List<SqlRow> getAllDistinctDomains() {
+		return Ebean.createSqlQuery("select distinct(domain) as domain from mail_object_model").findList();
+	}
+	public static List<SqlRow> getRecentlyAddedDomains() {
+		return Ebean.createSqlQuery("select distinct(domain) as domain from mail_object_model where  sent_date >=  (NOW() - INTERVAL 1 MONTH ) and domain NOT IN ( select distinct(domain) as domain from mail_object_model where sent_date < NOW() - INTERVAL 1 MONTH)").findList();
 	}
 }

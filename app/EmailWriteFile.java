@@ -44,21 +44,17 @@ public class EmailWriteFile {
         
         // save message.
       	for (int i = 0; i < message.length; i++) {
-      		System.out.println("------------------");
-      		System.out.println("value of i "+i);
       		MailObjectModel mm = new MailObjectModel();
       		if (message[i].getSubject() == null || message[i].getSubject().startsWith("Re:")) {
       			continue;
       		}
       		try {
-      			System.out.println("in try ");
 			mm.mailName=message[i].getSubject();
 			mm.sendersEmail=message[i].getFrom()[0].toString();
       		} catch(Exception e) {
       			//e.printStackTrace();
       			continue;
       		}
-      		System.out.println("after try");
             createRootDir();
             String domain = createDomainDir(message, i);
             String dateStr=message[i].getSentDate().toString();
@@ -81,7 +77,6 @@ public class EmailWriteFile {
             while(st.hasMoreElements()) {
 				tokenList.add(st.nextElement().toString().toUpperCase());
 			}
-            System.out.println("mm domain ----"+mm.domain);
             DomainBL domainBL=DomainBL.findDomainblObjectByDomainName(domain);
             String emailAddr=mm.sendersEmail;
             int open=emailAddr.indexOf("<");
@@ -90,15 +85,12 @@ public class EmailWriteFile {
     		{
     			emailAddr=emailAddr.substring(open+1,close);
     		}
-    		System.out.println("emailAddr---"+emailAddr);
             EmailBL emailBL=EmailBL.findEmailblObjectByEmailAddress(emailAddr);
             if(domainBL!=null||emailBL!=null)
             {
             	mm.status=2;
             }
-            System.out.println("before mm save");
             mm.save();
-    		System.out.println("After mm save");
     	
     		 /*ActorSystem  actorSystem = Akka.system();
     		 actorSystem.scheduler().scheduleOnce(Duration.create(0, TimeUnit.MILLISECONDS), 

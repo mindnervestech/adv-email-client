@@ -1232,6 +1232,9 @@ public class Application extends Controller implements Job {
 		public List<DailyReport> dailyReports;
 	}
 
+	public static class MonthUnprocessReport{
+		public List<DailyReport> dailyReports;
+	}
 	public static class TodayReport {
 		public List<DailyReport> dailyReports;
 	}
@@ -1239,11 +1242,24 @@ public class Application extends Controller implements Job {
 	public static class UnprocessTodayReport {
 		public List<DailyReport> dailyReports;
 	}
+	
+	public static class TotalUnprocessReport {
+		public List<DailyReport> dailyReports;
+	}
 
+	public static class DomainList{
+		public List<DailyReport> dailyReports;
+	}
+	public static class RecentDomainList{
+		public List<DailyReport> dailyReports;
+	}
 	public static class AllDailyReport {
 		public MonthReport monthReport;
 		public TodayReport todayReport;
-		public UnprocessTodayReport unprocessTodayReport;
+		public MonthUnprocessReport monthUnprocessReport;
+		public TotalUnprocessReport totalUnprocessReport;
+		public DomainList domainList;
+		public RecentDomainList recentDomainList;
 	}
 
 	final static String pdfPath = Play.application().configuration()
@@ -1253,21 +1269,25 @@ public class Application extends Controller implements Job {
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
 		System.out.println("new date = " + new Date());
 
-		List<SqlRow> models = MailObjectModel.getLastThirtyDaysMailRecord();
+		List<SqlRow> totalUnprocess = MailObjectModel.getTotalUnprocessReportCount();
+		List<SqlRow> thirtydays = MailObjectModel.getLastThirtyDaysMailRecord();
+		List<SqlRow> thirtydaysUnprocessed = MailObjectModel.getLastThirtyDaysUnprocessedMailRecord();
 		List<SqlRow> model = MailObjectModel.getTodaysMails();
-		List<SqlRow> _model = MailObjectModel.getTodaysUnprocessedMails();
+		List<SqlRow> distinctDomainList = MailObjectModel.getAllDistinctDomains();
+		List<SqlRow> recentDomainList = MailObjectModel.getRecentlyAddedDomains();
 		System.out.println("Todays Total Mail received");
 		System.out.println("Domain Name | count ");
 
 		MonthReport monthReport = new MonthReport();
 		List<DailyReport> dailyMonthReport = new ArrayList<DailyReport>();
-		for (SqlRow row : models) {
+		for (SqlRow row : thirtydays) {
 			DailyReport report = new DailyReport();
 			report.domain = row.getString("domain");
 			report.count = row.getInteger("count");
 			dailyMonthReport.add(report);
 		}
 		monthReport.dailyReports = dailyMonthReport;
+		
 		dailyMonthReport = new ArrayList<DailyReport>();
 		TodayReport todayReport = new TodayReport();
 		for (SqlRow row : model) {
@@ -1277,20 +1297,51 @@ public class Application extends Controller implements Job {
 			dailyMonthReport.add(report);
 		}
 		todayReport.dailyReports = dailyMonthReport;
-
-		UnprocessTodayReport unprocessTodayReport = new UnprocessTodayReport();
+		
+		MonthUnprocessReport monthUnprocessReport = new MonthUnprocessReport();
 		dailyMonthReport = new ArrayList<DailyReport>();
-		for (SqlRow row : _model) {
+		for (SqlRow row : thirtydaysUnprocessed) {
 			DailyReport report = new DailyReport();
-			report.domain = row.getString("domain");
 			report.count = row.getInteger("count");
 			dailyMonthReport.add(report);
 		}
-		unprocessTodayReport.dailyReports = dailyMonthReport;
+		monthUnprocessReport.dailyReports = dailyMonthReport;
+		
+		TotalUnprocessReport totalUnprocessReport = new TotalUnprocessReport();
+		dailyMonthReport = new ArrayList<DailyReport>();
+		for (SqlRow row : totalUnprocess) {
+			DailyReport report = new DailyReport();
+			report.count = row.getInteger("count");
+			dailyMonthReport.add(report);
+		}
+		totalUnprocessReport.dailyReports = dailyMonthReport;
+		
+		DomainList domainList = new DomainList();
+		dailyMonthReport = new ArrayList<DailyReport>();
+		for (SqlRow row : distinctDomainList) {
+			DailyReport report = new DailyReport();
+			report.domain = row.getString("domain");
+			dailyMonthReport.add(report);
+		}
+		domainList.dailyReports = dailyMonthReport;
+		
+
+		RecentDomainList recentDomainList2 = new RecentDomainList();
+		dailyMonthReport = new ArrayList<DailyReport>();
+		for (SqlRow row : recentDomainList) {
+			DailyReport report = new DailyReport();
+			report.domain = row.getString("domain");
+			dailyMonthReport.add(report);
+		}
+		recentDomainList2.dailyReports = dailyMonthReport;
+		
 		AllDailyReport report = new AllDailyReport();
 		report.monthReport = monthReport;
 		report.todayReport = todayReport;
-		report.unprocessTodayReport = unprocessTodayReport;
+		report.monthUnprocessReport = monthUnprocessReport;
+		report.totalUnprocessReport = totalUnprocessReport;
+		report.domainList = domainList;
+		report.recentDomainList = recentDomainList2;
 		DailyReportPDF.generateDailyReportPdf(report, pdfPath);
 
 		try {
