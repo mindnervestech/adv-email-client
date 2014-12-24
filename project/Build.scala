@@ -19,6 +19,9 @@ object ApplicationBuild extends Build {
     "org.seleniumhq.selenium" % "selenium-htmlunit-driver" % "2.25.0",
     "net.coobird" % "thumbnailator" % "0.4.7",
     "be.objectify" %% "deadbolt-java" % "2.1.2",
+    "javax.activation" % "activation" % "1.0.2",
+    "com.itextpdf" % "itextpdf" % "5.0.6",
+   	"com.itextpdf.tool" % "xmlworker" % "1.0.0",
     javaCore,
     javaJdbc,
     javaEbean

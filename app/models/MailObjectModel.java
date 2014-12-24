@@ -3,7 +3,6 @@ package models;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -16,8 +15,10 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import play.db.ebean.Model;
 
 import com.avaje.ebean.Ebean;
+import com.avaje.ebean.SqlQuery;
 import com.avaje.ebean.SqlRow;
 import com.avaje.ebean.SqlUpdate;
+import com.avaje.ebean.annotation.Sql;
 @Entity
 public class MailObjectModel extends Model{
 	@Id
@@ -170,5 +171,16 @@ public class MailObjectModel extends Model{
 	public static MailObjectModel getMailObjetcById(Long id2) {
 		// TODO Auto-generated method stub
 		return find.where().eq("id", id2).findUnique();
+	}
+	public static List<SqlRow> getTodaysUnprocessedMails() {
+		List<SqlRow> query = Ebean.createSqlQuery("SELECT domain, COUNT(*) AS COUNT FROM mail_object_model where  sent_date >=  (NOW() - INTERVAL 1 DAY ) and STATUS = 0 group by domain").findList();
+		return query;
+	}
+	public static List<SqlRow> getTodaysMails() {
+		List<SqlRow> query = Ebean.createSqlQuery("SELECT domain, COUNT(*) AS COUNT FROM mail_object_model where  sent_date >=  (NOW() - INTERVAL 1 DAY ) group by domain").findList();
+		return query;
+	}
+	public static List<SqlRow> getLastThirtyDaysMailRecord() {
+		return Ebean.createSqlQuery("SELECT domain, COUNT(*) AS COUNT FROM mail_object_model where  sent_date >=  (NOW() - INTERVAL 1 MONTH ) group by domain").findList();
 	}
 }

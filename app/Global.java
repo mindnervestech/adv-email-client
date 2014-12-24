@@ -1,4 +1,13 @@
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
+
+import org.quartz.CronTrigger;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerFactory;
+import org.quartz.SimpleTrigger;
+import org.quartz.impl.StdSchedulerFactory;
+
 import play.Application;
 import play.GlobalSettings;
 import play.Logger;
@@ -27,6 +36,21 @@ public class Global extends GlobalSettings {
 					}
 					}, actorSystem2.dispatcher()
 				);*/
+		try{
+		SchedulerFactory sf = new StdSchedulerFactory();
+		Scheduler sched = sf.getScheduler();
+		sched.start();
+		JobDetail jd = new JobDetail("myjob", sched.DEFAULT_GROUP,
+				controllers.Application.class);
+		CronTrigger ct=new CronTrigger("cronTrigger","group2","0 59 23 * * ?");
+		/*SimpleTrigger st = new SimpleTrigger("mytrigger", sched.DEFAULT_GROUP,
+				new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY,
+				60L * 1000L);*/
+		
+		sched.scheduleJob(jd, ct);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 		ActorSystem  actorSystem1 = Akka.system();
 		 actorSystem1.scheduler().schedule(
 				Duration.create(0, TimeUnit.MILLISECONDS),
