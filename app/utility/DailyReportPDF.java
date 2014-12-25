@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import play.i18n.Lang;
 import play.i18n.Messages;
@@ -24,11 +26,14 @@ import com.itextpdf.text.pdf.PdfWriter;
 import controllers.Application.AllDailyReport;
 import controllers.Application.DailyReport;
 import controllers.Application.DomainList;
+import controllers.Application.HostDomainList;
+import controllers.Application.MailVariastion;
 import controllers.Application.MonthReport;
 import controllers.Application.MonthUnprocessReport;
 import controllers.Application.RecentDomainList;
 import controllers.Application.TodayReport;
 import controllers.Application.TotalUnprocessReport;
+import controllers.Application.VariationDetails;
 
 public class DailyReportPDF {
 
@@ -72,7 +77,9 @@ public class DailyReportPDF {
 		MonthReport monthReport = report.monthReport;
 		TodayReport todayReport = report.todayReport;
 		DomainList domainList = report.domainList;
+		HostDomainList hostDomainList = report.hostDomainList;
 		RecentDomainList recentDomainList = report.recentDomainList;
+		MailVariastion mailVariastion = report.mailVariastion;
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		DateFormat df1 = new SimpleDateFormat("HH:mm");
 
@@ -82,9 +89,9 @@ public class DailyReportPDF {
 		Font pageHeading;
 		String lang = null;
 
-		fontChinese = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL);
+		fontChinese = new Font(Font.FontFamily.TIMES_ROMAN, 10, Font.NORMAL);
 		heading = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD);
-		tableHeading = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD);
+		tableHeading = new Font(Font.FontFamily.TIMES_ROMAN, 11, Font.BOLD);
 		pageHeading = new Font(Font.FontFamily.TIMES_ROMAN, 16, Font.BOLD);
 		lang = "en";
 
@@ -133,6 +140,7 @@ public class DailyReportPDF {
 		cell.setBorderColorRight(BaseColor.WHITE);
 		cell.setVerticalAlignment(Element.ALIGN_LEFT);
 		cell.setColspan(3);
+		cell.setPaddingTop(20);
 		table.addCell(cell);
 
 		cell = new PdfPCell(new Phrase((Messages.get(
@@ -165,6 +173,7 @@ public class DailyReportPDF {
 		cell.setBorderColorRight(BaseColor.WHITE);
 		cell.setVerticalAlignment(Element.ALIGN_LEFT);
 		cell.setColspan(3);
+		cell.setPaddingTop(20);
 		table.addCell(cell);
 		for (DailyReport dr : monthUnprocessReport.dailyReports) {
 			cell = new PdfPCell(new Phrase((Messages.get(
@@ -186,6 +195,7 @@ public class DailyReportPDF {
 		cell.setBorderColorRight(BaseColor.WHITE);
 		cell.setVerticalAlignment(Element.ALIGN_LEFT);
 		cell.setColspan(3);
+		cell.setPaddingTop(20);
 		table.addCell(cell);
 		for (DailyReport dr : totalUnprocessReport.dailyReports) {
 			cell = new PdfPCell(new Phrase((Messages.get(
@@ -199,6 +209,64 @@ public class DailyReportPDF {
 			cell.setVerticalAlignment(Element.ALIGN_RIGHT);
 			table.addCell(cell);
 		}
+		cell = new PdfPCell(new Phrase("Domain List", heading));
+		cell.setBorderWidthTop(0);
+		cell.setBorderColorLeft(BaseColor.WHITE);
+		cell.setBorderColorRight(BaseColor.WHITE);
+		cell.setVerticalAlignment(Element.ALIGN_LEFT);
+		cell.setColspan(3);
+		cell.setPaddingTop(20);
+		table.addCell(cell);
+		
+		
+		cell = new PdfPCell(new Phrase((Messages.get(
+				new Lang(Lang.forCode("en")), "Agora-D Domain Name")), tableHeading));
+		cell.setPaddingLeft(5);
+		cell.setVerticalAlignment(Element.ALIGN_LEFT);
+		table.addCell(cell);
+
+		cell = new PdfPCell(new Phrase("Agora-E Domain Name", tableHeading));
+		cell.setVerticalAlignment(Element.ALIGN_RIGHT);
+		table.addCell(cell);
+		List<DailyReport> dailyReports = new ArrayList<DailyReport>(); 
+		if(hostDomainList.dailyReports.size() >domainList.dailyReports.size()){
+			dailyReports = hostDomainList.dailyReports;
+		}else{
+			dailyReports = domainList.dailyReports;
+		}
+		for (int i = 0; i<dailyReports.size(); i++) {
+			try{
+			if(hostDomainList.dailyReports  != null){
+				cell = new PdfPCell(new Phrase((Messages.get(
+						new Lang(Lang.forCode("en")), hostDomainList.dailyReports.get(i).domain)),
+						fontChinese));
+				cell.setPaddingLeft(5);
+				cell.setVerticalAlignment(Element.ALIGN_LEFT);
+				table.addCell(cell);
+			}
+				
+			}catch (Exception e){
+				cell = new PdfPCell(new Phrase((Messages.get(
+						new Lang(Lang.forCode("en")), "")),
+						fontChinese));
+				cell.setPaddingLeft(5);
+				cell.setVerticalAlignment(Element.ALIGN_LEFT);
+				table.addCell(cell);
+			}
+			
+			try{
+				if(domainList.dailyReports != null){
+					cell = new PdfPCell(new Phrase(domainList.dailyReports.get(i).domain, fontChinese));
+					cell.setVerticalAlignment(Element.ALIGN_RIGHT);
+					table.addCell(cell);
+				
+				}
+			}catch(Exception e){
+				cell = new PdfPCell(new Phrase("", fontChinese));
+				cell.setVerticalAlignment(Element.ALIGN_RIGHT);
+				table.addCell(cell);
+			}
+		}
 		
 		PdfPTable table2 = new PdfPTable(1);
 		table2.setWidthPercentage(50);
@@ -206,22 +274,6 @@ public class DailyReportPDF {
 		table2.setWidths(_columnWidthsTop);
 		table2.setHorizontalAlignment(Element.ALIGN_LEFT);
 		
-		cell = new PdfPCell(new Phrase("Domain List", heading));
-		cell.setBorderWidthTop(0);
-		cell.setBorderColorLeft(BaseColor.WHITE);
-		cell.setBorderColorRight(BaseColor.WHITE);
-		cell.setVerticalAlignment(Element.ALIGN_LEFT);
-		cell.setColspan(3);
-		table2.addCell(cell);
-		
-		for (DailyReport dr : domainList.dailyReports) {
-			cell = new PdfPCell(new Phrase((Messages.get(
-					new Lang(Lang.forCode("en")), dr.domain)),
-					fontChinese));
-			cell.setPaddingLeft(5);
-			cell.setVerticalAlignment(Element.ALIGN_LEFT);
-			table2.addCell(cell);
-		}
 		
 		cell = new PdfPCell(new Phrase("Recently Added Domain List", heading));
 		cell.setBorderWidthTop(0);
@@ -229,6 +281,7 @@ public class DailyReportPDF {
 		cell.setBorderColorRight(BaseColor.WHITE);
 		cell.setVerticalAlignment(Element.ALIGN_LEFT);
 		cell.setColspan(3);
+		cell.setPaddingTop(20);
 		table2.addCell(cell);
 		
 		for (DailyReport dr : recentDomainList.dailyReports) {
@@ -240,8 +293,67 @@ public class DailyReportPDF {
 			table2.addCell(cell);
 		}
 		
+		PdfPTable table3 = new PdfPTable(4);
+		table3.setWidthPercentage(100);
+		float[] columnWidthsTop3 = {2f, 1f, 1f, 1f};
+		table3.setWidths(columnWidthsTop3);
+		table3.setHorizontalAlignment(Element.ALIGN_LEFT);
+		
+		
+		cell = new PdfPCell(new Phrase(
+				"Mail Variations", heading));
+		cell.setBorderWidthTop(0);
+		cell.setBorderColorLeft(BaseColor.WHITE);
+		cell.setBorderColorRight(BaseColor.WHITE);
+		cell.setVerticalAlignment(Element.ALIGN_LEFT);
+		cell.setColspan(4);
+		cell.setPaddingTop(20);
+		table3.addCell(cell);
+
+		
+		cell = new PdfPCell(new Phrase((Messages.get(
+				new Lang(Lang.forCode("en")), "Domain")), tableHeading));
+		cell.setPaddingLeft(5);
+		cell.setVerticalAlignment(Element.ALIGN_LEFT);
+		table3.addCell(cell);
+
+		cell = new PdfPCell(new Phrase("Last Month", tableHeading));
+		cell.setVerticalAlignment(Element.ALIGN_RIGHT);
+		table3.addCell(cell);
+		
+		
+		cell = new PdfPCell(new Phrase("Current Month", tableHeading));
+		cell.setVerticalAlignment(Element.ALIGN_RIGHT);
+		table3.addCell(cell);
+			
+		cell = new PdfPCell(new Phrase("% loss", tableHeading));
+		cell.setVerticalAlignment(Element.ALIGN_RIGHT);
+		table3.addCell(cell);
+		
+		for (VariationDetails  vr: mailVariastion.variationDetails) {
+			cell = new PdfPCell(new Phrase((Messages.get(
+					new Lang(Lang.forCode("en")), vr.domain)),
+					fontChinese));
+			cell.setPaddingLeft(5);
+			cell.setVerticalAlignment(Element.ALIGN_LEFT);
+			table3.addCell(cell);
+
+			cell = new PdfPCell(new Phrase(String.valueOf(vr.lastMonthCount), fontChinese));
+			cell.setVerticalAlignment(Element.ALIGN_RIGHT);
+			table3.addCell(cell);
+			
+			cell = new PdfPCell(new Phrase(String.valueOf(vr.currentMonthCount), fontChinese));
+			cell.setVerticalAlignment(Element.ALIGN_RIGHT);
+			table3.addCell(cell);
+			
+			cell = new PdfPCell(new Phrase(String.valueOf(vr.lossPercent), fontChinese));
+			cell.setVerticalAlignment(Element.ALIGN_RIGHT);
+			table3.addCell(cell);
+		}
+
 		document.add(table);
 		document.add(table2);
+		document.add(table3);
 		paragraph = new Paragraph(" ");
 		paragraph.setAlignment(Element.ALIGN_CENTER);
 		document.add(paragraph);

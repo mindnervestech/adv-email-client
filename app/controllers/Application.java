@@ -8,6 +8,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -1163,10 +1168,8 @@ public class Application extends Controller implements Job {
 	    int year = cal.get(cal.YEAR);  
 	    int month = cal.get(cal.MONTH)+1; //zero-based  
 	    int preMonth = cal.get(cal.MONTH);
-	    System.out.println("year = "+year+"\nmonth = "+month);  
 	    String date = year+"-"+month+"-"+"01";
 	    String preDate = year+"-"+preMonth+"-"+"01";
-		System.out.println("date= "+preDate);
 		StringBuilder query = new StringBuilder();
 		List<SqlRow> resultList = null;
 		query.append("select distinct domain from mail_object_model");
@@ -1176,15 +1179,12 @@ public class Application extends Controller implements Job {
 			mailsToDisplay.domainName= sr.getString("domain");
 			SqlRow currentMonthCount= MailObjectModel.findMailObjectByDomainNameAndDate(mailsToDisplay.domainName, date);
 			int currentCount = currentMonthCount.getInteger("count");
-			System.out.println(currentCount);
 			SqlRow preMonthCount= MailObjectModel.findMailObjectByDomainNameAndDate(mailsToDisplay.domainName, preDate);
 			int preCount = preMonthCount.getInteger("count");
-			System.out.println(preCount);
 			float lossPercent;
 			if(preCount > currentCount){
 				lossPercent = 100-(currentCount*100/preCount);
 				if(lossPercent > percent ){
-					System.out.println(lossPercent);
 						String to = "mindnervestech@gmail.com";
 
 						final String from = "mindnervesdemo@gmail.com";
@@ -1223,6 +1223,61 @@ public class Application extends Controller implements Job {
 		}
 		return ok();
 	}
+	public static MailVariastion _mailVariations(int percent) {
+		MailVariastion mailVariastion = new MailVariastion();
+		List<VariationDetails> variationDetails = new ArrayList<VariationDetails>();
+		Date d = new Date();
+		Calendar cal = Calendar.getInstance();  
+	    int year = cal.get(cal.YEAR);  
+	    int month = cal.get(cal.MONTH)+1; //zero-based  
+	    int preMonth = cal.get(cal.MONTH);
+	    String date = year+"-"+month+"-"+"01";
+	    String preDate = year+"-"+preMonth+"-"+"01";
+		StringBuilder query = new StringBuilder();
+		List<SqlRow> resultList = null;
+		query.append("select distinct domain from mail_object_model");
+		resultList = Ebean.createSqlQuery(query.toString()).findList();
+		
+		//List<String> 
+		for(SqlRow sr:resultList){
+			MailsToDisplay mailsToDisplay= new MailsToDisplay();
+			mailsToDisplay.domainName= sr.getString("domain");
+			SqlRow currentMonthCount= MailObjectModel.findMailObjectByDomainNameAndDate(mailsToDisplay.domainName, date);
+			int currentCount = currentMonthCount.getInteger("count");
+			SqlRow preMonthCount= MailObjectModel.findMailObjectByDomainNameAndDate(mailsToDisplay.domainName, preDate);
+			int preCount = preMonthCount.getInteger("count");
+			float lossPercent;
+			VariationDetails variationDetail = new VariationDetails();
+			variationDetail.domain = mailsToDisplay.domainName;
+			variationDetail.lastMonthCount = preCount;
+			variationDetail.currentMonthCount = currentCount;
+			
+			if(preCount > currentCount){
+				lossPercent = 100-(currentCount*100/preCount);
+				if(lossPercent > 20 ){
+						//message.setText(String.valueOf(lossPercent));
+							variationDetail.lossPercent = lossPercent;
+					}
+			}else{
+				lossPercent = 100-(preCount*100/currentCount);
+				variationDetail.lossPercent = lossPercent;
+			}
+			
+			variationDetails.add(variationDetail);
+		}
+		mailVariastion.variationDetails = variationDetails;
+		return mailVariastion;
+	}
+	public static class MailVariastion{
+		public List<VariationDetails> variationDetails;
+	}
+	
+	public static class VariationDetails{
+		public String domain;
+		public int lastMonthCount;
+		public int currentMonthCount;
+		public float lossPercent;
+	}
 	public static class DailyReport {
 		public String domain;
 		public Integer count;
@@ -1253,6 +1308,9 @@ public class Application extends Controller implements Job {
 	public static class RecentDomainList{
 		public List<DailyReport> dailyReports;
 	}
+	public static class HostDomainList{
+		public List<DailyReport> dailyReports;
+	}
 	public static class AllDailyReport {
 		public MonthReport monthReport;
 		public TodayReport todayReport;
@@ -1260,6 +1318,8 @@ public class Application extends Controller implements Job {
 		public TotalUnprocessReport totalUnprocessReport;
 		public DomainList domainList;
 		public RecentDomainList recentDomainList;
+		public HostDomainList hostDomainList;
+		public MailVariastion mailVariastion;
 	}
 
 	final static String pdfPath = Play.application().configuration()
@@ -1268,15 +1328,54 @@ public class Application extends Controller implements Job {
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
 		System.out.println("new date = " + new Date());
-
+		MailVariastion mailVariastion = _mailVariations(20);
+		
+		HostDomainList hostDomainList = new HostDomainList();
+		java.sql.Connection conn = null;
+    	try {
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = null;
+			conn = DriverManager.getConnection("jdbc:mysql://enter-agora.com:3307/agora_scrape","agora_jagbir", "gane3Ecehema6a");
+			java.sql.Statement smt = conn.createStatement();
+			ResultSet userRS =  smt.executeQuery("select distinct(path) as path from hosts");
+			//List<UserRole>  userRole = new ArrayList<UserRole>();
+			//List<UserPermission> userPermission = new ArrayList<UserPermission>();
+			
+			
+			List<DailyReport> _dailyMonthReport = new ArrayList<DailyReport>();
+			while(userRS.next()) {
+				
+				URL aURL = new URL(userRS.getString("path"));
+				DailyReport report = new DailyReport();
+				report.domain = aURL.getAuthority();
+				//report.count = row.getInteger("count");
+				_dailyMonthReport.add(report);
+			}
+			hostDomainList.dailyReports = _dailyMonthReport;
+			
+    	}catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	finally {
+    		if(conn!=null) {
+    			try {
+					conn.close();
+				} catch (SQLException e) {
+				}
+    		}
+    	}
 		List<SqlRow> totalUnprocess = MailObjectModel.getTotalUnprocessReportCount();
 		List<SqlRow> thirtydays = MailObjectModel.getLastThirtyDaysMailRecord();
 		List<SqlRow> thirtydaysUnprocessed = MailObjectModel.getLastThirtyDaysUnprocessedMailRecord();
 		List<SqlRow> model = MailObjectModel.getTodaysMails();
 		List<SqlRow> distinctDomainList = MailObjectModel.getAllDistinctDomains();
 		List<SqlRow> recentDomainList = MailObjectModel.getRecentlyAddedDomains();
-		System.out.println("Todays Total Mail received");
-		System.out.println("Domain Name | count ");
 
 		MonthReport monthReport = new MonthReport();
 		List<DailyReport> dailyMonthReport = new ArrayList<DailyReport>();
@@ -1335,6 +1434,14 @@ public class Application extends Controller implements Job {
 		}
 		recentDomainList2.dailyReports = dailyMonthReport;
 		
+
+		for(DailyReport object1 : hostDomainList.dailyReports){
+		   for(DailyReport object2: domainList.dailyReports){
+		       if(object1.domain.equals(object2.domain)){
+		           object2.domain = object2.domain+ " (Present in Agora-D)";
+		       }
+		    }
+		}
 		AllDailyReport report = new AllDailyReport();
 		report.monthReport = monthReport;
 		report.todayReport = todayReport;
@@ -1342,11 +1449,14 @@ public class Application extends Controller implements Job {
 		report.totalUnprocessReport = totalUnprocessReport;
 		report.domainList = domainList;
 		report.recentDomainList = recentDomainList2;
+		report.hostDomainList = hostDomainList;
+		report.mailVariastion = mailVariastion;
 		DailyReportPDF.generateDailyReportPdf(report, pdfPath);
 
+		
 		try {
 
-			GMailServer.sendMail("Report", "Daily Report Pdf",
+		GMailServer.sendMail("Report", "Daily Report Pdf",
 					"admin@lab104.net", "Jagbir104",
 					"mindnervestech@gmail.com", pdfPath);
 			// GMailServer.sendMail();
