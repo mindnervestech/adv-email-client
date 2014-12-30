@@ -1584,7 +1584,10 @@ public class Application extends Controller implements Job {
 		for(SqlRow row: domainObjects){
 			list.add(row.getString("name"));
 		}
-		list.add(domainVM.parent);
+		if(!list.contains(domainVM.parent)){
+			list.add(domainVM.parent);
+		}
+		
 		List<DomainObject> domainObjects2 = DomainObject.getChildsOfDomain(id);
 		List<ChildVm> childVms = new ArrayList<>();
 		for(DomainObject object : domainObjects2){
