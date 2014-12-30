@@ -1468,4 +1468,175 @@ public class Application extends Controller implements Job {
 		System.out.println("Email Sent Succesfully..." + new Date());
 	}
 
+	public static class DomainTreeVM {
+		public Integer parent_id;
+		public String title;
+		public String label;
+		public int id;
+		public Integer domainId;
+		public Boolean collapsed = true;
+		public Integer count;
+		public List<DomainTreeVM> children = new ArrayList<DomainTreeVM>();
+	}
+	public static Result loadAllDomainTree(){
+		List<SqlRow> mailObjectModel = MailObjectModel.getAllDistinctDomains();
+		List<SqlRow> objects = DomainObject.getAllDistinctDomains();
+	
+		if(!objects.isEmpty()){
+			for(SqlRow object1 : mailObjectModel ){
+				boolean flag = false;
+			   for(SqlRow object2: objects ){
+			       if(object1.getString("domain").equals(object2.getString("domain"))){
+			           flag = true;
+			       }
+			    }
+			   if(!flag){
+		    	   saveNewDomainObject(object1.getString("domain"));
+		       }
+			}
+		}else{
+			for(SqlRow object1 : mailObjectModel ){
+				saveNewDomainObject(object1.getString("domain"));
+			}
+		}
+		List<DomainTreeVM> list = new ArrayList<DomainTreeVM>();
+		List<SqlRow> models = DomainObject.getAllDomains();
+		
+		for (SqlRow sr : models) {
+			DomainTreeVM _item = new DomainTreeVM();
+			_item.title = sr.getString("name");
+			_item.id = sr.getInteger("id");
+			int count = MailObjectModel.getDomainMailCountByName(sr.getString("name"));
+			_item.count = count;
+			_item.label = sr.getString("name");
+			_item.parent_id = sr.getInteger("parent_id");
+			List<DomainObject> domainObject = DomainObject.getChildsOfDomain(sr.getInteger("id"));
+			for(DomainObject object : domainObject){
+				
+				DomainTreeVM vm = new DomainTreeVM();
+				vm.label = object.name;
+				/*List<DomainObject> _domainObject = DomainObject.getChildsOfDomain(Integer.parseInt(object.id.toString()));
+				for(DomainObject _object : domainObject){
+					DomainTreeVM _vm = new DomainTreeVM();
+					vm.label = _object.name;
+					
+				}*/
+				
+				vm.children = getChild(object);
+				vm.parent_id = object.parentId;
+				vm.title = object.name;
+				vm.id = Integer.parseInt(object.id.toString());
+				_item.children.add(vm);
+			}
+			list.add(_item);
+		}
+		return ok(Json.toJson(list));
+	}
+	
+	public static void saveNewDomainObject(String domain){
+	   DomainObject domainObject = new DomainObject();
+ 	   domainObject.name = domain;
+ 	   domainObject.save();
+ 	   domainObject.parentId = Integer.parseInt(domainObject.id.toString());
+ 	   domainObject.update();
+	}
+	private static List<DomainTreeVM> getChild(DomainObject object) {
+		List<DomainTreeVM> childVms = new ArrayList<>();
+		List<DomainObject> _domainObject = DomainObject.getChildsOfDomain(Integer.parseInt(object.id.toString()));
+		for(DomainObject _object : _domainObject){
+			DomainTreeVM _vm = new DomainTreeVM();
+			_vm.label = _object.name;
+			_vm.parent_id = _object.parentId;
+			_vm.title = _object.name;
+			_vm.id = Integer.parseInt(_object.id.toString());
+			_vm.children = getChild(_object);
+			childVms.add(_vm);
+		}	
+		return childVms;
+	}
+
+	
+	public static class SubDomainVM{
+		public int id;
+		public String name;
+		public int count;
+		public String parent;
+		public List<String> domainList;
+		public List<ChildVm> allChildList;
+		public List<ChildVm> child;
+		
+	}
+	public static class ChildVm {
+		public int id;
+		public String label;
+	}
+	public static Result loadsubmedia(int id){
+		
+		DomainObject domainObject = DomainObject.getDomainById(id);
+		SubDomainVM domainVM = new SubDomainVM();
+		domainVM.id = Integer.parseInt(domainObject.id.toString());
+		domainVM.name = domainObject.name;
+		int count = MailObjectModel.getDomainMailCountByName(domainObject.name);
+		domainVM.count = count;
+		domainVM.parent = DomainObject.getDomainById(domainObject.parentId).name;
+		List<SqlRow> domainObjects = DomainObject.getAllDomains();
+		List<String> list = new ArrayList<String>();
+		for(SqlRow row: domainObjects){
+			list.add(row.getString("name"));
+		}
+		list.add(domainVM.parent);
+		List<DomainObject> domainObjects2 = DomainObject.getChildsOfDomain(id);
+		List<ChildVm> childVms = new ArrayList<>();
+		for(DomainObject object : domainObjects2){
+			ChildVm childVm = new ChildVm();
+			childVm.id = Integer.parseInt(object.id.toString());
+			//childVm.label = object.name;
+			childVms.add(childVm);
+		}
+		domainVM.child = childVms;
+		
+		childVms = new ArrayList<>();
+		List<DomainObject> _domainObjects = DomainObject.getAllChildList(id);
+		for(DomainObject object : _domainObjects){
+			ChildVm childVm = new ChildVm();
+			childVm.id = Integer.parseInt(object.id.toString());
+			childVm.label = object.name;
+			childVms.add(childVm);
+		}
+		domainVM.allChildList = childVms;
+		domainVM.domainList = list;
+		return ok(Json.toJson(domainVM));
+	}
+	
+	public static Result assignParent(){
+		JsonNode json = request().body().asJson();
+		SubDomainVM domainVM = Json.fromJson(json, SubDomainVM.class);
+		DomainObject _domainObject = DomainObject.getDomainByName(domainVM.parent);
+		DomainObject domainObject = DomainObject.getDomainById(domainVM.id);
+		domainObject.parentId = Integer.parseInt(_domainObject.id.toString());
+		domainObject.save();
+		return ok();
+	}
+	public static class AssignedChild {
+		public int parent;
+		public List<ChildVm> childData;
+	}
+	public static Result assignChild(){
+		JsonNode json = request().body().asJson();
+		AssignedChild assignedChild = Json.fromJson(json, AssignedChild.class);
+		DomainObject domainObject = DomainObject.getDomainById(assignedChild.parent);
+		/*domainObject.parentId = assignedChild.parent;
+		domainObject.save();*/
+		List<DomainObject> domainObjects = DomainObject.getChildsOfDomain(Integer.parseInt(domainObject.id.toString()));
+		for(DomainObject object : domainObjects){
+			object.parentId = Integer.parseInt(object.id.toString());
+			object.save();
+		}
+		for(ChildVm vm : assignedChild.childData){
+			DomainObject object = DomainObject.getDomainById(vm.id);
+				object.parentId = Integer.parseInt(domainObject.id.toString());
+				object.save();
+		}
+		return ok();
+	}
 }

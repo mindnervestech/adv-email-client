@@ -85,5 +85,12 @@ GET     /showTables/:id                     controllers.ShowTab.showTables(id :L
 GET		/saveEmailSearchSet				 	controllers.Application.saveEmailSearchSet()
 GET		/get-table-cover-image-by-id/:id	controllers.ShowTab.getTableCoverImageByID(id :Long)
 
+
+GET     /loadmedia                          controllers.Application.loadAllDomainTree()
+GET     /loadsubmedia/:id                   controllers.Application.loadsubmedia(id : Integer)
+POST    /assignParent                       controllers.Application.assignParent()
+POST    /assignChild                        controllers.Application.assignChild()
+
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

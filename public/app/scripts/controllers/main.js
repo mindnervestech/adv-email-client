@@ -1269,3 +1269,66 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 		});
 	};
 });
+emailclient.controller('DomainStatisticsController',function($scope, $location,$http, $modal,$sce, usSpinnerService){
+	
+	$scope.roleList = [] ;
+	$scope.success;
+	$scope.failure;
+	$scope.isDomain;
+	$scope.domain;
+	$scope.editIdCat = -1;
+	$scope.childModel = [];
+	$scope.childdata = []
+	$scope.loadSubSubscription = function (data) {
+		usSpinnerService.spin('loading...');
+		$scope.editIdCat = -1;
+		if(data!=null) {
+			$http.get("loadsubmedia/"+data)
+			.success(function(data, status, headers, config) {
+				$scope.success=false;
+				$scope.failure=false;
+				$scope.isDomain=true;
+				$scope.domain=data;
+				$scope.childModel = data.child;
+				$scope.childdata = data.allChildList;
+				usSpinnerService.stop('loading...');
+			});
+		}
+	};
+	$scope.loadmedia = function () {
+		usSpinnerService.spin('loading...');
+		$http.get('loadmedia')
+		.success(function(data, status, headers, config) {
+			if(data.length>0) {
+				$scope.roleList=data;
+				
+			} 
+			usSpinnerService.stop('loading...');
+		});
+	};
+	$scope.assignedChild = {
+			parent :'',
+			childData :[]
+	};
+	$scope.onParentSelect = function(domain) {
+		usSpinnerService.spin('loading...');
+		$http.post('/assignParent', domain)
+		.success(function(_data) {
+			$scope.loadmedia();
+		});
+		usSpinnerService.stop('loading...');
+	}
+	
+	
+	$scope.onChildSelect = function(id) {
+		usSpinnerService.spin('loading...');
+		$scope.assignedChild.parent = id;
+		$scope.assignedChild.childData = $scope.childModel;
+		$http.post('/assignChild', $scope.assignedChild)
+		.success(function(_data) {
+			$scope.loadmedia();
+		});
+		usSpinnerService.stop('loading...');
+	}; 
+	
+});

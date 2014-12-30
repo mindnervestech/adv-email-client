@@ -220,4 +220,7 @@ public class MailObjectModel extends Model{
 	public static List<SqlRow> getRecentlyAddedDomains() {
 		return Ebean.createSqlQuery("select distinct(domain) as domain from mail_object_model where  sent_date >=  (NOW() - INTERVAL 1 MONTH ) and domain NOT IN ( select distinct(domain) as domain from mail_object_model where sent_date < NOW() - INTERVAL 1 MONTH)").findList();
 	}
+	public static int getDomainMailCountByName(String name) {
+		return find.where().eq("domain", name).findRowCount();
+	}
 }
