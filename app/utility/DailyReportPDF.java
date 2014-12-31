@@ -79,7 +79,7 @@ public class DailyReportPDF {
 		DomainList domainList = report.domainList;
 		HostDomainList hostDomainList = report.hostDomainList;
 		RecentDomainList recentDomainList = report.recentDomainList;
-		MailVariastion mailVariastion = report.mailVariastion;
+		MailVariastion mailVariastion = report.mailVariation;
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		DateFormat df1 = new SimpleDateFormat("HH:mm");
 

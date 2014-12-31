@@ -1319,7 +1319,7 @@ public class Application extends Controller implements Job {
 		public DomainList domainList;
 		public RecentDomainList recentDomainList;
 		public HostDomainList hostDomainList;
-		public MailVariastion mailVariastion;
+		public MailVariastion mailVariation;
 	}
 
 	final static String pdfPath = Play.application().configuration()
@@ -1450,7 +1450,8 @@ public class Application extends Controller implements Job {
 		report.domainList = domainList;
 		report.recentDomainList = recentDomainList2;
 		report.hostDomainList = hostDomainList;
-		report.mailVariastion = mailVariastion;
+		report.mailVariation = mailVariastion;
+		
 		DailyReportPDF.generateDailyReportPdf(report, pdfPath);
 
 		
@@ -1642,4 +1643,147 @@ public class Application extends Controller implements Job {
 		}
 		return ok();
 	}
+	
+	public static Result getReport() throws JobExecutionException {
+		MailVariastion mailVariastion = _mailVariations(20);
+		
+		HostDomainList hostDomainList = new HostDomainList();
+		java.sql.Connection conn = null;
+    	try {
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = null;
+			conn = DriverManager.getConnection("jdbc:mysql://enter-agora.com:3307/agora_scrape","agora_jagbir", "gane3Ecehema6a");
+			java.sql.Statement smt = conn.createStatement();
+			ResultSet userRS =  smt.executeQuery("select distinct(path) as path from hosts");
+			//List<UserRole>  userRole = new ArrayList<UserRole>();
+			//List<UserPermission> userPermission = new ArrayList<UserPermission>();
+			
+			
+			List<DailyReport> _dailyMonthReport = new ArrayList<DailyReport>();
+			while(userRS.next()) {
+				
+				URL aURL = new URL(userRS.getString("path"));
+				DailyReport report = new DailyReport();
+				report.domain = aURL.getAuthority();
+				//report.count = row.getInteger("count");
+				_dailyMonthReport.add(report);
+			}
+			hostDomainList.dailyReports = _dailyMonthReport;
+			
+    	}catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	finally {
+    		if(conn!=null) {
+    			try {
+					conn.close();
+				} catch (SQLException e) {
+				}
+    		}
+    	}
+		List<SqlRow> totalUnprocess = MailObjectModel.getTotalUnprocessReportCount();
+		List<SqlRow> thirtydays = MailObjectModel.getLastThirtyDaysMailRecord();
+		List<SqlRow> thirtydaysUnprocessed = MailObjectModel.getLastThirtyDaysUnprocessedMailRecord();
+		List<SqlRow> model = MailObjectModel.getTodaysMails();
+		List<SqlRow> distinctDomainList = MailObjectModel.getAllDistinctDomains();
+		List<SqlRow> recentDomainList = MailObjectModel.getRecentlyAddedDomains();
+
+		MonthReport monthReport = new MonthReport();
+		List<DailyReport> dailyMonthReport = new ArrayList<DailyReport>();
+		for (SqlRow row : thirtydays) {
+			DailyReport report = new DailyReport();
+			report.domain = row.getString("domain");
+			report.count = row.getInteger("count");
+			dailyMonthReport.add(report);
+		}
+		monthReport.dailyReports = dailyMonthReport;
+		
+		dailyMonthReport = new ArrayList<DailyReport>();
+		TodayReport todayReport = new TodayReport();
+		for (SqlRow row : model) {
+			DailyReport report = new DailyReport();
+			report.domain = row.getString("domain");
+			report.count = row.getInteger("count");
+			dailyMonthReport.add(report);
+		}
+		todayReport.dailyReports = dailyMonthReport;
+		
+		MonthUnprocessReport monthUnprocessReport = new MonthUnprocessReport();
+		dailyMonthReport = new ArrayList<DailyReport>();
+		for (SqlRow row : thirtydaysUnprocessed) {
+			DailyReport report = new DailyReport();
+			report.count = row.getInteger("count");
+			dailyMonthReport.add(report);
+		}
+		monthUnprocessReport.dailyReports = dailyMonthReport;
+		
+		TotalUnprocessReport totalUnprocessReport = new TotalUnprocessReport();
+		dailyMonthReport = new ArrayList<DailyReport>();
+		for (SqlRow row : totalUnprocess) {
+			DailyReport report = new DailyReport();
+			report.count = row.getInteger("count");
+			dailyMonthReport.add(report);
+		}
+		totalUnprocessReport.dailyReports = dailyMonthReport;
+		
+		DomainList domainList = new DomainList();
+		dailyMonthReport = new ArrayList<DailyReport>();
+		for (SqlRow row : distinctDomainList) {
+			DailyReport report = new DailyReport();
+			report.domain = row.getString("domain");
+			dailyMonthReport.add(report);
+		}
+		domainList.dailyReports = dailyMonthReport;
+		
+
+		RecentDomainList recentDomainList2 = new RecentDomainList();
+		dailyMonthReport = new ArrayList<DailyReport>();
+		for (SqlRow row : recentDomainList) {
+			DailyReport report = new DailyReport();
+			report.domain = row.getString("domain");
+			dailyMonthReport.add(report);
+		}
+		recentDomainList2.dailyReports = dailyMonthReport;
+		
+
+		for(DailyReport object1 : hostDomainList.dailyReports){
+		   for(DailyReport object2: domainList.dailyReports){
+		       if(object1.domain.equals(object2.domain)){
+		           object2.domain = object2.domain+ " (Present in Agora-D)";
+		       }
+		    }
+		}
+		AllDailyReport report = new AllDailyReport();
+		report.monthReport = monthReport;
+		report.todayReport = todayReport;
+		report.monthUnprocessReport = monthUnprocessReport;
+		report.totalUnprocessReport = totalUnprocessReport;
+		report.domainList = domainList;
+		report.recentDomainList = recentDomainList2;
+		report.hostDomainList = hostDomainList;
+		report.mailVariation = mailVariastion;
+		
+		//DailyReportPDF.generateDailyReportPdf(report, pdfPath);
+
+		
+		try {
+
+		/*GMailServer.sendMail("Report", "Daily Report Pdf",
+					"admin@lab104.net", "Jagbir104",
+					"mindnervestech@gmail.com", pdfPath);*/
+			// GMailServer.sendMail();
+			// EmailUtils.send();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return ok(Json.toJson(report));
+	}
+	
 }

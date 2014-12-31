@@ -52,6 +52,10 @@ angular.module('email-client', [
     	  templateUrl: '/assets/app/views/domainStatistics.html',
           controller: 'DomainStatisticsController'
       })
+      .when('/dailyData',{
+    	  templateUrl: '/assets/app/views/dailyPDFHtml.html',
+          controller: 'DailyController'
+      })
       .otherwise({
           redirectTo: '/'
       });

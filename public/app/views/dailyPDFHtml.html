@@ -1,0 +1,90 @@
+<html>
+<body>
+<div style="background: white;margin-top: 10%;">
+	<br><br>
+	<div><b style="margin-left: 5%;font-size: large;">Today's Received Mail Count</b></div>
+	<table class="table" border="2" style="width:90%;margin-left: 5%;">
+		<th>Domain Name</th>
+		<th>Mail Count</th>
+		<tr ng-repeat="obj in report.todayReport.dailyReports">
+			<td style="width: 50%;">{{obj.domain}}</td>
+			<td>{{obj.count}}</td>
+		</tr>
+	</table>
+	<br><br>
+	<div><b style="margin-left: 5%;font-size: large;">Last 30 Day's Mail Count By Domain Name</b></div>
+	<table class="table" border="2" style="width:90%;margin-left: 5%;">
+		<th>Domain Name</th>
+		<th>Mail Count</th>
+		<tr ng-repeat="obj in report.monthReport.dailyReports">
+			<td style="width: 50%;">{{obj.domain}}</td>
+			<td>{{obj.count}}</td>
+		</tr>
+	</table>
+	
+	<br><br>
+	<div><b style="margin-left: 5%;font-size: large;">Last 30 Day's UnProcessed Mail Count</b></div>
+	<table class="table" border="2" style="width:90%;margin-left: 5%;">
+		<tr>
+			<td style="width: 50%;">Count</td>
+			<td>{{report.monthUnprocessReport.dailyReports[0].count}}</td>
+		</tr>
+	</table>
+	
+	<br><br>
+	<div><b style="margin-left: 5%;font-size: large;">Total UnProcessed Mail Count</b></div>
+	<table class="table" border="2" style="width:90%;margin-left: 5%;">
+		<tr>
+			<td style="width: 50%;">Count</td>
+			<td>{{report.totalUnprocessReport.dailyReports[0].count}}</td>
+		</tr>
+	</table>
+	
+	<br><br>
+	<div><b style="margin-left: 5%;font-size: large;">Domain List</b></div>
+	<table class="table" style="margin-left: 53px;">
+	<tr>
+		<td style="border-top:0px;width:572px;">
+			<table class="table" border="2" style="">
+				<th>Agora-D Domain Name</th>
+				<tr ng-repeat="obj in report.hostDomainList.dailyReports">
+					<td>{{obj.domain}}</td>
+				</tr>
+			</table>
+		</td>
+		<td style="border-top:0px;">
+			<table class="table" border="2" style="width:86%;margin-left: -18px;">
+				<th>Agora-E Domain Name</th>
+				<tr ng-repeat="obj in report.domainList.dailyReports">
+					<td>{{obj.domain}}</td>
+				</tr>
+			</table>
+	   </td>	
+	</tr>
+	</table>
+	<br><br>
+	<div><b style="margin-left: 5%;font-size: large;">Recently Added Domain List</b></div>
+	<table class="table" border="2" style="width:555px;margin-left: 5%;">
+		<tr ng-repeat="obj in report.recentDomainList.dailyReports">
+			<td style="width: 50%;">{{obj.domain}}</td>
+		</tr>
+	</table>
+	
+	<br><br>
+	<div><b style="margin-left: 5%;font-size: large;">Mail Variations</b></div>
+	<table class="table" border="2" style="width:90%;margin-left: 5%;">
+		<th>Domain</th>
+		<th>Last Month</th>
+		<th>Current Month</th>
+		<th>% Loss</th>
+		<tr ng-repeat="obj in report.mailVariation.variationDetails">
+			<td>{{obj.domain}}</td>
+			<td>{{obj.lastMonthCount}}</td>
+			<td>{{obj.currentMonthCount}}</td>
+			<td>{{obj.lossPercent}}</td>
+		</tr>
+	</table>
+	<br><br>
+</div>
+</body>
+</html>

@@ -1332,3 +1332,13 @@ emailclient.controller('DomainStatisticsController',function($scope, $location,$
 	}; 
 	
 });
+
+emailclient.controller('DailyController',function($scope, $http, usSpinnerService){
+	usSpinnerService.spin('loading...');
+	$http.get('getReport')
+	.success(function(data, status, headers, config) {
+		$scope.report = data;
+		console.log($scope.report);
+		usSpinnerService.stop('loading...');
+	});
+});

@@ -90,6 +90,7 @@ GET     /loadmedia                          controllers.Application.loadAllDomai
 GET     /loadsubmedia/:id                   controllers.Application.loadsubmedia(id : Integer)
 POST    /assignParent                       controllers.Application.assignParent()
 POST    /assignChild                        controllers.Application.assignChild()
+GET		/getReport							controllers.Application.getReport()
 
 
 # Map static resources from the /public folder to the /assets URL path
