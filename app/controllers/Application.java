@@ -1183,43 +1183,47 @@ public class Application extends Controller implements Job {
 			int preCount = preMonthCount.getInteger("count");
 			float lossPercent;
 			if(preCount > currentCount){
-				lossPercent = 100-(currentCount*100/preCount);
-				if(lossPercent > percent ){
-						String to = "mindnervestech@gmail.com";
-
-						final String from = "mindnervesdemo@gmail.com";
-						String host = "smtp.gmail.com";
-						final String password = "mindnervesadmin";
-						String port = "587";
-						Properties properties = new Properties();
-						properties.put("mail.smtp.starttls.enable", "true");
-						properties.put("mail.smtp.host", host);
-						properties.put("mail.smtp.auth", "true"); // password
-						properties.put("mail.smtp.port", port);
-						Session session = Session.getInstance(properties,
-						new javax.mail.Authenticator() {
-						protected PasswordAuthentication getPasswordAuthentication() {
-							return new PasswordAuthentication(from,
-									password);
+				if(preCount != 0){
+					lossPercent = 100-(currentCount*100/preCount);
+					
+					if(lossPercent > percent ){
+							String to = "mindnervestech@gmail.com";
+	
+							final String from = "mindnervesdemo@gmail.com";
+							String host = "smtp.gmail.com";
+							final String password = "mindnervesadmin";
+							String port = "587";
+							Properties properties = new Properties();
+							properties.put("mail.smtp.starttls.enable", "true");
+							properties.put("mail.smtp.host", host);
+							properties.put("mail.smtp.auth", "true"); // password
+							properties.put("mail.smtp.port", port);
+							Session session = Session.getInstance(properties,
+							new javax.mail.Authenticator() {
+							protected PasswordAuthentication getPasswordAuthentication() {
+								return new PasswordAuthentication(from,
+										password);
+								}
+							});
+							try {
+								Message message = new MimeMessage(session);
+								message.setFrom(new InternetAddress(from));
+								message.addRecipients(Message.RecipientType.TO,
+										InternetAddress.parse(to));
+								message.setSubject("MAIL VARIATION");
+								message.setText(String.valueOf(lossPercent));
+								Transport.send(message);
+								System.out.println("Sent message successfully 21....");
+							} catch (Exception mex) {
+								mex.printStackTrace();
 							}
-						});
-						try {
-							Message message = new MimeMessage(session);
-							message.setFrom(new InternetAddress(from));
-							message.addRecipients(Message.RecipientType.TO,
-									InternetAddress.parse(to));
-							message.setSubject("MAIL VARIATION");
-							message.setText(String.valueOf(lossPercent));
-							Transport.send(message);
-							System.out.println("Sent message successfully 21....");
-						} catch (Exception mex) {
-							mex.printStackTrace();
 						}
 					}
-			}else{
-				lossPercent = 100-(preCount*100/currentCount);
-			}
-			
+				}else{
+					if(currentCount != 0){
+						lossPercent = 100-(preCount*100/currentCount);
+					}
+				}
 		}
 		return ok();
 	}
@@ -1253,14 +1257,18 @@ public class Application extends Controller implements Job {
 			variationDetail.currentMonthCount = currentCount;
 			
 			if(preCount > currentCount){
-				lossPercent = 100-(currentCount*100/preCount);
-				if(lossPercent > 20 ){
-						//message.setText(String.valueOf(lossPercent));
-							variationDetail.lossPercent = lossPercent;
-					}
+				if(preCount != 0){
+					lossPercent = 100-(currentCount*100/preCount);
+					if(lossPercent > 20 ){
+							//message.setText(String.valueOf(lossPercent));
+								variationDetail.lossPercent = lossPercent;
+						}
+				}
 			}else{
-				lossPercent = 100-(preCount*100/currentCount);
-				variationDetail.lossPercent = lossPercent;
+				if(currentCount != 0){
+					lossPercent = 100-(preCount*100/currentCount);
+					variationDetail.lossPercent = lossPercent;
+				}
 			}
 			
 			variationDetails.add(variationDetail);
