@@ -1294,6 +1294,505 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 		});
 	};
 });
+
+emailclient.controller('ShowCalendarController',function($scope, $location,$http, $modal,$sce,$upload, usSpinnerService){
+	$scope.predicate = 'relevance';
+	$scope.reverse=false;
+	$scope.dateReverse=true;
+	$scope.subjectReverse=true;
+	$scope.dateReverse=true;
+	$scope.isHide = true;
+	$scope.DivShow=false;
+	$scope.feedbackSuccess = false;
+	console.log($scope.DivShow);
+
+	$scope.databaseSize;
+	$scope.mailFolderSize;
+	$scope.isStatics = false;
+	$scope.seeMailInfo = [];
+	
+	$scope.init = function(index) {
+			$(".div"+index).hide();
+			$(".numDiv"+index).show();
+	};
+	
+	$scope.divShow = function (i,divShow, data) {
+		$scope.DivShow = divShow;
+		if($(".div"+i).is(':visible')) {
+			$(".div"+i).hide();
+			$(".numDiv"+i).show();
+		} else {
+			
+			$(".div"+i).show();
+			$(".numDiv"+i).hide();
+			
+		}
+	};
+	
+	$scope.onFileSelect = function($files) {
+		$scope.selectedFile = $files;
+	}
+	$scope.isUploaded = false;
+	$scope.uploadFile = function(channelName) {
+		$scope.channelName = channelName;
+		$upload.upload({
+			url: '/uploadPDF',
+			method: 'POST',
+			file: $scope.selectedFile,
+			data: {"channelName":$scope.channelName},
+			fileFormDataName: 'pdfFile'
+		}).progress(function(evt) {
+			
+	    }).success(function(data, status, headers, config) {
+	    	console.log('success');
+	    	$scope.isUploaded = true;
+	    }).error(function(data, status, headers, config) {
+	    	
+	    });
+	}
+	
+	
+	$scope.mailInfo = function (data) {
+		console.log(data);
+		$scope.isUploaded = false;
+		$http.get('/getEmailInfo/'+data)
+		.success(function(data, status, headers, config) {
+			console.log(data);
+			$scope.seeMailInfo = {
+					channel_name:data.channel_name,
+					history:data.history,
+					last_renewed:data.last_renewed,
+					media_kit_url:data.media_kit_url,
+					file_url:data.file_url,
+					username:data.username,
+					password:data.password,
+					subscriber:data.subscriber,
+					publisher_url:data.publisher_url,
+					notes:data.notes,
+					publisher:data.publisher
+					
+				}
+			modalInstance = $modal.open({
+			      templateUrl: 'manage-edit-user.html',
+			      scope : $scope
+			    });
+		});
+		
+	
+	};
+	$scope.saveMailInfo = function (col_name, record, channel_name) {
+		$http.get('/saveEmailInfo/'+col_name+'/'+record+'/'+channel_name)
+		.success(function(data, status, headers, config) {
+			
+		});
+	};
+	$scope.saveRenewedDate = function (col_name, record, channel_name) {
+		if(record != null){
+			$http.get('/saveRenewedDate/'+col_name+'/'+record+'/'+channel_name)
+				.success(function(data, status, headers, config) {
+			
+			});
+		}
+	};
+	/*  Below Section for modal  */
+	/*if($location.path()=="/admin") {
+		$scope.isadmin = true;
+	}*/
+	  var modalInstance;
+	  $scope.open = function () {
+		    modalInstance = $modal.open({
+		      templateUrl: '/assets/app/views/myModal.html',
+		      scope : $scope
+		    });
+	  };
+	  $scope.s1 = null;
+	  $scope.ok = function () {
+		  usSpinnerService.spin('loading...');
+		  $http.get('/saveEmailSearchSet',{params:$scope.searchForm})
+			.success(function(data, status, headers, config){
+				$scope.saveSearchSets = data.saveSearchSets;
+				usSpinnerService.stop('loading...');
+			});
+	    modalInstance.close();
+	  };
+	  $scope.cancel = function () {
+	    modalInstance.dismiss('cancel');
+	  };
+    /*  Above Section for modal  */  
+	 
+	  /*  below Section for email popup modal  */
+	  $scope.getWordCloudById = function (id) {
+		 $scope.wordCloudId = id;
+		   //$scope.searchForm.popUpId = popUpId;
+		  usSpinnerService.spin('loading...');
+		  $http.get('/get-word-cloud-by-id/'+id)
+			.success(function(data, status, headers, config) {
+				
+				//$('#wordcloudimage').attr('src','data:image/svg+xml,'+data);
+				$scope.wc = 'data:image/svg+xml,'+data;
+				usSpinnerService.stop('loading...');
+				modalInstance = $modal.open({
+				      templateUrl: '/assets/app/views/wordcloud.html',
+				      scope : $scope
+				    });
+			});
+		  
+	  };
+	  $scope.removeEmailData=function(id,index)
+	  {
+		  //alert("in remove "+id+" "+indexId);
+		  if(confirm("Are you sure you want to delete this mail? Yes/No")) {
+		  $http.get('/deletemailbyid/'+id)
+			.success(function(data, status, headers, config){
+				$scope.emails.splice(index,1);
+				//alert("data "+data);
+				//$scope.submitSearch();
+				/*if(data)
+				{
+					//alert("in if");
+					$scope.getBlackList();
+				}*/
+			});
+		  }
+	  };
+	  $scope.downloadPDF =function(popUpId) {
+		  $http.get('/downloadPdf/'+popUpId, {params:$scope.searchForm})
+			.success(function(data, status, headers, config){
+				$('.modal-headerPopUp').append(data.htmlToShowMailPopUp);
+				usSpinnerService.stop('loading...');
+			});
+	  };
+	  $scope.currentIndex = -1;
+	  $scope.showPopUpModal=function (popUpId,index) {
+		  $scope.currentIndex = index;
+		  console.log("$scope.currentIndex :"+$scope.currentIndex);
+		  $scope.searchForm.popUpId = popUpId;
+		  $scope.openPopup();
+		  
+	  };
+	  $scope.isFromShowTab = false;
+	  $scope.isHiddenMail = false;
+	  $scope.openPopup = function() {
+		  usSpinnerService.spin('loading...');
+		  $http.get('/showPopUpModal', {params:$scope.searchForm})
+			.success(function(data, status, headers, config){
+				$('.modal-bodyPopUp').append(data.htmlToShowMailPopUp);
+				usSpinnerService.stop('loading...');
+			});
+		  modalInstance = $modal.open({
+		      templateUrl: '/assets/app/views/myEmailModal.html',
+		      scope : $scope
+		    });
+	  };
+	  
+	  $scope.showPopUpModalShowTab = function(popUpId,status) {
+		  $scope.isFromShowTab = true;
+		  if($("#emailId"+popUpId).attr('class')=='tip-bottom') {
+			  $scope.isHiddenMail = false;
+		  } else {
+			  $scope.isHiddenMail = true;
+		  }
+		  
+		  $scope.searchForm.popUpId = popUpId;
+		  $scope.openPopup();
+	  };
+	  
+	  $scope.trustSrc = function (url) {
+		  return $sce.trustAsResourceUrl(url);
+	  }
+	  
+	  $scope.currentPage = 0;
+	    $scope.pageSize = 6;
+	    $scope.data = [];
+	    $scope.s1 = [];
+	    for (var i=0; i<45; i++) {
+	        $scope.data.push("Item11 "+i);
+	    }
+		
+	  $scope.getlinkImageByID1=function (popUpId) {
+		  $scope.searchForm.popUpId = popUpId;
+		  usSpinnerService.spin('loading...');
+		  $http.get('/get-link-image-by-id/'+popUpId, {params:$scope.searchForm})
+			.success(function(data, status, headers, config){
+				$scope.s1= data;
+				$('.modal-bodyPopUp').append(data.htmlToShowMailPopUp);
+				usSpinnerService.stop('loading...');
+			});
+		  modalInstance = $modal.open({
+		      templateUrl: '/assets/app/views/iframe.html',
+		      scope : $scope
+		    });
+	  };
+	  
+	  $scope.numberOfPages=function(){
+	        return Math.ceil($scope.s1.length/$scope.pageSize);                
+	    }
+
+	
+	  
+	  
+    /*  Above Section for email popup modal  */ 
+	
+	  /*  below Section for email images modal  */ 
+	  $scope.showPopUpImages=function (eIdForImages) {
+		  $scope.searchForm.eIdForImages = eIdForImages;
+		  usSpinnerService.spin('loading...');
+		  $http.get('/showPopUpForImages', {params:$scope.searchForm})
+			.success(function(data, status, headers, config){
+				$('.modal-headerPopUp').append(data.htmlToShowMailPopUp);
+				usSpinnerService.stop('loading...');
+			});
+		  modalInstance = $modal.open({
+		      templateUrl: '/assets/app/views/myEmailModal.html',
+		      scope : $scope
+		    });
+	  };
+    /*  Above Section for email images modal  */ 
+	  
+	  /*  below Section for email links modal  */ 
+	  $scope.showPopUpLinks=function (eIdForLinks) {
+		  $scope.searchForm.eIdForLinks = eIdForLinks;
+		  $http.get('/showPopUpForLinks', {params:$scope.searchForm})
+			.success(function(data, status, headers, config){
+				$('.modal-headerPopUp').append(data.htmlToShowMailPopUp);
+			});
+		  modalInstance = $modal.open({
+		      templateUrl: '/assets/app/views/myEmailModal.html',
+		      scope : $scope
+		    });
+	  };
+    /*  Above Section for email links modal  */ 
+	  
+	  
+	/*  Below Section for pagination  */
+	$scope.totalItems = 0;
+	$scope.currentPage = 0;
+	$scope.prevPage = -1;
+	$scope.maxSize = 5;
+	
+	
+	$scope.$watch('currentPage', function(newPage){
+		if($scope.toggle && !($scope.currentPage == 0 && $scope.searchForm.page == 0)) {
+		$scope.searchForm.page =  $scope.currentPage ;
+		
+			  search(function(data){
+					$scope.emails = data.emails;
+					$scope.hasSearchResult = data.emails.length != 0;
+					$scope.noOFPages = data.noOFPages;
+					$scope.totalItems = data.noOFPages * $scope.searchForm.rowCount ; // Added for Pagination
+					usSpinnerService.stop('loading...');
+			  });
+		  }
+	});
+	
+	$scope.domainCounts = [];
+	$scope.$watch('allChecked', function(value){
+		if($scope.domainCounts) {
+			for(var i=0 ; i < $scope.domainCounts.length; i++) {
+				$scope.domainCounts[i].sel = value; 
+			}
+		}
+	});
+	  
+	/*  Above Section for pagination  */  
+	  
+	$scope.noOfRows = 'Per Page';
+	$scope.sortBy = 'Sort By';
+	$scope.searchForm= {
+				from : '',
+				to : new Date(),
+				domain : [],
+				domainChecked:"",
+				cntKeyWord : "",
+				subKeyWord : "",
+				page : 0,
+				saveSearchId: 0,
+				rowCount : 10,
+				url:"",
+				popUpId:0,
+				eIdForImages :0,
+				eIdForLinks : 0,
+				saveSearchName :"",
+				levelOnekeyWord :""
+	}
+	
+	$scope.subjectSort = function(reverse){
+		$scope.predicate='subject';
+		$scope.subjectReverse=reverse;
+		$scope.reverse=reverse;
+		$scope.submitSearch();
+	};
+	$scope.dateSort = function(reverse){
+		$scope.predicate='sentDate';
+		$scope.dateReverse=reverse;
+		$scope.reverse=reverse;
+		$scope.submitSearch();
+	};
+	$scope.domainSort = function(reverse){
+		$scope.predicate='domain';
+		$scope.domainReverse=reverse;
+		$scope.reverse=reverse;
+		$scope.submitSearch();
+	};
+	$scope.relevanceSort = function(){
+		$scope.predicate='relevance';
+		$scope.reverse;
+		$scope.submitSearch();
+	};
+	$scope.submitSearch = function(count,sortText) {
+		if(sortText == null){
+			$scope.sortBy = 'Sort By';
+		}else{
+			$scope.sortBy = sortText;
+		}
+		
+		if(count == null){
+			$scope.noOfRows = 'Per Page';
+			$scope.searchForm.rowCount = 10;
+		}else{
+			$scope.noOfRows = count;
+			$scope.searchForm.rowCount = count;
+		}
+		$scope.searchForm.page = 0;
+		$scope.currentPage = 0;
+		$scope.toggle = true;
+		$scope.soButton = true;
+		
+		search(function(data) {
+			$scope.emails = data.emails;
+			if($scope.emails.length==0){
+				$scope.soButton = 0;
+				}
+			$scope.hasSearchResult = data.emails.length != 0;
+			$scope.domainCounts = data.domainCounts; 
+			$scope.noOFPages = data.noOFPages;
+			$scope.totalItems = data.noOFPages * $scope.searchForm.rowCount ; // Added for Pagination
+			$scope.saveSearchSets = data.saveSearchSets;        // Added for saveSearchSet
+			$scope.hasQuickSearch = data.saveSearchSets.length != 0;
+			usSpinnerService.stop('loading...');
+			$scope.allChecked = true;
+		});
+	}
+	
+	function search(callback) {
+		usSpinnerService.spin('loading...');
+		$scope.searchForm.domainChecked = "";
+		//alert($scope.predicate+'/'+$scope.reverse);
+		$http.get('/searchForEmails/'+$scope.predicate+'/'+$scope.reverse, {params:$scope.searchForm})
+		.success(function(data, status, headers, config){
+			$("#test").click()
+			if(callback) {
+				callback(data);
+			}
+			
+		});
+	}
+	
+	$scope.getTimes=function(n){
+		var arr = [];
+		for (var i = 0; i < n; i++){
+		      arr.push(i);
+		}
+	     return arr;
+	};
+	
+	$scope.emailPaging = function() {
+		$scope.searchForm.page++;
+		search(function(data){
+			$scope.emails = data.emails;
+			$scope.hasSearchResult = data.emails.length != 0;
+			$scope.noOFPages = data.noOFPages;
+			$scope.totalItems = data.noOFPages * $scope.searchForm.rowCount ; // Added for Pagination
+			usSpinnerService.stop('loading...');
+		});
+	}
+	
+	$scope.openEmailModal = function(emailID) {
+		
+	}
+	$scope.requestPager= function(pageNo) {
+		usSpinnerService.spin('loading...');
+		$scope.searchForm.page = pageNo;
+		$http.get('/searchForEmails', {params:$scope.searchForm})
+		.success(function(data, status, headers, config){
+			usSpinnerService.stop('loading...');
+			$scope.emails = data.emails;
+			$scope.saveSearchSets = data.saveSearchSets; 
+			$scope.noOFPages = data.noOFPages;
+			$scope.totalItems = data.noOFPages * $scope.searchForm.rowCount ; // Added for Pagination
+		});
+	}
+	  $scope.addDomain = function(domain) {
+		    if ($scope.checked_domains.indexOf(domain) != -1) return;
+		    $scope.checked_domains.push(domain);
+		  };
+	$scope.showSearchResult= function(url)
+	{
+		usSpinnerService.spin('loading...');
+		$http.get('/searchForEmails?'+url)
+		.success(function(data, status, headers, config){
+			usSpinnerService.stop('loading...');
+			$scope.emails = data.emails;
+			$scope.domainCounts = data.domainCounts; 
+			$scope.noOFPages = data.noOFPages;
+			$scope.totalItems = data.noOFPages * $scope.searchForm.rowCount ; // Added for Pagination
+			$scope.saveSearchSets = data.saveSearchSets;        // Added for saveSearchSet
+		});
+	}
+		  
+		  
+	$scope.filterEmailSearch= function() {
+		$scope.searchForm.domainChecked = "";
+		usSpinnerService.spin('loading...');
+		for(var i=0 ; i < $scope.domainCounts.length; i++) {
+			if($scope.domainCounts[i].sel) {
+				$scope.searchForm.domainChecked += $scope.domainCounts[i].name+",";
+			}
+		}
+		$http.get('/filterSearch/'+$scope.predicate+'/'+$scope.reverse,{params:$scope.searchForm})
+		.success(function(data, status, headers, config){
+			usSpinnerService.stop('loading...');
+			$scope.emails = data.emails;
+			$scope.saveSearchSets = data.saveSearchSets; 
+			$scope.noOFPages = data.noOFPages;
+			$scope.totalItems = data.noOFPages * $scope.searchForm.rowCount ; // Added for Pagination
+			//$scope.allChecked = true;
+		});
+	};
+	var protocol = $location.protocol();
+	var host = $location.host();
+	var port = $location.port();
+	$scope.hideEmail = function(id,index) {
+		$http({method:'GET',url:protocol+'://'+host+':'+port+'/hideEmail/'+id}).success(function(data) {
+			if($scope.isFromShowTab) {
+				$scope.isHiddenMail = true;
+				$("#emailId"+id).attr('class', 'tip-bottom mailHidden');
+			} else {
+				$scope.emails[index].isHidden = true;
+			}
+		});
+	};
+	
+	$scope.showEmail = function(id,index) {
+		$http({method:'GET',url:protocol+'://'+host+':'+port+'/showEmail/'+id}).success(function(data) {
+			if($scope.isFromShowTab) {
+				$("#emailId"+id).attr('class', 'tip-bottom');
+				$scope.isHiddenMail = false;
+			} else {
+				$scope.emails[index].isHidden = false;
+			}
+		});
+	};
+	$scope.item = {};
+	$scope.sendFeedback = function() {
+		$http({method:'POST',url:'/feedback',data:$scope.item}).success(function(data) {
+			$scope.item = {};
+			$scope.feedbackSuccess = true;
+			//$location.path("auth#/");
+		});
+	};
+});
+
 emailclient.controller('DomainStatisticsController',function($scope, $location,$http, $modal,$sce, usSpinnerService){
 	
 	$scope.roleList = [] ;
@@ -1360,10 +1859,12 @@ emailclient.controller('DomainStatisticsController',function($scope, $location,$
 
 emailclient.controller('DailyController',function($scope, $http, usSpinnerService){
 	usSpinnerService.spin('loading...');
+	$scope.isLoaded = true;
 	$http.get('getReport')
 	.success(function(data, status, headers, config) {
 		$scope.report = data;
 		console.log($scope.report);
 		usSpinnerService.stop('loading...');
+		$scope.isLoaded = false;
 	});
 });

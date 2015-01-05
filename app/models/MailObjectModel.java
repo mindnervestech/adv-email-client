@@ -64,6 +64,16 @@ public class MailObjectModel extends Model{
 		return resultList;
 	}
 	
+	public static List<SqlRow> findMailObjectByDomainNameAndDate(String domainName, String fromDate, String toDate) {
+		StringBuilder query = new StringBuilder();
+		List<SqlRow> resultList = null;
+		query.append("SELECT mail_name,id,DATE_FORMAT(sent_date, '%m') AS month,sent_date,status "+ 
+						" FROM mail_object_model where sent_date BETWEEN '"+toDate+"' and '"+fromDate+"' AND domain = '"+domainName+
+						"' GROUP BY DATE_FORMAT(sent_date, '%d-%m-%Y') ");
+		resultList = Ebean.createSqlQuery(query.toString()).findList();
+		return resultList;
+	}
+	
 	public static void deleteMailObjectById(long id)
 	{
 		SqlUpdate list=Ebean.createSqlUpdate("UPDATE mail_object_model SET status=3 WHERE id="+id);
