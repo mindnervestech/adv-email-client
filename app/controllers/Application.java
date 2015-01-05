@@ -71,6 +71,7 @@ import play.data.Form;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
+import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
 import utility.DailyReportPDF;
 import views.html.accessFailed;
@@ -98,6 +99,21 @@ public class Application extends Controller implements Job {
 	static final String adminPermission = Play.application().configuration()
 			.getString("admin.permission");
 
+	final static String rootDir = Play.application().configuration().getString("pdf.storage.path");
+    
+    static {
+    	createRootDir();
+    }
+
+	public static void createRootDir() {
+	  File file = new File(rootDir);
+	  if (!file.exists()) {
+	          file.mkdir();
+	  }
+	  
+	}
+	
+	
 	public static Result login() {
 		Http.Context context = Http.Context.current();
 		DynamicForm requestData = Form.form().bindFromRequest();
@@ -1001,6 +1017,7 @@ public class Application extends Controller implements Job {
 		public String publisher;
 		public String publisher_url;
 		public String media_kit_url;
+		public String file_url;
 		public String username;
 		public String password;
 		public String last_renewed;
@@ -1034,6 +1051,10 @@ public class Application extends Controller implements Job {
 			bInfo.publisher = info.getString("publisher");
 			bInfo.publisher_url = info.getString("publisher_url");
 			bInfo.media_kit_url = info.getString("media_kit_url");
+			if(info.getString("file_url") != null) {
+				File file = new File(info.getString("file_url"));
+				bInfo.file_url = file.getName();
+			}
 			bInfo.username = info.getString("username");
 			bInfo.password = info.getString("password");
 			bInfo.last_renewed = info.getString("last_renewed");
@@ -1164,12 +1185,7 @@ public class Application extends Controller implements Job {
 		if(key.equals("Y")) {
 			isAdmin  = true;
 		}
-		Calendar cal = Calendar.getInstance();  
-	    int year = cal.get(cal.YEAR);  
-	    int month = cal.get(cal.MONTH)+1; //zero-based  
-	    int preMonth = cal.get(cal.MONTH);
-	    String date = year+"-"+month+"-"+"01";
-	    String preDate = year+"-"+preMonth+"-"+"01";
+		
 		StringBuilder query = new StringBuilder();
 		List<SqlRow> resultList = null;
 		query.append("select distinct domain from mail_object_model");
@@ -1177,66 +1193,60 @@ public class Application extends Controller implements Job {
 		for(SqlRow sr:resultList){
 			MailsToDisplay mailsToDisplay= new MailsToDisplay();
 			mailsToDisplay.domainName= sr.getString("domain");
-			SqlRow currentMonthCount= MailObjectModel.findMailObjectByDomainNameAndDate(mailsToDisplay.domainName, date);
+			SqlRow currentMonthCount= MailObjectModel._findMailObjectByDomainNameAndDate(mailsToDisplay.domainName);
 			int currentCount = currentMonthCount.getInteger("count");
-			SqlRow preMonthCount= MailObjectModel.findMailObjectByDomainNameAndDate(mailsToDisplay.domainName, preDate);
+			SqlRow preMonthCount= MailObjectModel.findMailObjectByDomainNameAndDate(mailsToDisplay.domainName);
 			int preCount = preMonthCount.getInteger("count");
 			float lossPercent;
 			if(preCount > currentCount){
 				if(preCount != 0){
 					lossPercent = 100-(currentCount*100/preCount);
-					
-					if(lossPercent > percent ){
-							String to = "mindnervestech@gmail.com";
-	
-							final String from = "mindnervesdemo@gmail.com";
-							String host = "smtp.gmail.com";
-							final String password = "mindnervesadmin";
-							String port = "587";
-							Properties properties = new Properties();
-							properties.put("mail.smtp.starttls.enable", "true");
-							properties.put("mail.smtp.host", host);
-							properties.put("mail.smtp.auth", "true"); // password
-							properties.put("mail.smtp.port", port);
-							Session session = Session.getInstance(properties,
-							new javax.mail.Authenticator() {
-							protected PasswordAuthentication getPasswordAuthentication() {
-								return new PasswordAuthentication(from,
-										password);
-								}
-							});
-							try {
-								Message message = new MimeMessage(session);
-								message.setFrom(new InternetAddress(from));
-								message.addRecipients(Message.RecipientType.TO,
-										InternetAddress.parse(to));
-								message.setSubject("MAIL VARIATION");
-								message.setText(String.valueOf(lossPercent));
-								Transport.send(message);
-								System.out.println("Sent message successfully 21....");
-							} catch (Exception mex) {
-								mex.printStackTrace();
+				if(lossPercent > percent ){
+						String to = "mindnervestech@gmail.com";
+
+						final String from = "mindnervesdemo@gmail.com";
+						String host = "smtp.gmail.com";
+						final String password = "mindnervesadmin";
+						String port = "587";
+						Properties properties = new Properties();
+						properties.put("mail.smtp.starttls.enable", "true");
+						properties.put("mail.smtp.host", host);
+						properties.put("mail.smtp.auth", "true"); // password
+						properties.put("mail.smtp.port", port);
+						Session session = Session.getInstance(properties,
+						new javax.mail.Authenticator() {
+						protected PasswordAuthentication getPasswordAuthentication() {
+							return new PasswordAuthentication(from,
+									password);
 							}
+						});
+						try {
+							Message message = new MimeMessage(session);
+							message.setFrom(new InternetAddress(from));
+							message.addRecipients(Message.RecipientType.TO,
+									InternetAddress.parse(to));
+							message.setSubject("MAIL VARIATION");
+							message.setText(String.valueOf(lossPercent));
+							Transport.send(message);
+							System.out.println("Sent message successfully 21....");
+						} catch (Exception mex) {
+							mex.printStackTrace();
 						}
 					}
-				}else{
-					if(currentCount != 0){
-						lossPercent = 100-(preCount*100/currentCount);
-					}
 				}
+			}else{
+				if(currentCount != 0){
+					lossPercent = 100-(preCount*100/currentCount);
+				}
+			}
+			
 		}
 		return ok();
 	}
 	public static MailVariastion _mailVariations(int percent) {
 		MailVariastion mailVariastion = new MailVariastion();
 		List<VariationDetails> variationDetails = new ArrayList<VariationDetails>();
-		Date d = new Date();
-		Calendar cal = Calendar.getInstance();  
-	    int year = cal.get(cal.YEAR);  
-	    int month = cal.get(cal.MONTH)+1; //zero-based  
-	    int preMonth = cal.get(cal.MONTH);
-	    String date = year+"-"+month+"-"+"01";
-	    String preDate = year+"-"+preMonth+"-"+"01";
+		
 		StringBuilder query = new StringBuilder();
 		List<SqlRow> resultList = null;
 		query.append("select distinct domain from mail_object_model");
@@ -1246,9 +1256,9 @@ public class Application extends Controller implements Job {
 		for(SqlRow sr:resultList){
 			MailsToDisplay mailsToDisplay= new MailsToDisplay();
 			mailsToDisplay.domainName= sr.getString("domain");
-			SqlRow currentMonthCount= MailObjectModel.findMailObjectByDomainNameAndDate(mailsToDisplay.domainName, date);
+			SqlRow currentMonthCount= MailObjectModel._findMailObjectByDomainNameAndDate(mailsToDisplay.domainName);
 			int currentCount = currentMonthCount.getInteger("count");
-			SqlRow preMonthCount= MailObjectModel.findMailObjectByDomainNameAndDate(mailsToDisplay.domainName, preDate);
+			SqlRow preMonthCount= MailObjectModel.findMailObjectByDomainNameAndDate(mailsToDisplay.domainName);
 			int preCount = preMonthCount.getInteger("count");
 			float lossPercent;
 			VariationDetails variationDetail = new VariationDetails();
@@ -1262,12 +1272,12 @@ public class Application extends Controller implements Job {
 					if(lossPercent > 20 ){
 							//message.setText(String.valueOf(lossPercent));
 								variationDetail.lossPercent = lossPercent;
-						}
+					}
 				}
 			}else{
-				if(currentCount != 0){
+				if(currentCount != 0){ 
 					lossPercent = 100-(preCount*100/currentCount);
-					variationDetail.lossPercent = lossPercent;
+					//variationDetail.lossPercent = lossPercent;
 				}
 			}
 			
@@ -1792,6 +1802,31 @@ public class Application extends Controller implements Job {
 		}
 
 		return ok(Json.toJson(report));
+	}
+	
+	public static Result uploadPDF() {
+		FilePart picture = request().body().asMultipartFormData().getFile("pdfFile0");
+		DynamicForm form = DynamicForm.form().bindFromRequest();
+		String channelName = form.get("channelName");
+        String fileName = picture.getFilename();
+        File file = picture.getFile();
+        try {
+        FileUtils.copyFile(file, new File(rootDir+File.separator+fileName));
+        BasicInfo basicInfo = BasicInfo.getByName(channelName);
+        	if(basicInfo != null) {
+        		basicInfo.setFileUrl(rootDir+File.separator+fileName);
+        		basicInfo.update();
+        	}
+        } catch(Exception e) {
+        	e.printStackTrace();
+        }
+		return ok();
+	}
+	
+	public static Result downloadFile(String path) {
+		 BasicInfo basicInfo = BasicInfo.getByName(path);
+		 File file = new File(basicInfo.getFileUrl());
+		return ok(file);
 	}
 	
 }

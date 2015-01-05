@@ -47,7 +47,9 @@ public class ShowTab extends Controller {
 			isAdmin  = true;
 		}
 		if(yearTab == 0 ){
-			yearTab = 2014L;
+			Date now = new Date();
+			Integer year = now.getYear();
+			yearTab = year.longValue();
 		}
 		StringBuilder query = new StringBuilder();
 		List<SqlRow> resultList = null;

@@ -317,12 +317,12 @@ public class DailyReportPDF {
 		cell.setVerticalAlignment(Element.ALIGN_LEFT);
 		table3.addCell(cell);
 
-		cell = new PdfPCell(new Phrase("Last Month", tableHeading));
+		cell = new PdfPCell(new Phrase("Last 30-60 Days", tableHeading));
 		cell.setVerticalAlignment(Element.ALIGN_RIGHT);
 		table3.addCell(cell);
 		
 		
-		cell = new PdfPCell(new Phrase("Current Month", tableHeading));
+		cell = new PdfPCell(new Phrase("Last 30 Days", tableHeading));
 		cell.setVerticalAlignment(Element.ALIGN_RIGHT);
 		table3.addCell(cell);
 			

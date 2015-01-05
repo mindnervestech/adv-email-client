@@ -797,7 +797,7 @@ emailclient.controller('AdminController',function($scope,$location,$http,$modal,
 		}
 });
 
-emailclient.controller('SearchController',function($scope, $location,$http, $modal,$sce, usSpinnerService){
+emailclient.controller('SearchController',function($scope, $location,$http, $modal,$sce,$upload, usSpinnerService){
 	$scope.predicate = 'relevance';
 	$scope.reverse=false;
 	$scope.dateReverse=true;
@@ -831,8 +831,32 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 		}
 	};
 	
+	$scope.onFileSelect = function($files) {
+		$scope.selectedFile = $files;
+	}
+	$scope.isUploaded = false;
+	$scope.uploadFile = function(channelName) {
+		$scope.channelName = channelName;
+		$upload.upload({
+			url: '/uploadPDF',
+			method: 'POST',
+			file: $scope.selectedFile,
+			data: {"channelName":$scope.channelName},
+			fileFormDataName: 'pdfFile'
+		}).progress(function(evt) {
+			
+	    }).success(function(data, status, headers, config) {
+	    	console.log('success');
+	    	$scope.isUploaded = true;
+	    }).error(function(data, status, headers, config) {
+	    	
+	    });
+	}
+	
+	
 	$scope.mailInfo = function (data) {
 		console.log(data);
+		$scope.isUploaded = false;
 		$http.get('/getEmailInfo/'+data)
 		.success(function(data, status, headers, config) {
 			console.log(data);
@@ -841,6 +865,7 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 					history:data.history,
 					last_renewed:data.last_renewed,
 					media_kit_url:data.media_kit_url,
+					file_url:data.file_url,
 					username:data.username,
 					password:data.password,
 					subscriber:data.subscriber,

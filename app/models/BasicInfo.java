@@ -24,6 +24,8 @@ public class BasicInfo extends Model {
 	public String publisher_url;
 
 	public String media_kit_url;
+	
+	public String fileUrl;
 
 	public String username;
 
@@ -126,10 +128,20 @@ public class BasicInfo extends Model {
 		this.subscriber = subscriber;
 	}
 
+	public String getFileUrl() {
+		return fileUrl;
+	}
+
+	public void setFileUrl(String fileUrl) {
+		this.fileUrl = fileUrl;
+	}
+
+	public static Finder<Integer,BasicInfo> find = new Finder<>(Integer.class,BasicInfo.class);
+	
 	public static SqlRow findRecordByName(String data) {
 		SqlRow b = Ebean
 				.createSqlQuery(
-						"select channel_name, publisher, publisher_url, media_kit_url, username, password, last_renewed, history, notes, Subscriber from basic_info where channel_name='"+ data+"'").findUnique();
+						"select channel_name, publisher, publisher_url, media_kit_url, file_url, username, password, last_renewed, history, notes, Subscriber from basic_info where channel_name='"+ data+"'").findUnique();
 		BasicInfo info = new BasicInfo();
 		if (b != null) {
 			System.out.println(b.getString("channel_name"));
@@ -139,7 +151,7 @@ public class BasicInfo extends Model {
 			info.save();
 			SqlRow binfo = Ebean
 					.createSqlQuery(
-							"select channel_name, publisher, publisher_url, media_kit_url, username, password, last_renewed, history, notes, Subscriber from basic_info where channel_name='"+ data+"'").findUnique();
+							"select channel_name, publisher, publisher_url, media_kit_url, file_url, username, password, last_renewed, history, notes, Subscriber from basic_info where channel_name='"+ data+"'").findUnique();
 			return binfo;
 		}
 	}
@@ -156,6 +168,11 @@ public class BasicInfo extends Model {
 		return "sucess";
 	}
 
+	public static BasicInfo getByName(String name) {
+		return find.where().eq("channel_name", name).findUnique();
+	}
+	
+	
 	/*
 	 * public static void deleteLinksByMailObjectId(long id) { SqlUpdate
 	 * list=Ebean.createSqlUpdate("DELETE FROM links WHERE mail_id_id="+id);

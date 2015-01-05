@@ -175,26 +175,11 @@ public class MailObjectModel extends Model{
 	}
 	
 	public static SqlRow findMailObjectByDomainNameAndDate(
-			String domainName, String date) {
-		Date myDate = null;
-		try {
-			myDate = new SimpleDateFormat("yyyy-MM-dd")
-			.parse(date);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Calendar c = Calendar.getInstance();
-	    c.setTime(myDate);
-	    c.add(Calendar.MONTH, 1);
-	    Date nextDate = c.getTime();
-	    String _date = null;
-	    _date = new SimpleDateFormat("yyyy-MM-dd")
-		.format(nextDate);
-	    System.out.println(_date);
-	    StringBuilder query = new StringBuilder();
+			String domainName) {
+		StringBuilder query = new StringBuilder();
 		SqlRow resultList = null;
-		query.append("SELECT domain, COUNT(*) as count FROM mail_object_model WHERE domain = '"+domainName+"' and sent_date BETWEEN '"+date+"' and '"+_date+"'");
+		query.append("SELECT domain, COUNT(*) as count FROM mail_object_model WHERE domain = '"+domainName+"' and sent_date BETWEEN ((NOW() - INTERVAL 1 MONTH) - INTERVAL 1 MONTH ) and (NOW() - INTERVAL 1 MONTH)");
+		//query.append("SELECT domain, COUNT(*) as count FROM mail_object_model WHERE domain = '"+domainName+"' and sent_date >= ((NOW() - INTERVAL 1 MONTH) - INTERVAL 1 MONTH )");
 		resultList = Ebean.createSqlQuery(query.toString()).findUnique();
 		return resultList;
 	}
@@ -222,5 +207,13 @@ public class MailObjectModel extends Model{
 	}
 	public static int getDomainMailCountByName(String name) {
 		return find.where().eq("domain", name).findRowCount();
+	}
+	public static SqlRow _findMailObjectByDomainNameAndDate(String domainName) {
+		StringBuilder query = new StringBuilder();
+		SqlRow resultList = null;
+		query.append("SELECT domain, COUNT(*) as count FROM mail_object_model WHERE domain = '"+domainName+"' and sent_date BETWEEN (NOW() - INTERVAL 1 MONTH ) and NOW()");
+		//query.append("SELECT domain, COUNT(*) as count FROM mail_object_model WHERE domain = '"+domainName+"' and sent_date >= (NOW() - INTERVAL 1 MONTH )");
+		resultList = Ebean.createSqlQuery(query.toString()).findUnique();
+		return resultList;
 	}
 }

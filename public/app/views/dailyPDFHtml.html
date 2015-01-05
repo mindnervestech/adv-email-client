@@ -1,4 +1,13 @@
 <html>
+<head>
+	<nav class="navbar" role="navigation" style="color: #bbb;border-bottom: 1px solid #444;">
+	 <div class="navbar-header" style="width: 20%;margin-left: 2%;margin-top: 0.5%;">
+	 	<a href="http://enter-agora.com/A3lifesci/welcome.m">
+	 		<img src="/assets/app/images/logo_agora.png" style="width: 100%" alt="Your Brand" >
+	 	</a>
+	 </div>	
+</nav>
+</head>
 <body>
 <div style="background: white;margin-top: 10%;">
 	<br><br>
@@ -74,8 +83,8 @@
 	<div><b style="margin-left: 5%;font-size: large;">Mail Variations</b></div>
 	<table class="table" border="2" style="width:90%;margin-left: 5%;">
 		<th>Domain</th>
-		<th>Last Month</th>
-		<th>Current Month</th>
+		<th>Last 30-60 Days</th>
+		<th>Last 30 Days</th>
 		<th>% Loss</th>
 		<tr ng-repeat="obj in report.mailVariation.variationDetails">
 			<td>{{obj.domain}}</td>
