@@ -16,7 +16,6 @@ angular.module('email-client', [
   'ngSanitize',
   'angularTreeview',
   'ngDragDrop',
-  'angularjs-dropdown-multiselect',
   'angularFileUpload'
 ])
   .config(function ($routeProvider) {
