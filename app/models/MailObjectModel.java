@@ -226,4 +226,13 @@ public class MailObjectModel extends Model{
 		resultList = Ebean.createSqlQuery(query.toString()).findUnique();
 		return resultList;
 	}
+	
+	public static List<MailObjectModel> getByDomainName(String domainName) {
+		return find.where().eq("domain", domainName).findList();
+	}
+	
+	public static MailObjectModel findById(long id) {
+		return find.byId(id);
+	}
+	
 }

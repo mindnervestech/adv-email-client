@@ -580,6 +580,11 @@ public class Application extends Controller implements Job {
 			DomainBL domain = new DomainBL();
 			domain.domain = domainName;
 			domain.save();
+			List<MailObjectModel> list = MailObjectModel.getByDomainName(domainName);
+			for(MailObjectModel obj: list) {
+				obj.setStatus(2);
+				obj.update();
+			}
 			dom = DomainBL.findDomainblObjectByDomainName(domainName);
 			blackListedResponse.domainList.add(dom);
 			return ok(Json.toJson(blackListedResponse));
