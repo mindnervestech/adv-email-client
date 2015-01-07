@@ -844,9 +844,10 @@ emailclient.controller('SearchController',function($scope, $location,$http, $mod
 			data: {"channelName":$scope.channelName},
 			fileFormDataName: 'pdfFile'
 		}).progress(function(evt) {
-			
+			usSpinnerService.spin('loading...');
 	    }).success(function(data, status, headers, config) {
 	    	console.log('success');
+	    	usSpinnerService.stop('loading...');
 	    	$scope.isUploaded = true;
 	    }).error(function(data, status, headers, config) {
 	    	

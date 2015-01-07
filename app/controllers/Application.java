@@ -1611,6 +1611,9 @@ public class Application extends Controller implements Job {
 		if(!list.contains(domainVM.parent)){
 			list.add(domainVM.parent);
 		}
+		if(!list.contains(domainVM.name)){
+			list.add(domainVM.name);
+		}
 		
 		List<DomainObject> domainObjects2 = DomainObject.getChildsOfDomain(id);
 		List<ChildVm> childVms = new ArrayList<>();

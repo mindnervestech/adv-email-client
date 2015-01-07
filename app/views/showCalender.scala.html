@@ -215,11 +215,12 @@
 								<a href="/downloadFile/{{seeMailInfo.channel_name}}" target="_blank">{{seeMailInfo.file_url}}</a>
  							</div>
 							<div style="padding: 1%;" ng-show="isadmin">
-								<input type="file" class="col-sm-5" name="pdfFile" style="margin-left:20%;" ng-file-select="onFileSelect($files)" accept="pdf/*"> <input type="button" value="Upload pdf" ng-click="uploadFile(seeMailInfo.channel_name)">
+								<input type="file" class="col-sm-5" name="pdfFile" style="margin-left:20%;" ng-file-select="onFileSelect($files)"> <input type="button" value="Upload pdf" ng-click="uploadFile(seeMailInfo.channel_name)">
 								<p style="color:green;margin-left: 35%;margin-top: 3%;" ng-show="isUploaded">File uploaded successfully!</p>
 							</div>
 							<div style="padding: 1%;" ng-show="isadmin">
 	 							<label class="col-sm-3 control-label">File Url:</label>
+								<input class="input-filter form-control" style = "width:50% !important; border:none;"  type="input"  ng-show="seeMailInfo.file_url == null" disabled="disabled"></input>
 								<a href="/downloadFile/{{seeMailInfo.channel_name}}" target="_blank">{{seeMailInfo.file_url}}</a>
  							</div>
  							<div style="padding: 1%;" ng-show="isadmin">
