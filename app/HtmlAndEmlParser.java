@@ -43,7 +43,7 @@ public class HtmlAndEmlParser {
     	Document doc= null;
     	System.out.println("Reading from FS" );
 		
-    	List <MailObjectModel> moList =MailObjectModel.find.where().eq("status", 0).setMaxRows(10).findList();
+    	List <MailObjectModel> moList =MailObjectModel.find.where().eq("status", 0).setMaxRows(30).findList();
     	System.out.println("No of mails to be processed  from FS" + moList.size());
 		for (MailObjectModel mm:moList)
 		{
